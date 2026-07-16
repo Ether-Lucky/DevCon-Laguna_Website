@@ -1,1 +1,4 @@
-# DevCon-Laguna_Website
+# Tech Stack
+Next.JS
+Tailwind
+Framer Motion
