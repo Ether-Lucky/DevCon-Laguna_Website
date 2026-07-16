@@ -1,0 +1,41 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/devcon/node_modules
+/devcon/.pnp
+/devcon/.pnp.*
+/devcon/.yarn/*
+!/devcon/.yarn/patches
+!/devcon/.yarn/plugins
+!/devcon/.yarn/releases
+!/devcon/.yarn/versions
+
+# testing
+/devcon/coverage
+
+# next.js
+/devcon/.next/
+/devcon/out/
+
+# production
+/devcon/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+/devcon/.env*
+
+# vercel
+/devcon/.vercel
+
+# typescript
+/devcon/*.tsbuildinfo
+/devcon/next-env.d.ts
