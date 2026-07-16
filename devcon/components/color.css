@@ -1,0 +1,23 @@
+/* DEVCON Laguna Brand Colors */
+:root {
+  --color-devcon-lime: #C0E00B;
+  --color-devcon-orange: #E06B22;
+  --color-devcon-purple-dark: #3A0066;
+  --color-devcon-purple-bright: #6320EE;
+  --color-devcon-black: #0B0B0C;
+  --color-devcon-white: #FFFFFF;
+  --color-devcon-gray: #A0A0A5;
+}
+
+/* Background Utility Classes */
+.bg-devcon-lime { background-color: var(--color-devcon-lime); }
+.bg-devcon-orange { background-color: var(--color-devcon-orange); }
+.bg-devcon-purple-dark { background-color: var(--color-devcon-purple-dark); }
+.bg-devcon-purple-bright { background-color: var(--color-devcon-purple-bright); }
+.bg-devcon-black { background-color: var(--color-devcon-black); }
+
+/* Text Utility Classes */
+.text-devcon-lime { color: var(--color-devcon-lime); }
+.text-devcon-orange { color: var(--color-devcon-orange); }
+.text-devcon-gray { color: var(--color-devcon-gray); }
+.text-devcon-white { color: var(--color-devcon-white); }
