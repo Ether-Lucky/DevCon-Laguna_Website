@@ -24,16 +24,16 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
   );
 
   // Base styles for both buttons
-  const baseClasses = "group inline-flex items-center justify-center font-semibold px-8 py-3 rounded-full transition-all duration-200 text-sm";
+  const baseClasses = "group inline-flex items-center justify-center font-inter font-semibold px-8 py-3 rounded-full transition-all duration-200 text-body-sm";
 
-  // Dynamic styling based on the variant
+  // Dynamic styling using your custom Tailwind config colors
   const variantClasses = variant === 'primary'
-    ? "bg-[#C0E00B] hover:bg-[#a6c209] active:bg-[#8ca407] text-black" // Lime green filled
-    : "border border-white/30 hover:border-white text-white bg-transparent hover:bg-white/10"; // Transparent outline
+    ? "bg-devcon-lime hover:bg-opacity-90 active:bg-opacity-80 text-devcon-black" // Brand Lime Green
+    : "border border-devcon-white/30 hover:border-devcon-white text-devcon-white bg-transparent hover:bg-devcon-white/10"; // Transparent Outline
 
   const combinedClasses = `${baseClasses} ${variantClasses}`;
 
-  // Render as Link or standard Button
+  // Render as Link if href is provided
   if (href) {
     return (
       <Link href={href} className={combinedClasses}>
@@ -43,8 +43,9 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
     );
   }
 
+  // Render as normal button if onClick is provided
   return (
-    <button onClick={onClick} className={combinedClasses}>
+    <button onClick={onClick} className={combinedClasses} type="button">
       {label}
       <ArrowIcon />
     </button>
