@@ -1,10 +1,12 @@
-import Image from "next/image";
+import MIssionVision from '@/components/ui/mission-vision/mission-vision';
 
 export default function Home() {
   return (
     <>
       <nav></nav>
-      <main></main>
+      <main>
+        <MIssionVision />
+      </main>
       <footer></footer>
     </>
   );
