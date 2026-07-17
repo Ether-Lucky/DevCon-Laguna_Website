@@ -1,10 +1,12 @@
-import Image from "next/image";
+import About from "@/components/ui/about";
 
 export default function Home() {
   return (
     <>
       <nav></nav>
-      <main></main>
+      <main>
+        <About />
+      </main>
       <footer></footer>
     </>
   );
