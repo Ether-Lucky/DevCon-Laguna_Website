@@ -1,7 +1,6 @@
-import React from 'react';
 import Button from '@/components/ui/button';
 import Carousel from '@/components/ui/events-carousel';
-import NavBar from '@/components/ui/nav-bar';
+import NavBar from '@/components/ui/nav-bar/nav-bar';
 
 export default function Home() {
   return (
