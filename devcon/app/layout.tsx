@@ -28,6 +28,9 @@ export default function RootLayout({
       className={`${dmSans.variable} ${inter.variable} h-full antialiased`}
     >
       <body className={`min-h-full flex flex-col`}>{children}</body>
+      <body suppressHydrationWarning className={`min-h-full flex flex-col`}>
+        {children}
+      </body>
     </html>
   );
 }

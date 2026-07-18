@@ -8,8 +8,13 @@ export default function Home() {
       <NavBar />
       <main className="flex min-h-screen flex-col items-center justify-center bg-devcon-black p-24 text-devcon-white font-inter"> 
         <WhatWeDo />
+
+      <main className="flex min-h-screen flex-col items-center justify-center bg-devcon-black p-24 text-devcon-white font-inter">  
+        
+        <WhatWeDo />
+
       </main>
       <footer></footer>
     </>
-  );
+  )
 }
