@@ -17,17 +17,18 @@ export default function NavLinks() {
   // const pathname = usePathname();
 
   return (
-    <>
+    <div className="flex items-center gap-10">
       {links.map((link) => {
         return (
           <Link
             key={link.name}
             href={link.href}
+            className="text-[18px] font-semibold leading-none text-white/75 transition-colors duration-150 hover:text-white"
           >
-            <p className="hidden md:block">{link.name}</p>
+            {link.name}
           </Link>
         );
       })}
-    </>
+    </div>
   );
 }

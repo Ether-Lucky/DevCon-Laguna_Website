@@ -5,10 +5,10 @@ export default function ThemeButton({ theme } : { theme: 'light' | 'dark' }) {
   return (
     <button 
       className={clsx(
-        "group inline-flex items-center justify-center font-inter font-semibold px-8 py-3 rounded-full transition-all duration-200 text-body-sm", 
+        "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200", 
         {
-          "bg-devcon-lime hover:bg-opacity-90 active:bg-opacity-80 text-devcon-black" : theme === 'light',
-          "border border-devcon-white/30 hover:border-devcon-white text-devcon-white bg-transparent hover:bg-devcon-white/10" : theme === 'dark'
+          "border-devcon-black/20 bg-devcon-lime text-devcon-black hover:bg-devcon-lime/90" : theme === 'light',
+          "border-devcon-white/20 bg-transparent text-devcon-white hover:border-devcon-white/35 hover:bg-devcon-white/8" : theme === 'dark'
         }
       )} 
       type="button"
@@ -16,8 +16,8 @@ export default function ThemeButton({ theme } : { theme: 'light' | 'dark' }) {
       <Image 
         src={theme === 'light' ? '/icons/sun.svg' : '/icons/moon.svg'}
         alt={theme === 'light' ? 'Light Mode' : 'Dark Mode'}
-        width={24}
-        height={24}
+        width={18}
+        height={18}
       />
     </button>
   );
