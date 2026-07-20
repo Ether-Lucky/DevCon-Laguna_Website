@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 const socialLinks = [
-  { label: "Facebook", href: "https://facebook.com", icon: "/icons/facebook.svg" },
-  { label: "Twitter", href: "https://x.com", icon: "/icons/twitter.svg" },
-  { label: "Instagram", href: "https://instagram.com", icon: "/icons/instagram.svg" },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: "/icons/linkedin.svg" },
+  { label: "Facebook", href: "https://www.facebook.com/DEVCONLAGUNA", icon: "/icons/facebook.svg" },
+  { label: "Twitter", href: "https://x.com/DEVCONPH", icon: "/icons/twitter.svg" },
+  { label: "Instagram", href: "https://www.instagram.com/devconlaguna", icon: "/icons/instagram.svg" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/devconlaguna/", icon: "/icons/linkedin.svg" },
 ];
 
 export default function SocialMedia() {
@@ -15,7 +15,7 @@ export default function SocialMedia() {
       key={item.label}
       href={item.href}
       aria-label={item.label}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 text-xl font-semibold text-devcon-white transition-transform duration-200 hover:-translate-y-0.5 hover:border-devcon-lime hover:bg-devcon-lime/10 p-3"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 text-xl font-semibold text-devcon-white transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10 p-3"
       >
       <span className="leading-none">
         <Image
