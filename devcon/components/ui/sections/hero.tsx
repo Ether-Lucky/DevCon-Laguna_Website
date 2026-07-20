@@ -26,7 +26,14 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12 relative">
+            <Image 
+              src="/hero/look-here.png"
+              alt="Look Here"
+              width={50}
+              height={31}
+              className="absolute -top-6 -left-4"
+            />
             <Button
               label="Volunteer"
               href="#"
