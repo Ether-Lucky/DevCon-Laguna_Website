@@ -1,32 +1,85 @@
 import Image from "next/image";
+import Button from "@/components/ui/button";
+
+// const socialLinks = [
+//   { label: "Facebook", href: "https://facebook.com", icon: "f" },
+//   { label: "Twitter", href: "https://x.com", icon: "t" },
+//   { label: "Instagram", href: "https://instagram.com", icon: "◉" },
+//   { label: "LinkedIn", href: "https://linkedin.com", icon: "in" },
+// ];
 
 export default function Hero() {
   return (
-    <section id="hero" className="flex flex-row w-full">
-      <div className="w-1/2">
-        <h1>Building the Future of Tech, Together.</h1>
-        <p>DevCon Laguna is a community of developers, students, and technology enthusiasts dedicated to learning, collaborating, and creating meaningful impact through technology.</p>
-        {/* Social Media Links */}
-        <div className="flex flex-row gap-16">
-          <button>Volunteer</button>
-          <button>Learn More</button>
+    <section
+      id="hero"
+      className="relative bg-devcon-black px-6 py-6 text-devcon-white md:px-8 md:py-16"
+    >
+      <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
+        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none">
+          <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-devcon-white">
+            <span className="block">Building the</span>
+            <span className="block text-devcon-lime">Future of Tech,</span>
+            <span className="block text-devcon-orange">Together.</span>
+          </h1>
+
+          <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-devcon-gray md:mt-7">
+            DevCon Laguna is a community of developers, students, and technology
+            enthusiasts dedicated to learning, collaborating, and creating meaningful
+            impact through technology.
+          </p>
+
+          
+
+          {/* <div className="mt-8 flex items-center gap-4 md:mt-9 md:gap-5">
+            {socialLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                aria-label={item.label}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 text-xl font-semibold text-devcon-white transition-transform duration-200 hover:-translate-y-0.5 hover:border-devcon-lime hover:bg-devcon-lime/10 md:h-12 md:w-12"
+              >
+                <span className="leading-none">{item.icon}</span>
+              </a>
+            ))}
+          </div> */}
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12">
+            <Button
+              label="Volunteer"
+              href="#"
+              variant="primary"
+              hasArrow
+              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
+            />
+            <Button
+              label="Learn More"
+              href="#"
+              variant="outline"
+              hasArrow
+              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold"
+            />
+          </div>
         </div>
-      </div>
-      <div className="relative w-1/2 flex">
-        <Image
-          src="/hero/blob.png"
-          alt="Developer Conference"
-          width={672}
-          height={886}
-          className="absolute z-1"
-        />
-        <Image
-          src="/hero/purple-dots.png"
-          alt=""
-          width={1105}
-          height={1105}
-          className="opacity-50 absolute z-0"
-        />
+
+        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[50vw] md:justify-end">
+          <Image
+            src="/hero/web.png"
+            alt="DevCon Laguna community collage"
+            width={1000}
+            height={1023}
+            priority
+            className="hidden h-auto w-full md:block"
+          />
+          <Image
+            src="/hero/mobile.png"
+            alt="DevCon Laguna community collage"
+            width={420}
+            height={420}
+            priority
+            sizes="(max-width: 767px) 92vw, 0vw"
+            className="h-auto w-full md:hidden"
+          />
+        </div>
       </div>
     </section>
   );
