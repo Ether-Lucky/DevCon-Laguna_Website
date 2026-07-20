@@ -8,6 +8,7 @@ export default function Hero() {
       className="relative bg-devcon-black px-6 py-6 text-devcon-white md:px-8 md:py-16"
     >
       <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
+        {/* Text Content */}
         <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none">
           <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-devcon-white">
             <span className="block">Building the</span>
@@ -41,6 +42,7 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Image Content */}
         <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[50vw] md:justify-end">
           <Image
             src="/hero/web.png"
