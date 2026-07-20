@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 
 interface ButtonProps {
@@ -6,10 +5,10 @@ interface ButtonProps {
   onClick?: () => void;
   href?: string;
   variant?: 'primary' | 'outline'; // Choose between lime-green or outline
+  hasArrow?: boolean; // Whether to show the arrow icon
 }
 
-export default function Button({ label, onClick, href, variant = 'primary' }: ButtonProps) {
-  
+export default function Button({ label, onClick, href, variant = 'primary', hasArrow = true }: ButtonProps) {
   // The arrow icon ↗
   const ArrowIcon = () => (
     <svg 
@@ -26,10 +25,10 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
   // Base styles for both buttons
   const baseClasses = "group inline-flex items-center justify-center font-inter font-semibold px-8 py-3 rounded-full transition-all duration-200 text-body-sm";
 
-  // Dynamic styling using your custom Tailwind config colors
+  // Button styiling
   const variantClasses = variant === 'primary'
-    ? "bg-devcon-lime hover:bg-opacity-90 active:bg-opacity-80 text-devcon-black" // Brand Lime Green
-    : "border border-devcon-white/30 hover:border-devcon-white text-devcon-white bg-transparent hover:bg-devcon-white/10"; // Transparent Outline
+    ? "bg-devcon-lime hover:bg-opacity-90 active:bg-opacity-80 text-devcon-black" 
+    : "border border-devcon-white/30 hover:border-devcon-white text-devcon-white bg-transparent hover:bg-devcon-white/10"; 
 
   const combinedClasses = `${baseClasses} ${variantClasses}`;
 
@@ -38,7 +37,7 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
     return (
       <Link href={href} className={combinedClasses}>
         {label}
-        <ArrowIcon />
+        {hasArrow && <ArrowIcon />}
       </Link>
     );
   }
@@ -47,7 +46,7 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
   return (
     <button onClick={onClick} className={combinedClasses} type="button">
       {label}
-      <ArrowIcon />
+      {hasArrow && <ArrowIcon />}
     </button>
   );
 }
