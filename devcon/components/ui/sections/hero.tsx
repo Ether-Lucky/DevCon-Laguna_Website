@@ -11,7 +11,7 @@ export default function Hero() {
       <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
         
         {/* Text Content */}
-        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none">
+        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none z-1">
           <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-devcon-white">
             <span className="block">Building the</span>
             <span className="block text-devcon-lime">Future of Tech,</span>
@@ -26,7 +26,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12 relative">
+          <div className="mt-8 flex flex-row gap-3 sm:gap-4 md:mt-12 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -52,7 +52,7 @@ export default function Hero() {
         </div>
 
         {/* Image Content */}
-        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[50vw] md:justify-end">
+        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[50vw] md:justify-end z-0">
           <Image
             src="/hero/web.png"
             alt="DevCon Laguna community collage"
