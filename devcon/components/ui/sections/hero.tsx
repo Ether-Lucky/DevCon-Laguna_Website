@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Button from "@/components/ui/button";
+import SocialMedia from '@/components/ui/social-media';
 
 export default function Hero() {
   return (
@@ -8,6 +9,7 @@ export default function Hero() {
       className="relative bg-devcon-black px-6 py-6 text-devcon-white md:px-8 md:py-16"
     >
       <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
+        
         {/* Text Content */}
         <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none">
           <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-devcon-white">
@@ -22,7 +24,7 @@ export default function Hero() {
             impact through technology.
           </p>
 
-          {/* Social Media Links */}
+          <SocialMedia />
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12">
             <Button
