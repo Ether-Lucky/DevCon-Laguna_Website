@@ -9,22 +9,29 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section id="stats" className='flex flex-wrap justify-center gap-10'>
+    <section
+      id="stats"
+      className='grid w-full grid-cols-2 gap-y-10 px-6 py-10 text-center sm:px-10 md:grid-cols-4 md:gap-6 lg:px-16'
+    >
       {stats.map((stat) => {
         return (
           <div
             key={stat.name}
             className='flex flex-col items-center gap-2'
           >
-            <Image 
-              src={stat.icon.link} 
+            <Image
+              src={stat.icon.link}
               alt={stat.name}
               width={stat.icon.width}
               height={stat.icon.height}
-              className='object-contain'
+              className='h-16 w-auto object-contain'
             />
-            <em>{stat.value}+</em>
-            <em>{stat.name}</em>
+            <p className='text-4xl font-semibold leading-none tracking-tight text-devcon-white md:text-[44px]'>
+              {stat.value}<span className='text-devcon-gray'>+</span>
+            </p>
+            <p className='max-w-40 text-sm font-semibold leading-snug text-devcon-gray md:text-base'>
+              {stat.name}
+            </p>
           </div>
         );
       })}
