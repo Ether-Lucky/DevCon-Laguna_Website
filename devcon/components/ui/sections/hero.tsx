@@ -1,13 +1,6 @@
 import Image from "next/image";
 import Button from "@/components/ui/button";
 
-// const socialLinks = [
-//   { label: "Facebook", href: "https://facebook.com", icon: "f" },
-//   { label: "Twitter", href: "https://x.com", icon: "t" },
-//   { label: "Instagram", href: "https://instagram.com", icon: "◉" },
-//   { label: "LinkedIn", href: "https://linkedin.com", icon: "in" },
-// ];
-
 export default function Hero() {
   return (
     <section
@@ -28,20 +21,7 @@ export default function Hero() {
             impact through technology.
           </p>
 
-          
-
-          {/* <div className="mt-8 flex items-center gap-4 md:mt-9 md:gap-5">
-            {socialLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                aria-label={item.label}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 text-xl font-semibold text-devcon-white transition-transform duration-200 hover:-translate-y-0.5 hover:border-devcon-lime hover:bg-devcon-lime/10 md:h-12 md:w-12"
-              >
-                <span className="leading-none">{item.icon}</span>
-              </a>
-            ))}
-          </div> */}
+          {/* Social Media Links */}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-12">
             <Button
