@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-devcon-lime: #C0E00B;
+  --color-devcon-orange: #E06B22;
+  --color-devcon-purple-dark: #3A0066;
+  --color-devcon-purple-bright: #6320EE;
+  --color-devcon-black: #0B0B0C;
+  --color-devcon-white: #FFFFFF;
+  --color-devcon-gray: #A0A0A5;
+
+  /* Fonts */
+  --font-sans: var(--font-dm), sans-serif;
+  --font-inter: var(--font-inter-sans), sans-serif;
+
+  /* Typography */
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.02em;
+
+  --text-display-md: 55px;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.01em;
+
+  --text-display-sm: 40px;
+  --text-display-sm--line-height: 1.2;
+
+  --text-body-md: 18px;
+  --text-body-md--line-height: 1.5;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #0B0B0C; /* Set your default background to devcon-black */
+  --foreground: #FFFFFF; /* Set your default text to devcon-white */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0B0B0C;
+    --foreground: #FFFFFF;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
