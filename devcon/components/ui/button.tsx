@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 
 interface ButtonProps {
@@ -6,11 +5,11 @@ interface ButtonProps {
   onClick?: () => void;
   href?: string;
   variant?: 'primary' | 'outline'; // Choose between lime-green or outline
+  hasArrow?: boolean; // Whether to show the arrow icon
 }
 
-export default function Button({ label, onClick, href, variant = 'primary' }: ButtonProps) {
-  
-  // The arrow icon 
+export default function Button({ label, onClick, href, variant = 'primary', hasArrow = true }: ButtonProps) {
+  // The arrow icon ↗
   const ArrowIcon = () => (
     <svg 
       className="w-4 h-4 ml-1.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" 
@@ -38,7 +37,7 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
     return (
       <Link href={href} className={combinedClasses}>
         {label}
-        <ArrowIcon />
+        {hasArrow && <ArrowIcon />}
       </Link>
     );
   }
@@ -47,7 +46,7 @@ export default function Button({ label, onClick, href, variant = 'primary' }: Bu
   return (
     <button onClick={onClick} className={combinedClasses} type="button">
       {label}
-      <ArrowIcon />
+      {hasArrow && <ArrowIcon />}
     </button>
   );
 }
