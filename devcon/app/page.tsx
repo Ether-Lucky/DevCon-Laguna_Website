@@ -1,4 +1,5 @@
 import About from "@/components/ui/about";
+import MissionVision from '@/components/ui/mission-vision/mission-vision';
 
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <Stats />
         <About />
+        <MissionVision />
         <WhatWeDo />
         <Events />
         <Officers />
