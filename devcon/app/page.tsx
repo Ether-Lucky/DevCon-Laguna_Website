@@ -7,6 +7,9 @@ import Stats from '@/components/ui/sections/stats';
 import Events from '@/components/ui/events-carousel';
 import WhatWeDo from '@/components/ui/what-we-do';
 import Officers from '@/components/ui/officers';
+import ProgramsAndActivities from '@/components/ui/program-and-activities';
+import Footer from '@/components/ui/footer';
+
 
 export default function Home() {
   return (
@@ -20,8 +23,9 @@ export default function Home() {
         <WhatWeDo />
         <Events />
         <Officers />
-      </main>
-      <footer></footer>
+        <ProgramsAndActivities />
+        <Footer/>
+      </main> 
     </>
   );
 }
