@@ -1,7 +1,7 @@
 import About from "@/components/ui/about";
 import MissionVision from '@/components/ui/mission-vision/mission-vision';
 
-import NavBar from '@/components/ui/nav-bar/nav-bar';
+import NavBar from '@/components/ui/nav-bar';
 import Hero from '@/components/ui/sections/hero';
 import Stats from '@/components/ui/sections/stats';
 import Events from '@/components/ui/events-carousel';
