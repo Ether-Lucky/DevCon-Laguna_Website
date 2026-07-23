@@ -8,6 +8,8 @@ import Events from '@/components/ui/events-carousel';
 import WhatWeDo from '@/components/ui/what-we-do';
 import Officers from '@/components/ui/officers';
 import ProgramsAndActivities from '@/components/ui/program-and-activities';
+import Footer from '@/components/ui/footer';
+
 
 export default function Home() {
   return (
@@ -22,8 +24,8 @@ export default function Home() {
         <Events />
         <Officers />
         <ProgramsAndActivities />
-      </main>
-      <footer></footer>
+        <Footer/>
+      </main> 
     </>
   );
 }

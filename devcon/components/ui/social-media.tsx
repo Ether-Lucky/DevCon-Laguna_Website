@@ -5,6 +5,8 @@ const socialLinks = [
   { label: "Twitter", href: "https://x.com/DEVCONPH", icon: "/icons/twitter.svg" },
   { label: "Instagram", href: "https://www.instagram.com/devconlaguna", icon: "/icons/instagram.svg" },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/devconlaguna/", icon: "/icons/linkedin.svg" },
+  { label: "YouTube", href: "https://www.youtube.com/@devconlaguna", icon: "/icons/youtube.svg" },
+
 ];
 
 export default function SocialMedia() {

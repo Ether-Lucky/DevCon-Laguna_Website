@@ -208,7 +208,7 @@ export default function ProgramsAndActivities() {
 
         </div>
 
-        {/* Bottom Clean Slider Indicators */}
+        {/* Bottom Slider Indicators */}
         <div className="relative z-30 flex items-center justify-center mt-8 pt-2">
           <div className="flex items-center gap-2">
             {slides.map((slide, index) => (
