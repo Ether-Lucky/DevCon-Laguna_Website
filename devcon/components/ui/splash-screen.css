@@ -1,0 +1,76 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: #000;
+  will-change: opacity, transform, filter;
+}
+
+.splash-loader {
+  position: relative;
+  width: 5.25em;
+  height: 5.25em;
+}
+
+.splash-spinner {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.splash-dot {
+  position: absolute;
+  margin: auto;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+}
+
+.splash-dot--yellow {
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.splash-dot--orange {
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.splash-dot--green {
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.splash-dot--purple {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.splash-loading {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 3.6rem);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.1em;
+  font-family: var(--font-inter-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #eaeaea;
+  pointer-events: none;
+}
+
+.splash-letter {
+  display: inline-block;
+  will-change: transform, color;
+}
