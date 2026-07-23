@@ -4,7 +4,7 @@ export default function Logo() {
   return (
     <div className="shrink-0 leading-none">
       <Image
-        src="/logo/devcon-logo.png"
+        src="/logo/devcon-Logo.png"
         alt="Devcon Logo"
         width={240}
         height={76}
