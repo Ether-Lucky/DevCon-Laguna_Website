@@ -11,7 +11,7 @@ export default function Logo() {
         className="h-auto w-[170px] md:w-[200px]"
         priority
       />
-      <span className="block text-right text-[24px] font-bold uppercase tracking-[0.01em] text-[#c7d0da] md:text-[24px]">
+      <span className="block text-right text-[24px] font-bold uppercase tracking-[0.01em] text-muted md:text-[24px]">
         Laguna
       </span>
     </div>

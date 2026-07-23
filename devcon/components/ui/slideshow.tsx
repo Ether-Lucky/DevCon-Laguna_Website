@@ -84,7 +84,7 @@ export default function Slideshow() {
             key={slide.id}
             onClick={() => setCurrent(idx)}
             className={`h-3 rounded-full transition-all duration-300 ${
-              current === idx ? 'w-7 bg-devcon-white' : 'w-3 bg-devcon-white/30'
+              current === idx ? 'w-7 bg-foreground' : 'w-3 bg-foreground/30'
             }`}
             aria-label={`Go to slide ${idx + 1}`}
           />

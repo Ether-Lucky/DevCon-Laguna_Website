@@ -86,11 +86,11 @@ export default function EventsCarousel() {
       {/* Header */}
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-6 px-8">
         <div>
-          <h2 className="text-display-md font-extrabold text-devcon-white">
+          <h2 className="text-display-md font-extrabold text-foreground">
             Featured <span className="text-devcon-purple-bright">Events</span>
           </h2>
 
-          <p className="text-devcon-white text-body-md font-extralight mt-4 max-w-2xl">
+          <p className="mt-4 max-w-2xl text-body-md font-extralight text-foreground">
             Lorem ipsum dolor sit amet consectetur adipiscing elit semper dalar<br className="hidden md:block" />
             elementum tempus hac tellus libero accumsan.
           </p>
@@ -152,7 +152,7 @@ export default function EventsCarousel() {
               key={idx}
               onClick={() => setCurrentPage(idx)}
               className={`h-3 rounded-full transition-all duration-300 ${
-                currentPage === idx ? 'w-7 bg-white' : 'w-3 bg-white/30'
+                currentPage === idx ? 'w-7 bg-foreground' : 'w-3 bg-foreground/30'
               }`}
               aria-label={`Go to page ${idx + 1}`}
             />

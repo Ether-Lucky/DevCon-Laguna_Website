@@ -15,7 +15,7 @@ export default function SocialMedia() {
       key={item.label}
       href={item.href}
       aria-label={item.label}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 text-xl font-semibold text-devcon-white transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10 p-3"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 p-3 text-xl font-semibold text-foreground transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10"
       >
       <span className="leading-none">
         <Image

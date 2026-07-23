@@ -23,7 +23,7 @@ export default function NavLinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="text-[18px] font-semibold leading-none text-white/75 transition-colors duration-150 hover:text-white"
+            className="text-[18px] font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground"
           >
             {link.name}
           </Link>

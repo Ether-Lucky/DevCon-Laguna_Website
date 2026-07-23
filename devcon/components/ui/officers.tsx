@@ -64,10 +64,10 @@ function TeamCard({ member }: { member: TeamMember }) {
         )}
       </div>
 
-        <h3 className="text-devcon-white text-[28px] leading-[38px] font-semibold mt-6 text-center whitespace-nowrap">
+        <h3 className="mt-6 whitespace-nowrap text-center text-[28px] font-semibold leading-[38px] text-foreground">
         {member.name}
         </h3>
-        <p className="text-devcon-gray text-[20px] leading-[18px] font-normal uppercase tracking-[0.1em] mt-1 text-center whitespace-pre-line">
+        <p className="mt-1 whitespace-pre-line text-center text-[20px] font-normal uppercase leading-[18px] tracking-[0.1em] text-muted">
         {member.role}
         </p>
     </div>
@@ -86,16 +86,16 @@ export default function TeamSection() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section className="w-full bg-devcon-black py-24 px-6">
+    <section className="w-full bg-background px-6 py-24">
       {/* 2. CONTAINER */}
-      <div className="max-w-[1300px] mx-auto relative">
+      <div className="relative mx-auto max-w-[1300px]">
         
         {/* HEADER SECTION */}
-        <div className="text-center mb-16 flex flex-col items-center">
-          <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
+        <div className="mb-16 flex flex-col items-center text-center">
+          <h2 className="mb-6 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl">
             Meet Our <span className="text-devcon-purple-bright">Officers</span>
           </h2>
-            <p className="text-devcon-gray max-w-4xl text-center text-body-md font-normal leading-[30px] tracking-normal font-sans">
+            <p className="max-w-4xl text-center font-sans text-body-md font-normal leading-[30px] tracking-normal text-muted">
               Behind every successful community is a passionate team of volunteers dedicated to creating meaningful<br className="hidden md:block" />
               experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
             </p>
@@ -148,7 +148,7 @@ export default function TeamSection() {
                 key={idx}
                 onClick={() => setCurrentPage(idx)}
                 className={`h-3 rounded-full transition-all duration-300 ${
-                  currentPage === idx ? 'w-7 bg-white' : 'w-3 bg-white/30'
+                  currentPage === idx ? 'w-7 bg-foreground' : 'w-3 bg-foreground/30'
                 }`}
                 aria-label={`Go to page ${idx + 1}`}
               />

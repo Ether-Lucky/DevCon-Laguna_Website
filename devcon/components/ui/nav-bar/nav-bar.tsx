@@ -20,7 +20,7 @@ export default function NavBar() {
             hasArrow={false}
             className="h-12 px-8 text-body-sm font-semibold leading-none"
           />
-          <ThemeButton theme="dark" />
+          <ThemeButton />
         </div>
       </nav>
     </header>
