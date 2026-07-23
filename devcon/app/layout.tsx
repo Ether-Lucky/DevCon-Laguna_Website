@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans } from 'next/font/google';
+import { Inter, DM_Sans } from "next/font/google";
 import SplashScreen from "@/components/ui/splash-screen";
 import "./globals.css";
 
@@ -28,7 +28,10 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${inter.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className={`min-h-full flex flex-col`}>
+      <body
+        suppressHydrationWarning
+        className="splash-active min-h-full flex flex-col"
+      >
         <SplashScreen />
         {children}
       </body>
