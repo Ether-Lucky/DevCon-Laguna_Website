@@ -42,7 +42,6 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         vercel-version: 'latest'
-        working-directory: devcon
 
   lighthouse:
     timeout-minutes: 10
