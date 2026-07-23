@@ -6,9 +6,10 @@ interface ButtonProps {
   href?: string;
   variant?: 'primary' | 'outline'; // Choose between lime-green or outline
   hasArrow?: boolean; // Whether to show the arrow icon
+  className?: string;
 }
 
-export default function Button({ label, onClick, href, variant = 'primary', hasArrow = true }: ButtonProps) {
+export default function Button({ label, onClick, href, variant = 'primary', hasArrow = true, className = '' }: ButtonProps) {
   // The arrow icon ↗
   const ArrowIcon = () => (
     <svg 
@@ -30,7 +31,7 @@ export default function Button({ label, onClick, href, variant = 'primary', hasA
     ? "bg-devcon-lime hover:bg-opacity-90 active:bg-opacity-80 text-devcon-black" 
     : "border border-devcon-white/30 hover:border-devcon-white text-devcon-white bg-transparent hover:bg-devcon-white/10"; 
 
-  const combinedClasses = `${baseClasses} ${variantClasses}`;
+  const combinedClasses = `${baseClasses} ${variantClasses} ${className}`;
 
   // Render as Link if href is provided
   if (href) {
