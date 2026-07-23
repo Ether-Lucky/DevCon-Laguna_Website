@@ -13,7 +13,6 @@ const companyValues: InfoCardProps[] = [
     iconWidth: 280,
     iconHeight: 243,
     contentAlign: "top",
-    iconClassName: "opacity-50 dark:opacity-40",
   },
   {
     id: "vision",
@@ -27,9 +26,6 @@ const companyValues: InfoCardProps[] = [
     iconWidth: 320,
     iconHeight: 240,
     contentAlign: "top",
-    // White SVG → dark gold watermark in light mode; soft white in dark mode
-    iconClassName:
-      "opacity-35 brightness-0 sepia saturate-[6] hue-rotate-[-10deg] dark:opacity-40 dark:brightness-100 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0",
   },
 ];
 

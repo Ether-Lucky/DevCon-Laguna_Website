@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const socialLinks = [
   { label: "Facebook", href: "https://www.facebook.com/DEVCONLAGUNA", icon: "/icons/facebook.svg" },
   { label: "Twitter", href: "https://x.com/DEVCONPH", icon: "/icons/twitter.svg" },
@@ -17,14 +15,20 @@ export default function SocialMedia() {
       aria-label={item.label}
       className="flex h-11 w-11 items-center justify-center rounded-full border border-devcon-lime/80 p-3 text-xl font-semibold text-foreground transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10"
       >
-      <span className="leading-none">
-        <Image
-          src={item.icon}
-          alt={item.label}
-          width={18}
-          height={18}
-        />
-      </span>
+      <span
+        aria-hidden
+        className="block size-[18px] bg-[var(--foreground)] opacity-80 hover:opacity-100 transition-opacity duration-200"
+        style={{
+          maskImage: `url(${item.icon})`,
+          maskSize: "contain",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskImage: `url(${item.icon})`,
+          WebkitMaskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+        }}
+      />
       </a>
     ))}
     </div>

@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export interface InfoCardProps {
   id: string;
   title: string;
@@ -36,6 +34,12 @@ export default function InfoCard({
         ? "justify-center"
         : "justify-start";
 
+  // Fade toward the open side of the card (matches reference watermark)
+  const fadeMask =
+    iconPosition === "top-right"
+      ? "linear-gradient(to bottom, black 0%, black 25%, transparent 90%)"
+      : "linear-gradient(to top, black 0%, black 25%, transparent 90%)";
+
   return (
     <article
       className={`relative flex min-h-[320px] flex-col overflow-hidden rounded-[28px] p-8 sm:min-h-[380px] sm:p-10 md:min-h-[420px] ${themeClass} ${alignClass}`}
@@ -44,19 +48,29 @@ export default function InfoCard({
         <h3 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-display-sm">
           {title}
         </h3>
-        <p className="text-body-sm font-normal text-foreground sm:text-body-md">
+        <p className="text-body-sm font-normal text-foreground/80 sm:text-body-md">
           {description}
         </p>
       </div>
 
-      <Image
-        src={icon}
-        alt=""
-        width={iconWidth}
-        height={iconHeight}
+      <span
         aria-hidden="true"
-        className={`pointer-events-none absolute ${iconAlignment} ${iconClassName ?? "opacity-40"}`}
-        style={{ width: iconWidth, height: "auto", maxWidth: "none" }}
+        className={`pointer-events-none absolute ${iconAlignment} opacity-40 ${iconClassName ?? ""}`}
+        style={{
+          width: iconWidth,
+          height: iconHeight,
+          backgroundColor: "var(--foreground)",
+          WebkitMaskImage: `${fadeMask}, url(${icon})`,
+          WebkitMaskSize: "100% 100%, contain",
+          WebkitMaskRepeat: "no-repeat, no-repeat",
+          WebkitMaskPosition: "center, center",
+          WebkitMaskComposite: "source-in",
+          maskImage: `${fadeMask}, url(${icon})`,
+          maskSize: "100% 100%, contain",
+          maskRepeat: "no-repeat, no-repeat",
+          maskPosition: "center, center",
+          maskComposite: "intersect",
+        }}
       />
     </article>
   );
