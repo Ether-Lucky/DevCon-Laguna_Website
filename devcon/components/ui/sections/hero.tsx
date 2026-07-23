@@ -67,8 +67,8 @@ export default function Hero() {
             width={420}
             height={420}
             priority
-            sizes="(max-width: 767px) 92vw, 0vw"
-            className="h-auto w-full md:hidden"
+            sizes="(max-width: 767px) 100vw, 0vw"
+            className="h-auto w-full md:hidden mt-[23%]"
           />
         </div>
       </div>

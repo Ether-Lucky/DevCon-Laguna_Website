@@ -1,31 +1,35 @@
-import InfoCard, { InfoCardProps } from '@/components/ui/mission-vision/info-card';
+import InfoCard, { InfoCardProps } from "@/components/ui/mission-vision/info-card";
 
 const companyValues: InfoCardProps[] = [
   {
-    id: 'mission',
-    title: 'Mission',
+    id: "mission",
+    title: "Mission",
     description:
-      'To empower developers by providing opportunities for learning, collaboration, mentorship, and community engagement while promoting innovation and excellence in the field of technology.',
+      "To empower developers and aspiring technology professionals by providing opportunities for learning, collaboration, mentorship, and community engagement while promoting innovation and excellence in the field of technology.",
     themeClass:
-      'bg-gradient-to-b from-devcon-black via-devcon-purple-dark to-devcon-purple-bright',
-    icon: '/mission-vision/bullet.svg',
-    iconPosition: 'bottom-left',
+      "bg-gradient-to-b from-background to-devcon-purple-bright",
+    icon: "/mission-vision/bullet.svg",
+    iconPosition: "bottom-left",
     iconWidth: 280,
     iconHeight: 243,
-    contentAlign: 'top',
+    contentAlign: "top",
+    iconClassName: "opacity-50 dark:opacity-40",
   },
   {
-    id: 'vision',
-    title: 'Vision',
+    id: "vision",
+    title: "Vision",
     description:
-      'To cultivate a thriving and inclusive technology community in Laguna where individuals are inspired to innovate, lead, and create solutions that positively impact society.',
+      "To cultivate a thriving and inclusive technology community in Laguna where individuals are inspired to innovate, lead, and create solutions that positively impact society.",
     themeClass:
-      'bg-gradient-to-b from-[#f5c518] via-[#6b5510] to-devcon-black',
-    icon: '/mission-vision/eye.svg',
-    iconPosition: 'top-right',
+      "!justify-center bg-gradient-to-b from-[#f5c518] to-background dark:!justify-end",
+    icon: "/mission-vision/eye.svg",
+    iconPosition: "top-right",
     iconWidth: 320,
     iconHeight: 240,
-    contentAlign: 'bottom',
+    contentAlign: "top",
+    // White SVG → dark gold watermark in light mode; soft white in dark mode
+    iconClassName:
+      "opacity-35 brightness-0 sepia saturate-[6] hue-rotate-[-10deg] dark:opacity-40 dark:brightness-100 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0",
   },
 ];
 
