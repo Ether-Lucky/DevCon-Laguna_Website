@@ -33,7 +33,7 @@ export default function ThemeButton() {
       className={clsx(
         "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200",
         {
-          "border-devcon-black/20 bg-devcon-lime text-devcon-black hover:bg-devcon-lime/90":
+          "border border-border bg-devcon-white text-foreground hover:border-foreground/60 hover:bg-foreground/10":
             !isDark,
           "border-devcon-white/20 bg-transparent text-devcon-white hover:border-devcon-white/35 hover:bg-devcon-white/8":
             isDark,
