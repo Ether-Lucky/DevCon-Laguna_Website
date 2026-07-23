@@ -4,6 +4,7 @@ on:
     branches: [ prod, feat/ci-cd ]
   pull_request:
     branches: [ prod ]
+  workflow_dispatch:
 jobs:
   test:
     timeout-minutes: 60
@@ -28,6 +29,19 @@ jobs:
         name: playwright-report
         path: devcon/playwright-report/
         retention-days: 30
+
+  deploy:
+    needs: [test, lighthouse]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/prod' || github.event_name == 'workflow_dispatch'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: devcon
 
   lighthouse:
     timeout-minutes: 10
