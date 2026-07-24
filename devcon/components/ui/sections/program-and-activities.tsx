@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Button from "./button";
+import Button from "../button";
 
 // Inline Image Icon to represent a missing photo
 const ImageIcon = ({ className }: { className?: string }) => (

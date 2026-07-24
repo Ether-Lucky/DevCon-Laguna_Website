@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Logo from './logo';
+import Logo from '../logo';
 import SocialMedia from './social-media';
 
 export default function Footer() {
@@ -10,7 +10,6 @@ export default function Footer() {
         {/* Main Footer Content */}
         <div className="flex flex-col md:flex-row justify-between gap-12">
           
-
           <div className="md:w-1/3">
             
             {/* DevCon Laguna Logo Component */}
@@ -19,7 +18,7 @@ export default function Footer() {
             </div>
 
             <p className="text-[18px] text-body-md font-extralight leading-[30px] tracking-normal text-devcon-white mb-2 max-w-sm">
-            Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam mauris sed ma
+              Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam mauris sed ma
             </p>
 
             {/* Integrated Social Media Component */}
@@ -41,7 +40,7 @@ export default function Footer() {
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-lg mb-2">Resources</h3>
               <Link href="#" className="text-[18px] text-body-md font-extralight leading-[30px] tracking-[0%] text-gray-200 hover:text-white transition-colors">Blog</Link>
-              <Link href="#" className="text-[18px] text-body-md font-extralightl leading-[30px] tracking-[0%] text-gray-200 hover:text-white transition-colors">FAQ</Link>
+              <Link href="#" className="text-[18px] text-body-md font-extralight leading-[30px] tracking-[0%] text-gray-200 hover:text-white transition-colors">FAQ</Link>
               <Link href="#" className="text-[18px] text-body-md font-extralight leading-[30px] tracking-[0%] text-gray-200 hover:text-white transition-colors">Handbook</Link>
             </div>
 
@@ -68,9 +67,7 @@ export default function Footer() {
 
         {/* Bottom Bar Section */}
         <div>
-
           <hr className="border-t border-gray-400/50 mb-6" />
-
 
           <div className="text-center text-[18px] font-normal leading-[18px] tracking-[0px] text-gray-300">
             <p>
