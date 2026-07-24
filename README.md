@@ -64,6 +64,7 @@ DEVCON/
 ├── README.md             # Project documentation
 └── package.json          # Project dependencies and scripts
 
+```
 ## Notes
 
 The root workspace contains the Next.js app inside the `devcon` directory.
