@@ -37,6 +37,33 @@ Run these from the `devcon` folder:
 - `components/ui/` - reusable UI components
 - `public/` - static assets such as images and icons
 
+## Folder Structure
+
+```text
+DEVCON/
+│
+├── app/                  # Next.js app router pages & layouts
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+│
+├── components/           # UI components and feature sections
+│   ├── mission-vision/
+│   ├── nav-bar/
+│   ├── sections/         # Page sections (Hero, About, Footer, etc.)
+│   ├── button.tsx
+│   ├── logo.tsx
+│   └── slideshow.tsx
+│
+├── public/               # Static assets (images, icons, logos)
+│   ├── hero/
+│   ├── icons/
+│   └── images/
+│
+├── tests/                # Playwright end-to-end tests
+├── README.md             # Project documentation
+└── package.json          # Project dependencies and scripts
+
 ## Notes
 
 The root workspace contains the Next.js app inside the `devcon` directory.
