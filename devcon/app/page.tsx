@@ -1,14 +1,13 @@
-import About from "@/components/ui/about";
+import About from "@/components/ui/sections/about";
 import MissionVision from '@/components/ui/mission-vision/mission-vision';
-
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';
 import Stats from '@/components/ui/sections/stats';
-import Events from '@/components/ui/events-carousel';
-import WhatWeDo from '@/components/ui/what-we-do';
-import Officers from '@/components/ui/officers';
-import ProgramsAndActivities from '@/components/ui/program-and-activities';
-import Footer from '@/components/ui/footer';
+import Events from '@/components/ui/sections/events-carousel';
+import WhatWeDo from '@/components/ui/sections/what-we-do';
+import Officers from '@/components/ui/sections/officers';
+import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
+import Footer from '@/components/ui/sections/footer';
 
 
 export default function Home() {

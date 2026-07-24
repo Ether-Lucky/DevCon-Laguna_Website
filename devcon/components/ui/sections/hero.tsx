@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Button from "@/components/ui/button";
-import SocialMedia from '@/components/ui/social-media';
+import SocialMedia from '@/components/ui/sections/social-media';
 
 export default function Hero() {
   return (
