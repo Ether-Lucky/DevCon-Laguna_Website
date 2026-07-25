@@ -8,6 +8,7 @@ import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
 import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
 import Footer from '@/components/ui/sections/footer';
+import ScrollReveal from '@/components/ui/scroll-reveal';
 
 
 export default function Home() {
@@ -15,15 +16,33 @@ export default function Home() {
     <>
       <NavBar />
       <main className="flex min-h-screen flex-col items-center justify-center bg-devcon-black p-24 text-devcon-white font-inter">  
-        <Hero />
-        <Stats />
-        <About />
-        <MissionVision />
-        <WhatWeDo />
-        <Events />
-        <Officers />
-        <ProgramsAndActivities />
-        <Footer/>
+        <ScrollReveal className="w-full" variant="fade" amount={0.05}>
+          <Hero />
+        </ScrollReveal>
+        <ScrollReveal className="w-full" variant="scale">
+          <Stats />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <About />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <MissionVision />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <WhatWeDo />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <Events />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <Officers />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <ProgramsAndActivities />
+        </ScrollReveal>
+        <ScrollReveal className="w-full" variant="fade">
+          <Footer/>
+        </ScrollReveal>
       </main> 
     </>
   );
