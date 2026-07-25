@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <NavBar />
-      <main className="flex min-h-screen flex-col items-center justify-center bg-devcon-black p-24 text-devcon-white font-inter">  
+      <main className="flex min-h-screen flex-col items-center justify-center bg-background p-24 text-foreground font-inter">  
         <ScrollReveal className="w-full" variant="fade" amount={0.05}>
           <Hero />
         </ScrollReveal>

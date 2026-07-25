@@ -26,10 +26,10 @@ export default function Stats() {
               height={stat.icon.height}
               className='h-16 w-auto object-contain'
             />
-            <p className='text-4xl font-semibold leading-none tracking-tight text-devcon-white md:text-[44px]'>
-              {stat.value}<span className='text-devcon-gray'>+</span>
+            <p className='text-4xl font-semibold leading-none tracking-tight text-foreground md:text-[44px]'>
+              {stat.value}<span className='text-muted'>+</span>
             </p>
-            <p className='max-w-40 text-sm font-semibold leading-snug text-devcon-gray md:text-base'>
+            <p className='max-w-40 text-sm font-semibold leading-snug text-muted md:text-base'>
               {stat.name}
             </p>
           </div>

@@ -1,4 +1,21 @@
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0B0B0C;
+    --foreground: #FFFFFF;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} */
+
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-devcon-lime: #C0E00B;
@@ -36,16 +53,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
 }
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 86px;
-}
-
-:root {
-  --background: #0B0B0C; /* Set your default background to devcon-black */
-  --foreground: #FFFFFF; /* Set your default text to devcon-white */
+/* Dark-first defaults — matches brand and avoids FOUC before next-themes hydrates */
+:root,
+.dark {
+  --background: #0b0b0c;
+  --foreground: #ffffff;
+  --muted: #737272;
+  --border: rgba(255, 255, 255, 0.2);
+  --surface: #141416;
 
   --splash-yellow: #F0C419;
   --splash-orange: var(--color-devcon-orange);
@@ -53,11 +73,12 @@ html {
   --splash-purple: var(--color-devcon-purple-bright);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0B0B0C;
-    --foreground: #FFFFFF;
-  }
+.light {
+  --background: #f7f7f5;
+  --foreground: #464646;
+  --muted: #5c5c5c;
+  --border: rgba(11, 11, 12, 0.18);
+  --surface: #ffffff;
 }
 
 body {

@@ -50,14 +50,14 @@ const ITEMS: WhatWeDoItem[] = [
 
 export default function WhatWeDo() {
   return (
-    <section className="w-full bg-devcon-black py-24 px-6 font-inter">
+    <section className="w-full bg-background px-6 py-24 font-inter">
       {/* Heading */}
-      <div className="text-center mb-12">
-        <h2 className="text-display-md font-extrabold text-devcon-white">
+      <div className="mb-12 text-center">
+        <h2 className="text-display-md font-extrabold text-foreground">
           What <span className="text-devcon-purple-bright">We Do</span>
         </h2>
 
-        <p className="text-devcon-white font-dm font-extralight text-[18px] leading-[30px] tracking-[0px] text-center max-w-[620px] mx-auto mt-4">
+        <p className="mx-auto mt-4 max-w-[620px] text-center font-dm text-[18px] font-extralight leading-[30px] tracking-[0px] text-foreground">
           We create opportunities for developers of all skill levels to learn,
           connect, and grow through community-driven initiatives.
         </p>

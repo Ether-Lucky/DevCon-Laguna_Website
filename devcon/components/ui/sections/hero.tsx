@@ -6,19 +6,19 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative bg-devcon-black px-6 py-6 text-devcon-white md:px-8 md:py-16"
+      className="relative bg-background px-6 py-6 text-foreground md:px-8 md:py-16"
     >
       <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
         
         {/* Text Content */}
         <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none z-1">
-          <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-devcon-white">
+          <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground">
             <span className="block">Building the</span>
             <span className="block text-devcon-lime">Future of Tech,</span>
             <span className="block text-devcon-orange">Together.</span>
           </h1>
 
-          <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-devcon-gray md:mt-7">
+          <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-muted md:mt-7">
             DevCon Laguna is a community of developers, students, and technology
             enthusiasts dedicated to learning, collaborating, and creating meaningful
             impact through technology.
@@ -67,8 +67,8 @@ export default function Hero() {
             width={420}
             height={420}
             priority
-            sizes="(max-width: 767px) 92vw, 0vw"
-            className="h-auto w-full md:hidden"
+            sizes="(max-width: 767px) 100vw, 0vw"
+            className="h-auto w-full md:hidden mt-[23%]"
           />
         </div>
       </div>
