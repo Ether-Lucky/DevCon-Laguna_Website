@@ -10,7 +10,7 @@ const stats = [
 export default function Stats() {
   return (
     <section
-      id="stats"
+      id="partners"
       className='grid w-full grid-cols-2 gap-y-10 px-6 py-10 text-center sm:px-10 md:grid-cols-4 md:gap-6 lg:px-16'
     >
       {stats.map((stat) => {

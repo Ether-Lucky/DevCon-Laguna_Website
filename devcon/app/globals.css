@@ -87,6 +87,8 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  scroll-padding-top: 86px;
 }
 
 body.splash-active {
@@ -212,6 +214,10 @@ body.splash-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .splash-loader,
   .splash-loader i,
   .splash--exit {

@@ -82,7 +82,7 @@ export default function EventsCarousel() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section className="w-full">
+    <section id="events" className="w-full">
       {/* Header */}
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-6 px-8">
         <div>
@@ -90,10 +90,7 @@ export default function EventsCarousel() {
             Featured <span className="text-devcon-purple-bright">Events</span>
           </h2>
 
-          <p className="mt-4 max-w-2xl text-body-md font-extralight text-foreground">
-            Lorem ipsum dolor sit amet consectetur adipiscing elit semper dalar<br className="hidden md:block" />
-            elementum tempus hac tellus libero accumsan.
-          </p>
+          <p className="mt-4 max-w-2xl text-body-md font-extralight text-foreground">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
         </div>
 
         {/* Increase padding and text size */}

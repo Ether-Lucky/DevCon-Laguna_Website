@@ -1,10 +1,10 @@
 export const NAV_LINKS = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/#about" },
-  { name: "Events", href: "/#events" },
-  { name: "Officers", href: "/#officers" },
-  { name: "Partners", href: "/#partners" },
-  { name: "Contact", href: "/#contact" },
+  { name: "Home", href: "#hero" },
+  { name: "About", href: "#about" },
+  { name: "Events", href: "#events" },
+  { name: "Officers", href: "#officers" },
+  { name: "Partners", href: "#partners" },
+  { name: "Contact", href: "#contact" },
 ] as const;
 
 /** Desktop nav appears above this width; mobile menu below. */
