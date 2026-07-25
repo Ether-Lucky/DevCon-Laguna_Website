@@ -74,7 +74,7 @@ export default function TeamSection() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section className="w-full bg-devcon-black py-24 px-6">
+    <section id="officers" className="w-full bg-devcon-black py-24 px-6">
       {/* 2. CONTAINER */}
       <div className="max-w-[1300px] mx-auto relative">
         

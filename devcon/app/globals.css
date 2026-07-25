@@ -38,6 +38,11 @@
   --color-foreground: var(--foreground);
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 86px;
+}
+
 :root {
   --background: #0B0B0C; /* Set your default background to devcon-black */
   --foreground: #FFFFFF; /* Set your default text to devcon-white */
@@ -61,6 +66,8 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  scroll-padding-top: 86px;
 }
 
 body.splash-active {
@@ -186,6 +193,10 @@ body.splash-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .splash-loader,
   .splash-loader i,
   .splash--exit {

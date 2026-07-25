@@ -82,7 +82,7 @@ export default function EventsCarousel() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section className="w-full">
+    <section id="events" className="w-full">
       {/* Header */}
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-6 px-8">
         <div>

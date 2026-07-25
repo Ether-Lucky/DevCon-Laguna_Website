@@ -4,7 +4,7 @@ import SocialMedia from './social-media';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gradient-to-b from-transparent via-[#6A0DF2]/50 to-[#6A0DF2] text-white pt-16 pb-8 px-6 md:px-12 font-sans mt-24">
+    <footer id="contact" className="w-full bg-gradient-to-b from-transparent via-[#6A0DF2]/50 to-[#6A0DF2] text-white pt-16 pb-8 px-6 md:px-12 font-sans mt-24">
       <div className="max-w-[1440px] mx-auto flex flex-col gap-16">
         
         {/* Main Footer Content */}
