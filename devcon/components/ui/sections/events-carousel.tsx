@@ -90,10 +90,7 @@ export default function EventsCarousel() {
             Featured <span className="text-devcon-purple-bright">Events</span>
           </h2>
 
-          <p className="text-devcon-white text-body-md font-extralight mt-4 max-w-2xl">
-            Lorem ipsum dolor sit amet consectetur adipiscing elit semper dalar<br className="hidden md:block" />
-            elementum tempus hac tellus libero accumsan.
-          </p>
+          <p className="text-devcon-white text-body-md font-extralight mt-4 max-w-2xl">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
         </div>
 
         {/* Increase padding and text size */}
