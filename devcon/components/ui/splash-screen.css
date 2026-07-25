@@ -62,9 +62,6 @@
   justify-content: center;
   gap: 0.1em;
   font-family: var(--font-inter-sans), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: #eaeaea;
   pointer-events: none;
