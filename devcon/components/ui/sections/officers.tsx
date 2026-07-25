@@ -52,7 +52,7 @@ function TeamCard({ member }: { member: TeamMember }) {
         )}
       </div>
 
-        <h3 className="mt-6 whitespace-nowrap text-center text-[28px] font-semibold leading-[38px] text-foreground">
+        <h3 className="mt-6 text-center text-[28px] font-semibold leading-[38px] text-foreground">
         {member.name}
         </h3>
         <p className="mt-1 whitespace-pre-line text-center text-[20px] font-normal uppercase leading-[18px] tracking-[0.1em] text-muted">

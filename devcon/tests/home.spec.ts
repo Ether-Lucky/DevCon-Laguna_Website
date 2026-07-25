@@ -160,6 +160,18 @@ test('renders footer social media links', async ({ page }) => {
   await expect(footer.getByRole('link', { name: 'YouTube' }).first()).toBeVisible();
 });
 
+// Test case for Theme Toggle
+test('toggles theme on button click', async ({ page }) => {
+  const button = page.getByRole('button', { name: /switch to (light|dark) mode/i });
+  await expect(button).toBeVisible();
+
+  const htmlBefore = await page.locator('html').getAttribute('class');
+  await button.click();
+  const htmlAfter = await page.locator('html').getAttribute('class');
+
+  expect(htmlAfter).not.toBe(htmlBefore);
+});
+
 test('renders footer legal links', async ({ page }) => {
   const footer = page.locator('footer');
   await expect(footer.getByRole('link', { name: 'Terms and Conditions' })).toBeVisible();
