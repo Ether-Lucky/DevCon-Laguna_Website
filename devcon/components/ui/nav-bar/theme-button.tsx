@@ -32,6 +32,7 @@ export default function ThemeButton() {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={clsx(
         "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200",
+        "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200",
         {
           "border border-border bg-devcon-white text-foreground hover:border-foreground/60 hover:bg-foreground/10":
             !isDark,
@@ -42,7 +43,7 @@ export default function ThemeButton() {
     >
       <Image
         src={isDark ? "/icons/sun.svg" : "/icons/moon.svg"}
-        alt=""
+        alt={isDark ? "Light Mode" : "Dark Mode"}
         width={18}
         height={18}
       />

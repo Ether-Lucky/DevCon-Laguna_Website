@@ -1,34 +1,38 @@
-'use client';
+import Link from "next/link";
+import clsx from "clsx";
+import { NAV_LINKS, navLinkClassName } from "./constants";
 
-import Link from 'next/link';
-// import { usePathname } from 'next/navigation';
-// import clsx from 'clsx';
+type NavLinksProps = {
+  orientation?: "horizontal" | "vertical";
+  onNavigate?: () => void;
+  className?: string;
+};
 
-const links = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/#about' },
-  { name: 'Events', href: '/#events' },
-  { name: 'Officers', href: '/#officers' },
-  { name: 'Partners', href: '/#partners' },
-  { name: 'Contact', href: '/#contact' },
-];
-
-export default function NavLinks() {
-  // const pathname = usePathname();
-
+export default function NavLinks({
+  orientation = "horizontal",
+  onNavigate,
+  className,
+}: NavLinksProps) {
   return (
-    <div className="flex items-center gap-10">
-      {links.map((link) => {
-        return (
-          <Link
-            key={link.name}
-            href={link.href}
-            className="text-[18px] font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground"
-          >
-            {link.name}
-          </Link>
-        );
-      })}
+    <div
+      className={clsx(
+        "flex",
+        orientation === "horizontal"
+          ? "items-center gap-10"
+          : "flex-col gap-4",
+        className,
+      )}
+    >
+      {NAV_LINKS.map((link) => (
+        <Link
+          key={link.name}
+          href={link.href}
+          onClick={onNavigate}
+          className={navLinkClassName}
+        >
+          {link.name}
+        </Link>
+      ))}
     </div>
   );
 }
