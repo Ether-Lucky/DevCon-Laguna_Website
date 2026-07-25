@@ -14,4 +14,4 @@ export const navVisibility = {
 } as const;
 
 export const navLinkClassName =
-  "text-[18px] font-semibold leading-none text-white/75 transition-colors duration-150 hover:text-white";
+  "text-[18px] font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground";
