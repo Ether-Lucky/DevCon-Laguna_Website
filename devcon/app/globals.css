@@ -40,6 +40,11 @@
 :root {
   --background: #0B0B0C; /* Set your default background to devcon-black */
   --foreground: #FFFFFF; /* Set your default text to devcon-white */
+
+  --splash-yellow: #F0C419;
+  --splash-orange: var(--color-devcon-orange);
+  --splash-green: #6FC71E;
+  --splash-purple: var(--color-devcon-purple-bright);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,4 +60,135 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body.splash-active {
+  overflow: hidden;
+}
+
+/* —— Splash / loading screen —— */
+.splash {
+  --s: 6.25em;
+  --d: 2.4em;
+  --t: 1.2s;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.splash--exit {
+  animation: splashOut 0.45s ease forwards;
+}
+
+.splash-loader {
+  position: relative;
+  width: var(--s);
+  height: var(--s);
+  animation: splashRotate var(--t) linear infinite;
+}
+
+.splash-loader i {
+  position: absolute;
+  margin: auto;
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+}
+
+.splash-loader i:nth-child(1) {
+  inset: 0 auto 0 0;
+  background: var(--splash-yellow);
+  animation: splashDotsY var(--t) linear infinite;
+}
+.splash-loader i:nth-child(2) {
+  inset: 0 0 auto;
+  background: var(--splash-orange);
+  animation: splashDotsX var(--t) linear infinite;
+}
+.splash-loader i:nth-child(3) {
+  inset: 0 0 0 auto;
+  background: var(--splash-green);
+  animation: splashDotsY var(--t) linear infinite;
+}
+.splash-loader i:nth-child(4) {
+  inset: auto 0 0;
+  background: var(--splash-purple);
+  animation: splashDotsX var(--t) linear infinite;
+}
+
+.splash-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 4.25rem);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-inter);
+  text-transform: uppercase;
+  color: #eaeaea;
+  pointer-events: none;
+}
+
+.splash-label span {
+  display: inline-block;
+}
+
+@keyframes splashRotate {
+  0% {
+    transform: rotate(0deg);
+    width: var(--s);
+    height: var(--s);
+  }
+  66% {
+    width: var(--d);
+    height: var(--d);
+  }
+  100% {
+    transform: rotate(360deg);
+    width: var(--s);
+    height: var(--s);
+  }
+}
+
+@keyframes splashDotsY {
+  66% {
+    opacity: 1;
+    width: var(--d);
+  }
+  77% {
+    opacity: 1;
+    width: 0;
+  }
+}
+
+@keyframes splashDotsX {
+  66% {
+    opacity: 1;
+    height: var(--d);
+  }
+  77% {
+    opacity: 1;
+    height: 0;
+  }
+}
+
+@keyframes splashOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-loader,
+  .splash-loader i,
+  .splash--exit {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
