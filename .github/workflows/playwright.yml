@@ -54,8 +54,8 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run visual regression tests
-      run: npx playwright test tests/visual.spec.ts
+    - name: Run visual regression tests (update baselines)
+      run: npx playwright test tests/visual.spec.ts --update-snapshots
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -67,6 +67,12 @@ jobs:
       with:
         name: visual-regression-results
         path: devcon/test-results/
+        retention-days: 30
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: linux-baselines
+        path: devcon/tests/visual.spec.ts-snapshots/
         retention-days: 30
 
   deploy:
