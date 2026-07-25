@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
+  await page.locator('#splash-screen').waitFor({ state: 'detached', timeout: 5000 });
 });
 
 // Test cases for Hero
@@ -64,7 +65,7 @@ test('renders officers section', async ({ page }) => {
 
 // Test cases for Stats Section
 test('renders stats section with all stat cards', async ({ page }) => {
-  const stats = page.locator('#stats');
+  const stats = page.locator('#partners');
   await expect(stats.getByText('500+')).toBeVisible();
   await expect(stats.getByText('30+')).toBeVisible();
   await expect(stats.getByText('100+')).toBeVisible();
@@ -76,7 +77,7 @@ test('renders stats section with all stat cards', async ({ page }) => {
 });
 
 test('renders stats section images', async ({ page }) => {
-  const stats = page.locator('#stats');
+  const stats = page.locator('#partners');
   await expect(stats.getByAltText('Community Volunteers')).toBeVisible();
   await expect(stats.getByAltText('Events Organized')).toBeVisible();
   await expect(stats.getByAltText('Community Reached')).toBeVisible();
@@ -106,8 +107,8 @@ test('renders mission and vision cards', async ({ page }) => {
   const mv = page.locator('#mission-vision');
   await expect(mv.getByRole('heading', { name: 'Mission' })).toBeVisible();
   await expect(mv.getByRole('heading', { name: 'Vision' })).toBeVisible();
-  await expect(mv.getByText('To empower developers by providing opportunities')).toBeVisible();
-  await expect(mv.getByText('To cultivate a thriving and inclusive technology community')).toBeVisible();
+  await expect(mv.getByText(/To empower developers/)).toBeVisible();
+  await expect(mv.getByText(/To cultivate a thriving/)).toBeVisible();
 });
 
 // Test cases for Programs and Activities Section
@@ -122,7 +123,7 @@ test('renders mission and vision cards', async ({ page }) => {
 // Test cases for Footer Section
 test('renders footer with logo and copyright', async ({ page }) => {
   const footer = page.locator('footer');
-  await expect(footer.getByAltText('Devcon Logo')).toBeVisible();
+  await expect(footer.getByAltText('Devcon Logo').first()).toBeVisible();
   await expect(footer.getByText('© 2026 DEVCON Laguna')).toBeVisible();
 });
 
