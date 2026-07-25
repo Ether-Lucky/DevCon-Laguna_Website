@@ -17,9 +17,7 @@ export default function Footer() {
               <Logo />
             </div>
 
-            <p className="text-[18px] text-body-md font-extralight leading-[30px] tracking-normal text-devcon-white mb-2 max-w-sm">
-              Lorem ipsum dolor sit amet consectetur adipiscing elit aliquam mauris sed ma
-            </p>
+            <p className="text-[18px] text-body-md font-extralight leading-[30px] tracking-normal text-devcon-white mb-2 max-w-sm"> Empowering the next generation of developers through innovation, collaboration, and community.</p>
 
             {/* Integrated Social Media Component */}
             <SocialMedia />
