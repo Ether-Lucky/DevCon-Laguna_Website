@@ -6,16 +6,16 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative bg-background px-6 py-6 text-foreground md:px-8 md:py-16"
+      className="relative overflow-visible bg-background -mt-8 px-6 pt-0 pb-6 text-foreground md:-mt-16 md:px-8 md:pt-0 md:pb-16"
     >
-      <div className="relative mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 md:flex-row md:items-center md:justify-between md:gap-10 lg:gap-16">
+      <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4 lg:gap-6">
         
         {/* Text Content */}
         <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none z-1">
-          <h1 className="text-[clamp(3rem,7vw,5.25rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-foreground">
+          <h1 className="text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.25] tracking-[0.02em] text-foreground">
             <span className="block">Building the</span>
-            <span className="block text-devcon-lime">Future of Tech,</span>
-            <span className="block text-devcon-orange">Together.</span>
+            <span className="mt-1 block whitespace-nowrap text-devcon-lime">Future of Tech,</span>
+            <span className="mt-1 block text-devcon-orange">Together.</span>
           </h1>
 
           <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-muted md:mt-7">
@@ -52,12 +52,12 @@ export default function Hero() {
         </div>
 
         {/* Image Content */}
-        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[50vw] md:justify-end z-0">
+        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[65vw] md:flex-shrink-0 md:-ml-16 lg:-ml-24 z-0">
           <Image
             src="/hero/web.png"
             alt="DevCon Laguna community collage"
-            width={1000}
-            height={1023}
+            width={1200}
+            height={1228}
             priority
             className="hidden h-auto w-full md:block"
           />
