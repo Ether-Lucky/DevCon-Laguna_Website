@@ -11,7 +11,7 @@ export default function Hero() {
       <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4 lg:gap-6">
         
         {/* Text Content */}
-        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none z-1">
+        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none md:pl-8 lg:pl-16 z-1">
           <h1 className="text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.25] tracking-[0.02em] text-foreground">
             <span className="block">Building the</span>
             <span className="mt-1 block whitespace-nowrap text-devcon-lime">Future of Tech,</span>
