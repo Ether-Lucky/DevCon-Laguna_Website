@@ -13,12 +13,20 @@ test.beforeEach(async ({ page }) => {
     `,
   });
 
-  await page.evaluate(() => Promise.all([
-    document.fonts.ready,
-    ...Array.from(document.images).map((img) =>
-      img.complete ? Promise.resolve() : new Promise<void>((r) => { img.onload = () => r(); img.onerror = () => r(); })
-    ),
-  ]));
+  await page.evaluate(() => {
+    const timeout = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+    const fontReady = document.fonts.ready.then(() => {});
+    const imagePromises = Array.from(document.images).map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise<void>((r) => {
+        const done = () => r();
+        img.onload = done;
+        img.onerror = done;
+        setTimeout(done, 3000);
+      });
+    });
+    return Promise.race([Promise.all([fontReady, ...imagePromises]), timeout(10000)]);
+  });
   await page.waitForTimeout(500);
 });
 
