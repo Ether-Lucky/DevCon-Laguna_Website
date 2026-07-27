@@ -42,7 +42,7 @@ export default function InfoCard({
 
   return (
     <article
-      className={`relative flex min-h-[320px] flex-col overflow-hidden rounded-[28px] p-8 sm:min-h-[380px] sm:p-10 md:min-h-[420px] ${themeClass} ${alignClass}`}
+      className={`relative flex min-h-[240px] sm:min-h-[320px] flex-col overflow-hidden rounded-[20px] sm:rounded-[28px] p-6 sm:p-8 md:min-h-[420px] md:p-10 ${themeClass} ${alignClass}`}
     >
       <div className="relative z-10 max-w-[min(100%,28rem)]">
         <h3 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-display-sm">

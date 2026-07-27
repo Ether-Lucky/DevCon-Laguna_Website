@@ -119,7 +119,7 @@ export default function ProgramsAndActivities() {
   const isTextHidden = Boolean(currentSlide.imagePath || currentSlide.hideText);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-12">
+    <section className="w-full max-w-7xl mx-auto px-3 py-8 sm:px-4 sm:py-12 md:px-4 md:py-12">
       <div 
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -127,7 +127,7 @@ export default function ProgramsAndActivities() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative w-full rounded-[32px] overflow-hidden bg-devcon-black border border-devcon-gray/20 p-8 md:p-16 shadow-2xl h-[480px] md:h-[540px] flex flex-col justify-between cursor-grab active:cursor-grabbing select-none"
+        className="relative w-full rounded-[20px] sm:rounded-[32px] overflow-hidden bg-devcon-black border border-devcon-gray/20 p-4 sm:p-8 md:p-16 shadow-2xl h-[400px] sm:h-[480px] md:h-[540px] flex flex-col justify-between cursor-grab active:cursor-grabbing select-none"
       >
         
         {/* Background Layer */}
@@ -167,7 +167,7 @@ export default function ProgramsAndActivities() {
             {/* DYNAMIC TEXT: Invisible if an image exists OR hideText is true */}
             <h2 
               aria-hidden={isTextHidden ? "true" : "false"} 
-              className={`text-3xl md:text-5xl font-bold tracking-tight font-sans leading-tight transition-all duration-300 ${
+              className={`text-xl sm:text-3xl md:text-5xl font-bold tracking-tight font-sans leading-tight transition-all duration-300 ${
                 isTextHidden ? "invisible select-none pointer-events-none" : "text-devcon-white visible"
               }`}
             >
@@ -186,9 +186,9 @@ export default function ProgramsAndActivities() {
             </p>
 
             {/* VISIBLE BUTTONS */}
-            <div className="flex flex-wrap items-center gap-4 pt-4 ml-14
-              [&>*]:!px-[24px] [&>*]:!py-[12px]
-              [&>*]:!text-[20px] [&>*]:!font-[700] [&>*]:!leading-[20px] [&>*]:!tracking-[0%] 
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 ml-0 sm:ml-14
+              [&>*]:!px-[16px] sm:[&>*]:!px-[24px] [&>*]:!py-[10px] sm:[&>*]:!py-[12px]
+              [&>*]:!text-[14px] sm:[&>*]:!text-[20px] [&>*]:!font-[700] [&>*]:!leading-[20px] [&>*]:!tracking-[0%] 
               [&>*]:![font-family:var(--font-sans)]
               [&>*]:flex [&>*]:items-center [&>*]:justify-center"
             >
