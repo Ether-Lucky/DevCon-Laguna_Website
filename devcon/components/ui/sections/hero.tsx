@@ -11,10 +11,10 @@ export default function Hero() {
       <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4 lg:gap-6">
         
         {/* Text Content */}
-        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none md:pl-8 lg:pl-16 z-1">
+        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none md:pl-8 lg:pl-16 z-1 order-1 md:order-none">
           <h1 className="text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.25] tracking-[0.02em] text-foreground">
             <span className="block">Building the</span>
-            <span className="mt-1 block whitespace-nowrap text-devcon-lime">Future of Tech,</span>
+            <span className="mt-1 block text-devcon-lime sm:whitespace-nowrap">Future of Tech,</span>
             <span className="mt-1 block text-devcon-orange">Together.</span>
           </h1>
 
@@ -26,7 +26,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 flex flex-row gap-3 sm:gap-4 md:mt-12 relative">
+          <div className="mt-8 hidden md:flex md:flex-row md:gap-4 md:mt-12 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -52,7 +52,7 @@ export default function Hero() {
         </div>
 
         {/* Image Content */}
-        <div className="-mt-60 flex w-full justify-center md:mt-0 md:w-[65vw] md:flex-shrink-0 md:-ml-16 lg:-ml-24 z-0">
+        <div className="flex w-full justify-center md:-mt-60 md:mt-0 md:w-[65vw] md:flex-shrink-0 md:-ml-16 lg:-ml-24 z-0 order-2 md:order-none">
           <Image
             src="/hero/web.png"
             alt="DevCon Laguna community collage"
@@ -68,7 +68,32 @@ export default function Hero() {
             height={420}
             priority
             sizes="(max-width: 767px) 100vw, 0vw"
-            className="h-auto w-full md:hidden mt-[23%]"
+            className="h-auto w-full md:hidden"
+          />
+        </div>
+
+        {/* Mobile Buttons — below image */}
+        <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
+          <Image 
+            src="/hero/look-here.png"
+            alt="Look Here"
+            width={50}
+            height={31}
+            className="absolute -top-6 left-[calc(50%-120px)]"
+          />
+          <Button
+            label="Volunteer"
+            href="#"
+            variant="primary"
+            hasArrow
+            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
+          />
+          <Button
+            label="Learn More"
+            href="#"
+            variant="outline"
+            hasArrow
+            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold"
           />
         </div>
       </div>

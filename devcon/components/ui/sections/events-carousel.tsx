@@ -34,7 +34,7 @@ const CalendarIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
 
 function EventCard({ event }: { event: EventItem }) {
   return (
-    <div className="relative flex-1 h-[600px] rounded-3xl overflow-hidden bg-zinc-900">
+    <div className="relative flex-1 h-[400px] sm:h-[600px] rounded-3xl overflow-hidden bg-zinc-900">
       {event.img ? (
         <>
           <img
@@ -84,17 +84,17 @@ export default function EventsCarousel() {
   return (
     <section id="events" className="w-full">
       {/* Header */}
-      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-6 px-8">
+      <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 px-4 sm:px-8">
         <div>
-          <h2 className="text-display-md font-extrabold text-foreground">
+          <h2 className="text-3xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
             Featured <span className="text-devcon-purple-bright">Events</span>
           </h2>
 
-          <p className="mt-4 max-w-2xl text-body-md font-extralight text-foreground">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
+          <p className="mt-4 max-w-2xl text-body-sm sm:text-body-md font-extralight text-foreground">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
         </div>
 
         {/* Increase padding and text size */}
-        <div className="mr-12 [&>*]:!w-[260px] [&>*]:!h-[76px] [&>*]:!text-[20px] [&>*]:!leading-[20px] [&>*]:!font-bold [&>*]:!flex [&>*]:!items-center [&>*]:!justify-center [&>*]:!gap-2 [&>*]:!whitespace-nowrap [&_svg]:!flex-shrink-0">
+        <div className="[&>*]:!w-full sm:[&>*]:!w-[260px] [&>*]:!h-[56px] sm:[&>*]:!h-[76px] [&>*]:!text-[16px] sm:[&>*]:!text-[20px] [&>*]:!leading-[20px] [&>*]:!font-bold [&>*]:!flex [&>*]:!items-center [&>*]:!justify-center [&>*]:!gap-2 [&>*]:!whitespace-nowrap [&_svg]:!flex-shrink-0">
           <Button 
             label="View All Events" 
             href="/events"
@@ -104,7 +104,7 @@ export default function EventsCarousel() {
       </div>
 
       {/* Slider */}
-      <div className="relative w-full max-w-[1440px] mx-auto py-6 px-8">
+      <div className="relative w-full max-w-[1440px] mx-auto py-6 px-4 sm:px-8">
         <div className="overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out"
@@ -123,10 +123,10 @@ export default function EventsCarousel() {
         {/* Next button — always visible */}
         <button
           onClick={nextPage}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
           aria-label="Next events"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -134,7 +134,7 @@ export default function EventsCarousel() {
         {/* Previous button — always visible */}
         <button
           onClick={prevPage}
-          className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
           aria-label="Previous events"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

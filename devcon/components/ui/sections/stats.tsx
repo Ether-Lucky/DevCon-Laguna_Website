@@ -11,7 +11,7 @@ export default function Stats() {
   return (
     <section
       id="partners"
-      className='grid w-full grid-cols-2 gap-y-10 px-6 py-10 text-center sm:px-10 md:grid-cols-4 md:gap-6 lg:px-16'
+      className='grid w-full grid-cols-2 gap-y-8 sm:gap-y-10 px-4 sm:px-6 py-8 sm:py-10 text-center md:grid-cols-4 md:gap-6 md:px-10 lg:px-16'
     >
       {stats.map((stat) => {
         return (
@@ -26,10 +26,10 @@ export default function Stats() {
               height={stat.icon.height}
               className='h-16 w-auto object-contain'
             />
-            <p className='text-4xl font-semibold leading-none tracking-tight text-foreground md:text-[44px]'>
+            <p className='text-2xl sm:text-4xl font-semibold leading-none tracking-tight text-foreground md:text-[44px]'>
               {stat.value}<span className='text-muted'>+</span>
             </p>
-            <p className='max-w-40 text-sm font-semibold leading-snug text-muted md:text-base'>
+            <p className='max-w-40 text-xs sm:text-sm font-semibold leading-snug text-muted md:text-base'>
               {stat.name}
             </p>
           </div>
