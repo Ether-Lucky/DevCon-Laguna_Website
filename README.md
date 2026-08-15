@@ -54,7 +54,13 @@ DEVCON/
 │   ├── button.tsx
 │   ├── logo.tsx
 │   └── slideshow.tsx
-│
+│ 
+├── lib/
+│   ├── content/
+│   │   └── events.ts     # Content/data layer
+│   └── db/
+│       └── ...
+│ 
 ├── public/               # Static assets (images, icons, logos)
 │   ├── hero/
 │   ├── icons/
