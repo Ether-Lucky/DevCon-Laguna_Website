@@ -2,7 +2,7 @@ interface TeamMember {
   id: number;
   name: string;
   role: string;
-  img: string;
+  img?: string;
   gradient: string;
 }
 
@@ -95,5 +95,5 @@ const team: TeamMember[] = [
 
 const membersPerPage = 8;
 
-export { team, membersPerPage }
 export type { TeamMember }
+export { team, membersPerPage }

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Button from '@/components/ui/button';
-import {TeamMember, team, membersPerPage} from '@/lib/content/officers'
+import { TeamMember, team, membersPerPage } from '@/lib/content/officers'
 
 function initials(name: string) {
   return name
