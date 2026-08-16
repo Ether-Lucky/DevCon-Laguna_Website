@@ -1,6 +1,6 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { NAV_LINKS, navLinkClassName } from "./constants";
+import { navLinks } from "./constants";
 
 type NavLinksProps = {
   orientation?: "horizontal" | "vertical";
@@ -18,17 +18,17 @@ export default function NavLinks({
       className={clsx(
         "flex",
         orientation === "horizontal"
-          ? "items-center gap-10"
+          ? "items-center gap-16"
           : "flex-col gap-4",
         className,
       )}
     >
-      {NAV_LINKS.map((link) => (
+      {navLinks.map((link) => (
         <Link
           key={link.name}
           href={link.href}
           onClick={onNavigate}
-          className={navLinkClassName}
+          className='text-base font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground'
         >
           {link.name}
         </Link>

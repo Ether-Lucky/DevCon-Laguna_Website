@@ -1,17 +1,15 @@
-export const NAV_LINKS = [
+const navLinks = [
   { name: "Home", href: "#hero" },
   { name: "About", href: "#about" },
   { name: "Events", href: "#events" },
   { name: "Officers", href: "#officers" },
   { name: "Partners", href: "#partners" },
   { name: "Contact", href: "#contact" },
-] as const;
+];
 
-/** Desktop nav appears above this width; mobile menu below. */
-export const navVisibility = {
+const navVisibility = {
   desktopOnly: "hidden min-[1050px]:flex",
   mobileOnly: "min-[1050px]:hidden",
-} as const;
+}
 
-export const navLinkClassName =
-  "text-[18px] font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground";
+export { navLinks, navVisibility }
