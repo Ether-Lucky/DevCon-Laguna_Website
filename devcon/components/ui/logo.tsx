@@ -1,6 +1,8 @@
 import Image from "next/image";
 
 export default function Logo() {
+  const logoClassName = "h-auto w-[120px] md:w-[200px]"
+
   return (
     <div className="flex-col shrink-0 size-fit leading-none">
       {/* Shown in dark theme */}
@@ -10,7 +12,7 @@ export default function Logo() {
         width={240}
         height={76}
         priority
-        className="hidden dark:block h-auto w-[170px] md:w-[200px]"
+        className={`hidden dark:block ${logoClassName}`}
       />
       {/* Shown in light theme */}
       <Image
@@ -19,7 +21,7 @@ export default function Logo() {
         width={240}
         height={76}
         priority
-        className="block dark:hidden h-auto w-[170px] md:w-[200px]"
+        className={`block dark:hidden ${logoClassName}`}
       />
       <span className="block text-right text-lg md:text-lg font-bold font-sans uppercase tracking-[0.01em] text-muted">
         Laguna

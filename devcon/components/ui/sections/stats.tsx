@@ -4,7 +4,7 @@ import { stats } from '@/lib/content/stats';
 export default function Stats() {
   return (
     <section id="partners" className="max-w-7xl mx-auto">
-      <div className="relative w-full grid grid-cols-2 md:grid-cols-4 justify-between gap-8 md:gap-6 px-16 pt-0 md:py-16 font-sans text-center">
+      <div className="relative w-full grid grid-cols-2 md:grid-cols-4 justify-between gap-8 md:gap-6 px-8 md:px-16 pt-0 pb-32 md:py-48 font-sans text-center">
         {stats.map((stat) => {
           return (
             <div

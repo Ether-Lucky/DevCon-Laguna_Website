@@ -1,4 +1,4 @@
-import About from "@/components/ui/sections/about";
+import About from "@/components/ui/sections/about/about";
 import MissionVision from '@/components/ui/mission-vision/mission-vision';
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';

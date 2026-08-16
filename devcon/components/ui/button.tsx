@@ -27,7 +27,7 @@ export default function Button({
     className,
     {
       "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
-      "border border-border bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10": variant === "outline",
+      "border border-foreground/40 bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10": variant === "outline",
     },
   );
 

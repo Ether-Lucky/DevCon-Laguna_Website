@@ -10,7 +10,7 @@ export default function Hero() {
     >
       <div className="relative w-full flex flex-col xl:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
-        <div className="px-16 xl:pl-8 mt-16 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
+        <div className="px-8 xl:pl-8 mt-8 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-none text-foreground">
             <span>Building the </span>
             <span className="mt-1 text-devcon-lime-500">Future of Tech, </span>
