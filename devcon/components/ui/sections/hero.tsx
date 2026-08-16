@@ -10,14 +10,14 @@ export default function Hero() {
     >
       <div className="relative w-full flex flex-col xl:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
-        <div className="pl-8 xl:pl-8 mt-16 xl:mt-0 h-fit z-1">
-          <h1 className="text-6xl font-extrabold leading-none text-foreground">
-            <span className="block">Building the</span>
-            <span className="mt-1 block text-devcon-lime-500 sm:whitespace-nowrap">Future of Tech,</span>
-            <span className="mt-1 block text-devcon-orange-500">Together.</span>
+        <div className="px-16 xl:pl-8 mt-16 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-none text-foreground">
+            <span>Building the </span>
+            <span className="mt-1 text-devcon-lime-500">Future of Tech, </span>
+            <span className="mt-1 text-devcon-orange-500">Together.</span>
           </h1>
 
-          <p className="mt-6 max-w-[36rem] leading-[1.45] text-muted">
+          <p className="mt-6 text-muted">
             DevCon Laguna is a community of developers, students, and technology
             enthusiasts dedicated to learning, collaborating, and creating meaningful
             impact through technology.
@@ -25,7 +25,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="flex flex-row mt-12 gap-8 relative">
+          <div className="flex flex-col md:flex-row mt-12 gap-4 md:gap-8 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -37,13 +37,11 @@ export default function Hero() {
               label="Volunteer"
               href="#"
               variant="primary"
-              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
             />
             <Button
               label="Learn More"
               href="#"
               variant="outline"
-              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold"
             />
           </div>
         </div>
@@ -63,7 +61,7 @@ export default function Hero() {
             width={2286}
             height={2286}
             priority
-            className="w-[100vw] max-w-none -mt-[50%] xl:hidden z-0"
+            className="w-[140vw] max-w-none -my-[50vw] xl:hidden z-0"
           />
         {/* Mobile Buttons — below image */}
         {/* <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">

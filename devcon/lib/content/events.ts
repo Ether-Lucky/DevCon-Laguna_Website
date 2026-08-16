@@ -1,7 +1,6 @@
 type Category = "hackaton" | "workshop" | "seminar" | "community" | "career"
 
 interface EventItem {
-  
   id: number;
   title: string;
   date: string;
