@@ -1,6 +1,5 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { navLinks } from "./constants";
 
 type NavLinksProps = {
   orientation?: "horizontal" | "vertical";
@@ -8,19 +7,27 @@ type NavLinksProps = {
   className?: string;
 };
 
+const navLinks = [
+  { name: "Home", href: "#hero" },
+  { name: "About", href: "#about" },
+  { name: "Events", href: "#events" },
+  { name: "Officers", href: "#officers" },
+  { name: "Partners", href: "#partners" },
+  { name: "Contact", href: "#contact" },
+];
+
 export default function NavLinks({
   orientation = "horizontal",
   onNavigate,
-  className,
 }: NavLinksProps) {
   return (
     <div
       className={clsx(
         "flex",
-        orientation === "horizontal"
-          ? "items-center gap-16"
-          : "flex-col gap-4",
-        className,
+        {
+          "hidden xl:flex flex-row items-center gap-16": orientation === "horizontal",
+          "flex-col gap-4": orientation === "vertical",
+        },
       )}
     >
       {navLinks.map((link) => (

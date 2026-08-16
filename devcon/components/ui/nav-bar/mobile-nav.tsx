@@ -1,41 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import NavLinks from "./nav-links";
 import NavActions from "./nav-actions";
-import { navVisibility } from "./constants";
+import { Bars3BottomRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const closeMenu = () => setIsOpen(false);
   const toggleMenu = () => setIsOpen((open) => !open);
+  const iconClassName = "w-8";
 
   return (
-    <div className={navVisibility.mobileOnly}>
+    <div className="xl:hidden">
       <button
         type="button"
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={isOpen}
         aria-controls="mobile-navigation"
         onClick={toggleMenu}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-foreground/20 bg-transparent text-foreground transition-colors duration-200 hover:border-foreground/35 hover:bg-foreground/8"
+        className="inline-flex items-center justify-center bg-transparent text-foreground transition-colors duration-200"
       >
-        <span
-          aria-hidden
-          className="block size-[18px] bg-[var(--foreground)] opacity-80 hover:opacity-100 transition-opacity duration-200"
-          style={{
-          maskImage: `url(${isOpen ? '/icons/close.svg' : '/icons/Menu.svg'})`,
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            maskPosition: "center",
-            WebkitMaskImage: `url(${isOpen ? '/icons/close.svg' : '/icons/Menu.svg'})`,
-            WebkitMaskSize: "contain",
-            WebkitMaskRepeat: "no-repeat",
-            WebkitMaskPosition: "center",
-          }}
-        />
+        {isOpen ? <XMarkIcon className={iconClassName}/>: <Bars3BottomRightIcon className={iconClassName}/>}
       </button>
 
       {isOpen ? (

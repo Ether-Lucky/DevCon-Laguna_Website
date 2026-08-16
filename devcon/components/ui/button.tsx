@@ -25,12 +25,12 @@ export default function Button({
   const buttonFinalClassName = clsx(
     "group font-sans text-body-sm font-semibold flex flex-row items-center justify-center rounded-full gap-2 cursor-pointer",
     {
-      "px-6 py-2": icon === null,
-      "px-8 py-4": icon !== null,
+      "px-6 py-2": !icon,
+      "px-8 py-4": icon,
     },
     className,
     {
-      "bg-devcon-lime-500 text-background hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
+      "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
       "border border-border bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10": variant === "outline",
     },
   );
