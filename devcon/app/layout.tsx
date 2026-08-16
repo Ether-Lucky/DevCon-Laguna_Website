@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans } from 'next/font/google';
 import SplashScreen from "@/components/ui/splash-screen";
 import ThemeProvider from "@/components/theme-provider";
+import { inter, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter-sans",
-  subsets: ["latin"],
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,13 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${dmSans.variable} ${inter.variable} h-full antialiased`}
-    >
-      <body suppressHydrationWarning className="splash-active min-h-full flex flex-col">
-        <SplashScreen />
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable}`}>
+      <body className="antialiased min-h-full flex flex-col">
+        {/* <SplashScreen /> */}
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

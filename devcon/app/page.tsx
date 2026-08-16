@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <NavBar />
-      <main className="flex min-h-screen flex-col items-center justify-center bg-background pt-0 pb-24 px-6 text-foreground font-inter -mt-2">  
+      {/* <main className="flex min-h-screen flex-col items-center justify-center bg-background pt-0 pb-24 px-6 text-foreground -mt-2">  
         <ScrollReveal className="w-full" variant="fade" amount={0.05}>
           <Hero />
         </ScrollReveal>
@@ -40,10 +40,10 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <ProgramsAndActivities />
         </ScrollReveal>
-        <ScrollReveal className="w-full" variant="fade">
-          <Footer/>
-        </ScrollReveal>
       </main> 
+      <ScrollReveal className="w-full" variant="fade">
+          <Footer/>
+      </ScrollReveal> */}
     </>
   );
 }

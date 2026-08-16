@@ -1,37 +1,25 @@
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0B0B0C;
-    --foreground: #FFFFFF;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-} */
-
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-devcon-lime: #C0E00B;
-  --color-devcon-orange: #E06B22;
-  --color-devcon-purple: #6A0DF2;
-  --color-devcon-purple-dark: #3A0066;
-  --color-devcon-purple-bright: #6320EE;
-  --color-devcon-black: #0B0B0C;
-  --color-devcon-white: #FFFFFF;
-  --color-devcon-gray: #737272;
+  /* Colors */
+  --color-devcon-black-500: #0B0B0C;
+  --color-devcon-black-600: #141416;
+  --color-devcon-white-500: #FFFFFF;
+  --color-devcon-white-600: #F7F7F5;
+  --color-devcon-gray-100: #D0D4D4;
+  --color-devcon-gray-300: #464646;
+  --color-devcon-gray-500: #737272;
+  --color-devcon-lime-300: #6FC71E;
+  --color-devcon-lime-500: #C0E00B;
+  --color-devcon-orange-500: #E06B22;
+  --color-devcon-purple-300: #3A0066;
+  --color-devcon-purple-500: #6A0DF2;
+  --color-devcon-purple-700: #6320EE;
 
-  /* Fonts */
-  --font-sans: var(--font-dm), sans-serif;
-  --font-inter: var(--font-inter-sans), sans-serif;
-
-  /* Typography */
+  /*
+  Typography
   --text-display-lg: 64px;
   --text-display-lg--line-height: 1.1;
   --text-display-lg--letter-spacing: -0.02em;
@@ -47,40 +35,60 @@ body {
   --text-body-md--line-height: 1.5;
 
   --text-body-sm: 14px;
-  --text-body-sm--line-height: 1.5;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
-  --color-surface: var(--surface);
+  --text-body-sm--line-height: 1.5; */
 }
 
 /* Dark-first defaults — matches brand and avoids FOUC before next-themes hydrates */
 :root,
 .dark {
-  --background: #0b0b0c;
-  --foreground: #ffffff;
-  --muted: #737272;
-  --border: rgba(255, 255, 255, 0.2);
-  --surface: #141416;
-
+  --background: var(--color-devcon-black-500);
+  --foreground: var(--color-devcon-white-500);
+  --surface: var(--color-devcon-black-600);
+  --muted: var(--color-devcon-gray-100);
+  --border: rgb(var(--color-devcon-gray-500), 0.2);
+/* 
   --splash-yellow: #F0C419;
   --splash-orange: var(--color-devcon-orange);
   --splash-green: #6FC71E;
-  --splash-purple: var(--color-devcon-purple-bright);
+  --splash-purple: var(--color-devcon-purple-bright); */
 }
 
 .light {
-  --background: #f7f7f5;
-  --foreground: #464646;
-  --muted: #5c5c5c;
-  --border: rgba(11, 11, 12, 0.18);
-  --surface: #ffffff;
+  --background: var(--color-devcon-white-600);
+  --foreground: var(--color-devcon-gray-300);
+  --surface: var(--color-devcon-white-500);
+  --muted: var(--color-devcon-gray-500);
+  --border: rgba(var(--color-devcon-black-500), 0.18);
 }
 
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jet-brains-mono);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+}
+
+@layer base {
+  body {
+    @apply font-mono text-base;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sans tracking-tight;
+  }
+}
+
+
+/*
 body {
   background: var(--background);
   color: var(--foreground);
@@ -95,7 +103,6 @@ body.splash-active {
   overflow: hidden;
 }
 
-/* —— Splash / loading screen —— */
 .splash {
   --s: 6.25em;
   --d: 2.4em;
@@ -224,4 +231,4 @@ body.splash-active {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
-}
+} */

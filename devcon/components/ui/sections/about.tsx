@@ -2,10 +2,7 @@ import Slideshow from '@/components/ui/slideshow';
 
 export default function About() {
   return (
-    <section
-      id="about"
-      className="w-full bg-background px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20 font-inter"
-    >
+    <section id="about" className="w-full bg-background px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div className="max-w-xl">
           <span className="text-base sm:text-xl font-medium uppercase tracking-wide text-muted sm:text-2xl">
