@@ -25,7 +25,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 flex flex-row gap-4 xl:mt-12 relative">
+          <div className="flex flex-row mt-12 gap-8 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -55,7 +55,7 @@ export default function Hero() {
             width={2286}
             height={2286}
             priority
-            className="w-[200vw] xl:w-[100vw] max-w-none -mt-[50%] my-0 xl:-my-[15%] mx-0 xl:-mx-[15%] flex-shrink-0 hidden xl:block"
+            className="w-[200vw] w-[100vw] -my-[25%] -mx-[15%] flex-shrink-0 hidden xl:block"
           />
          <Image
             src="/hero/mobile.png"
