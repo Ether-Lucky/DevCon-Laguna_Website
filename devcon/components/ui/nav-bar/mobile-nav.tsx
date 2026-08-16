@@ -28,7 +28,7 @@ export default function MobileNav() {
       {isOpen ? (
         <div
           id="mobile-navigation"
-          className="absolute inset-x-0 top-full border-t border-background/10 bg-background/95 backdrop-blur-md"
+          className="absolute inset-x-0 top-full border-t border-background/10 bg-background/95 backdrop-blur-md shadow-lg/5"
         >
           <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-6 py-6 md:px-8">
             <NavLinks orientation="vertical" onNavigate={closeMenu} />
