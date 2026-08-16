@@ -22,9 +22,9 @@ export default function Home() {
         <ScrollReveal className="w-full" variant="scale">
           <Stats />
         </ScrollReveal>
-        {/* <ScrollReveal className="w-full">
+        <ScrollReveal className="w-full">
           <About />
-        </ScrollReveal> */}
+        </ScrollReveal>
         {/* <ScrollReveal className="w-full">
           <MissionVision />
         </ScrollReveal> */}
