@@ -10,7 +10,7 @@ export default function Hero() {
     >
       <div className="relative w-full flex flex-col xl:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
-        <div className="pl-8 xl:pl-8 mt-16 xl:mt-0 h-fit">
+        <div className="pl-8 xl:pl-8 mt-16 xl:mt-0 h-fit z-1">
           <h1 className="text-6xl font-extrabold leading-none text-foreground">
             <span className="block">Building the</span>
             <span className="mt-1 block text-devcon-lime-500 sm:whitespace-nowrap">Future of Tech,</span>
@@ -55,7 +55,7 @@ export default function Hero() {
             width={2286}
             height={2286}
             priority
-            className="w-[200vw] w-[100vw] -my-[25%] -mx-[15%] flex-shrink-0 hidden xl:block"
+            className="w-[200vw] w-[100vw] -my-[25%] -mx-[15%] flex-shrink-0 hidden xl:block z-0"
           />
          <Image
             src="/hero/mobile.png"
@@ -63,7 +63,7 @@ export default function Hero() {
             width={2286}
             height={2286}
             priority
-            className="w-[100vw] max-w-none -mt-[50%] xl:hidden"
+            className="w-[100vw] max-w-none -mt-[50%] xl:hidden z-0"
           />
         {/* Mobile Buttons — below image */}
         {/* <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
