@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SplashScreen from "@/components/ui/splash-screen";
 import ThemeProvider from "@/components/theme-provider";
-import { inter, jetBrainsMono } from "@/components/ui/fonts";
+import { dmSans, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${jetBrainsMono.variable}`}>
       <body className="antialiased min-h-full flex flex-col">
         {/* <SplashScreen /> */}
         <ThemeProvider>{children}</ThemeProvider>

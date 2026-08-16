@@ -38,6 +38,10 @@
   --text-body-sm--line-height: 1.5; */
 }
 
+* {
+  box-sizing: border-box;
+}
+
 /* Dark-first defaults — matches brand and avoids FOUC before next-themes hydrates */
 :root,
 .dark {
@@ -62,7 +66,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-dm-sans);
   --font-mono: var(--font-jet-brains-mono);
 
   --color-background: var(--background);

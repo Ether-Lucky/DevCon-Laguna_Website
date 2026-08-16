@@ -23,11 +23,11 @@ export default function Button({
 }: ButtonProps) {
 
   const buttonFinalClassName = clsx(
-    "group font-sans text-body-sm font-semibold flex flex-row items-center justify-center rounded-full gap-2 cursor-pointer",
-    {
-      "px-6 py-2": !icon,
-      "px-8 py-4": icon,
-    },
+    "group font-sans text-body-sm font-semibold flex flex-row items-center justify-center rounded-full gap-2 cursor-pointer px-6 py-2 w-max",
+    // {
+    //   "",
+    //   // "px-6 py-3": icon,
+    // },
     className,
     {
       "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
@@ -37,19 +37,18 @@ export default function Button({
 
   const iconClassName = `${iconWidth} transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5`
 
-  if (href) {
-    return (
+  return (href ?
+    (
       <Link href={href} className={buttonFinalClassName}>
-        <span>{label}</span>
-        <span className={iconClassName}>{icon}</span>
+        {label}
+        {icon && <span className={iconClassName}>{icon}</span>}
       </Link>
-    );
-  }
-
-  return (
-    <button onClick={onClick} className={buttonFinalClassName} type="button">
-      <span>{label}</span>
-      {icon && <span className={iconClassName}>{icon}</span>}
-    </button>
+    ) :
+    (
+      <button onClick={onClick} className={buttonFinalClassName} type="button">
+        {label}
+        {icon && <span className={iconClassName}>{icon}</span>}
+      </button>
+    )
   );
 }

@@ -6,19 +6,18 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative overflow-visible bg-background -mt-8 px-6 pt-0 pb-6 text-foreground md:-mt-16 md:px-8 md:pt-0 md:pb-16"
+      className="max-w-7xl mx-auto"
     >
-      <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4 lg:gap-6">
-        
+      <div className="relative w-full flex flex-col xl:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
-        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none md:pl-8 lg:pl-16 z-1 order-1 md:order-none">
-          <h1 className="text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.25] tracking-[0.02em] text-foreground">
+        <div className="pl-8 xl:pl-8 mt-16 xl:mt-0 h-fit">
+          <h1 className="text-6xl font-extrabold leading-none text-foreground">
             <span className="block">Building the</span>
-            <span className="mt-1 block text-devcon-lime sm:whitespace-nowrap">Future of Tech,</span>
-            <span className="mt-1 block text-devcon-orange">Together.</span>
+            <span className="mt-1 block text-devcon-lime-500 sm:whitespace-nowrap">Future of Tech,</span>
+            <span className="mt-1 block text-devcon-orange-500">Together.</span>
           </h1>
 
-          <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-muted md:mt-7">
+          <p className="mt-6 max-w-[36rem] leading-[1.45] text-muted">
             DevCon Laguna is a community of developers, students, and technology
             enthusiasts dedicated to learning, collaborating, and creating meaningful
             impact through technology.
@@ -26,7 +25,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 hidden md:flex md:flex-row md:gap-4 md:mt-12 relative">
+          <div className="mt-8 flex flex-row gap-4 xl:mt-12 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -38,42 +37,36 @@ export default function Hero() {
               label="Volunteer"
               href="#"
               variant="primary"
-              hasArrow
               className="h-14 min-w-[180px] px-8 text-[1rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
             />
             <Button
               label="Learn More"
               href="#"
               variant="outline"
-              hasArrow
               className="h-14 min-w-[180px] px-8 text-[1rem] font-bold"
             />
           </div>
         </div>
 
         {/* Image Content */}
-        <div className="flex w-full justify-center md:-mt-60 md:mt-0 md:w-[65vw] md:flex-shrink-0 md:-ml-16 lg:-ml-24 z-0 order-2 md:order-none">
           <Image
-            src="/hero/web.png"
+            src="/hero/test.png"
             alt="DevCon Laguna community collage"
-            width={1200}
-            height={1228}
+            width={2286}
+            height={2286}
             priority
-            className="hidden h-auto w-full md:block"
+            className="w-[200vw] xl:w-[100vw] max-w-none -mt-[50%] my-0 xl:-my-[15%] mx-0 xl:-mx-[15%] flex-shrink-0 hidden xl:block"
           />
-          <Image
+         <Image
             src="/hero/mobile.png"
             alt="DevCon Laguna community collage"
-            width={420}
-            height={420}
+            width={2286}
+            height={2286}
             priority
-            sizes="(max-width: 767px) 100vw, 0vw"
-            className="h-auto w-full md:hidden"
+            className="w-[100vw] max-w-none -mt-[50%] xl:hidden"
           />
-        </div>
-
         {/* Mobile Buttons — below image */}
-        <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
+        {/* <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
           <Image 
             src="/hero/look-here.png"
             alt="Look Here"
@@ -95,7 +88,7 @@ export default function Hero() {
             hasArrow
             className="h-14 min-w-0 px-6 text-[0.875rem] font-bold"
           />
-        </div>
+        </div> */}
       </div>
     </section>
   );
