@@ -1,5 +1,5 @@
 import About from "@/components/ui/sections/about/about";
-import MissionVision from '@/components/ui/mission-vision/mission-vision';
+import MissionVision from '@/components/ui/sections/mission-vision/mission-vision';
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';
 import Stats from '@/components/ui/sections/stats';
@@ -25,9 +25,9 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <About />
         </ScrollReveal>
-        {/* <ScrollReveal className="w-full">
+        <ScrollReveal className="w-full">
           <MissionVision />
-        </ScrollReveal> */}
+        </ScrollReveal>
         {/* <ScrollReveal className="w-full">
           <WhatWeDo />
         </ScrollReveal> */}

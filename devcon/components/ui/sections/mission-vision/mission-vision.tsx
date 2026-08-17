@@ -1,4 +1,4 @@
-import InfoCard, { InfoCardProps } from "@/components/ui/mission-vision/info-card";
+import InfoCard, { InfoCardProps } from "@/components/ui/sections/mission-vision/info-card";
 
 const companyValues: InfoCardProps[] = [
   {
@@ -7,7 +7,7 @@ const companyValues: InfoCardProps[] = [
     description:
       "To empower developers and aspiring technology professionals by providing opportunities for learning, collaboration, mentorship, and community engagement while promoting innovation and excellence in the field of technology.",
     themeClass:
-      "bg-gradient-to-b from-background to-devcon-purple-bright",
+      "bg-gradient-to-b from-background to-devcon-purple-700",
     icon: "/mission-vision/bullet.svg",
     iconPosition: "bottom-left",
     iconWidth: 280,
@@ -33,7 +33,7 @@ export default function MissionVision() {
   return (
     <section
       id="mission-vision"
-      className="w-full bg-background px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20 font-inter"
+      className="max-w-7xl mx-auto px-4 py-12 md:px-8 md:py-0"
     >
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
         {companyValues.map((card) => (
