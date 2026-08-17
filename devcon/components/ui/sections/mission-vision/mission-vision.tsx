@@ -33,7 +33,7 @@ export default function MissionVision() {
   return (
     <section
       id="mission-vision"
-      className="max-w-7xl mx-auto px-4 py-12 md:px-8 md:py-0"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-0 md:py-48"
     >
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
         {companyValues.map((card) => (

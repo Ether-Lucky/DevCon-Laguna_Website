@@ -13,10 +13,16 @@ function initials(name: string) {
 }
  
 function TeamCard({ member }: { member: TeamMember }) {
+  const toAccentColor = {
+    'yellow': 'to-devcon-yellow-500',
+    'orange': 'to-devcon-orange-500',
+    'purple': 'to-devcon-purple-700',
+    'lime': 'to-devcon-lime-500',
+  } 
   return (
     <div className="flex flex-col items-center text-center">
       {/* 1. AVATAR */}
-      <div className={`relative w-28 h-28 sm:w-40 sm:h-40 md:w-61 md:h-62 rounded-full overflow-hidden bg-gradient-to-b ${member.gradient} flex items-center justify-center`}>
+      <div className={`relative w-28 h-28 sm:w-40 sm:h-40 md:w-61 md:h-62 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent]} flex items-center justify-center`}>
         {member.img ? (
           <img
             src={member.img}
@@ -50,19 +56,18 @@ export default function TeamSection() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section id="officers" className="w-full bg-background px-4 py-16 sm:px-6 sm:py-20 md:px-6 md:py-24">
+    <section id="officers" className="max-w-7xl mx-auto bg-background py-16 md:px-6 md:py-24">
       {/* 2. CONTAINER */}
       <div className="relative mx-auto max-w-[1300px]">
         
         {/* HEADER SECTION */}
         <div className="mb-16 flex flex-col items-center text-center">
-          <h2 className="mb-6 text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground">
-            Meet Our <span className="text-devcon-purple-bright">Officers</span>
+          <h2 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
+            Meet Our <span className="text-devcon-purple-500">Officers</span>
           </h2>
-            <p className="max-w-4xl text-center font-sans text-body-sm sm:text-body-md font-normal leading-[24px] sm:leading-[30px] tracking-normal text-muted px-2 sm:px-0">
-              Behind every successful community is a passionate team of volunteers dedicated to creating meaningful<br className="hidden md:block" />
-              experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
-            </p>
+          <p className="max-w-4xl text-lg font-extralight leading-8 text-muted">
+            Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
+          </p>
         </div>
         
         {/* Next button */}

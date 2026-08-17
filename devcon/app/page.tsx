@@ -28,15 +28,15 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <MissionVision />
         </ScrollReveal>
-        {/* <ScrollReveal className="w-full">
+        <ScrollReveal className="w-full">
           <WhatWeDo />
-        </ScrollReveal> */}
-        {/* <ScrollReveal className="w-full">
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
           <Events />
-        </ScrollReveal> */}
-        {/* <ScrollReveal className="w-full">
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
           <Officers />
-        </ScrollReveal> */}
+        </ScrollReveal>
         {/* <ScrollReveal className="w-full">
           <ProgramsAndActivities />
         </ScrollReveal> */}

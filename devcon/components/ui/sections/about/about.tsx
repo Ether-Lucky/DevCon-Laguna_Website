@@ -3,7 +3,7 @@ import AboutDevconSlideshow from '@/components/ui/sections/about/about-devcon-sl
 export default function About() {
   return (
     <section id="about" className="max-w-7xl mx-auto">
-      <div className="w-full bg-background px-8 lg:px-16 lg:px-4 pb-0 lg:py-12 mx-auto gap-16 flex flex-row items-center">
+      <div className="w-full bg-background px-8 lg:px-16 lg:px-4 pb-0 pt-12 lg:py-12 mx-auto gap-16 flex flex-row items-center">
         <div className="lg:max-w-xl">
           <span className="text-base sm:text-xl uppercase tracking-wide text-devcon-lime-500">
             {'// About DevCon Laguna'}
