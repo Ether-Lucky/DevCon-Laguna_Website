@@ -19,7 +19,7 @@
   --color-devcon-purple-500: #6A0DF2;
   --color-devcon-purple-700: #6320EE;
   --color-devcon-yellow-500: #F0C419;
-  
+
   /*
   Typography
   --text-display-lg: 64px;
@@ -50,7 +50,7 @@
   --background: var(--color-devcon-black-500);
   --foreground: var(--color-devcon-white-500);
   --surface: var(--color-devcon-black-600);
-  --muted: var(--color-devcon-gray-100);
+  --muted: var(--color-devcon-gray-500);
   --border: rgb(var(--color-devcon-gray-500), 0.2);
 /* 
   --splash-yellow: #F0C419;

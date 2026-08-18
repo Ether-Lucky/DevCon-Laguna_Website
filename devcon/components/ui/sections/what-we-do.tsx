@@ -5,14 +5,14 @@ import Image from 'next/image';
 
 export default function WhatWeDo() {
   return (
-    <section className="w-full bg-background px-4 py-16 sm:px-6 sm:py-20 md:px-6 md:py-24">
+    <section className="w-full bg-background px-4 py-32 md:px-6 md:py-24">
       {/* Heading */}
       <div className="mb-12 text-center">
         <h2 className="text-4xl md:text-6xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
           What <span className="text-devcon-purple-700">We Do</span>
         </h2>
 
-        <p className="mx-auto mt-4 max-w-[620px] text-center">
+        <p className="mx-auto mt-4 max-w-xl text-center text-muted">
           We create opportunities for developers of all skill levels to learn,
           connect, and grow through community-driven initiatives.
         </p>

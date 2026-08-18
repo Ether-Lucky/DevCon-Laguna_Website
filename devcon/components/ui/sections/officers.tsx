@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Button from '@/components/ui/button';
 import { TeamMember, team, membersPerPage } from '@/lib/content/officers'
+import Image from 'next/image'
 
 function initials(name: string) {
   return name
@@ -20,24 +21,27 @@ function TeamCard({ member }: { member: TeamMember }) {
     'lime': 'to-devcon-lime-500',
   } 
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="flex flex-col items-center text-center font-sans">
       {/* 1. AVATAR */}
       <div className={`relative w-28 h-28 sm:w-40 sm:h-40 md:w-61 md:h-62 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent]} flex items-center justify-center`}>
         {member.img ? (
-          <img
+          <Image
             src={member.img}
             alt={member.name}
+            width={member.width}
+            height={member.height}
             className="absolute inset-0 w-full h-full object-cover object-bottom"
+            priority
           />
         ) : (
           <span className="text-devcon-white/70 text-4xl font-bold">{initials(member.name)}</span>
         )}
       </div>
 
-        <h3 className="mt-4 sm:mt-6 text-center text-lg sm:text-[28px] font-semibold leading-tight sm:leading-[38px] text-foreground">
+        <h3 className="mt-4 text-2xl font-semibold leading-tight text-foreground font-bold">
         {member.name}
         </h3>
-        <p className="mt-1 whitespace-pre-line text-center text-xs sm:text-[20px] font-normal uppercase leading-tight sm:leading-[18px] tracking-[0.1em] text-muted">
+        <p className="mt-1 text-xl font-normal uppercase tracking-[10%] leading-tight text-muted">
         {member.role}
         </p>
     </div>
@@ -58,15 +62,15 @@ export default function TeamSection() {
   return (
     <section id="officers" className="max-w-7xl mx-auto bg-background py-16 md:px-6 md:py-24">
       {/* 2. CONTAINER */}
-      <div className="relative mx-auto max-w-[1300px]">
+      <div className="relative">
         
         {/* HEADER SECTION */}
         <div className="mb-16 flex flex-col items-center text-center">
           <h2 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
             Meet Our <span className="text-devcon-purple-500">Officers</span>
           </h2>
-          <p className="max-w-4xl text-lg font-extralight leading-8 text-muted">
-            Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
+          <p className="max-w-xl text-muted">
+            {"Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs."}
           </p>
         </div>
         
@@ -125,10 +129,7 @@ export default function TeamSection() {
           </div>
         )}
  
-        <div className="flex justify-center mt-8 sm:mt-10 [&_svg]:hidden [&>a]:!px-[32px] sm:[&>a]:!px-[54px] [&>a]:!py-[20px] sm:[&>a]:!py-[28px] [&>a]:!h-[56px] sm:[&>a]:!h-[74px] [&>a]:!rounded-[47px]
-         [&>a]:!text-[16px] sm:[&>a]:!text-[20px] [&>a]:!font-[700] [&>a]:!leading-[20px] [&>a]:!tracking-[0%] [&>a]:![font-family:'DM_Sans',sans-serif]">
-            <Button label="Meet the Team" href="/team" hasArrow={false} />
-        </div>
+            <Button label="Meet the Team" href="/team" />
       </div>
     </section>
   );

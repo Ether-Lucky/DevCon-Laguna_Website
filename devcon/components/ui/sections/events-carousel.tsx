@@ -60,15 +60,15 @@ export default function EventsCarousel() {
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   return (
-    <section id="events" className="w-full">
+    <section id="events" className="w-full bg-background px-4 py-32 md:px-6 md:py-24">
       {/* Header */}
       <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 px-4 sm:px-8">
         <div>
-          <h2 className="text-3xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
-            Featured <span className="text-devcon-purple-bright">Events</span>
+          <h2 className="text-4xl md:text-6xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
+            Featured <span className="text-devcon-purple-700">Events</span>
           </h2>
 
-          <p className="mt-4 max-w-2xl text-body-sm sm:text-body-md font-extralight text-foreground">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
+          <p className="mt-4 max-w-2xl text-body-sm sm:text-body-md font-light text-foreground">Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.</p>
         </div>
 
         {/* Increase padding and text size */}
@@ -76,7 +76,6 @@ export default function EventsCarousel() {
           <Button 
             label="View All Events" 
             href="/events"
-            hasArrow={true} 
           />
         </div>
       </div>
