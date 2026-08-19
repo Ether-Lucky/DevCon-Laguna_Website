@@ -1,29 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Button from '@/components/ui/button';
-
-interface EventItem {
-  id: number;
-  title: string;
-  date: string;
-  category: string;
-  color: string;
-  img?: string; // omit for placeholder cards
-}
-
-const EVENTS: EventItem[] = [
-  { id: 1, title: 'DevCon Hackathon 2026', date: 'May 10–12, 2026', category: 'HACKATHON', color: 'bg-[#C0E00B] text-black', img: '/images/hackathon.png' },
-  { id: 2, title: 'Web Dev Workshop', date: 'Dec 17, 2025', category: 'WORKSHOP', color: 'bg-[#F2C94C] text-black', img: '/images/workshop.png' },
-  { id: 3, title: 'Tech Talk: AI in Dev', date: 'Feb 12, 2024', category: 'SEMINAR', color: 'bg-[#6320EE] text-white', img: '/images/techtalk.png' },
-  { id: 4, title: 'Community Meetup', date: 'TBA', category: 'COMMUNITY', color: 'bg-devcon-lime text-black' },
-  { id: 5, title: 'UI/UX Design Sprint', date: 'TBA', category: 'WORKSHOP', color: 'bg-[#F2C94C] text-black' },
-  { id: 6, title: 'Career Fair 2026', date: 'TBA', category: 'CAREER', color: 'bg-devcon-orange text-black' },
-  { id: 7, title: 'Open Source Day', date: 'TBA', category: 'HACKATHON', color: 'bg-[#C0E00B] text-black' },
-  { id: 8, title: 'AI Bootcamp', date: 'TBA', category: 'SEMINAR', color: 'bg-[#6320EE] text-white' },
-  { id: 9, title: 'Demo Night', date: 'TBA', category: 'COMMUNITY', color: 'bg-devcon-lime text-black' },
-];
-
-const CARDS_PER_PAGE = 3;
+import { EventItem, events, eventsPerPage } from '@/lib/content/events'
 
 const CalendarIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -71,11 +49,11 @@ function EventCard({ event }: { event: EventItem }) {
 }
 
 export default function EventsCarousel() {
-  const totalPages = Math.ceil(EVENTS.length / CARDS_PER_PAGE);
+  const totalPages = Math.ceil(events.length / eventsPerPage);
   const [currentPage, setCurrentPage] = useState(0);
 
   const pages = Array.from({ length: totalPages }, (_, i) =>
-    EVENTS.slice(i * CARDS_PER_PAGE, i * CARDS_PER_PAGE + CARDS_PER_PAGE)
+    events.slice(i * eventsPerPage, i * eventsPerPage + eventsPerPage)
   );
 
   const nextPage = () => setCurrentPage((prev) => (prev + 1) % totalPages);
