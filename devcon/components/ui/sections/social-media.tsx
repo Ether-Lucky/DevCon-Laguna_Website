@@ -10,15 +10,15 @@ import { socialLinks } from "@/lib/content/social-links";
  *
  * Rendered in both the `Hero` section and the `Footer`.
  */
-export default function SocialMedia() {
+export default function SocialMedia({ color = 'text-foreground', compact = false }: { color?: string; compact?: boolean }) {
   return (
-    <div className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-4 md:mt-9 md:gap-5">
+    <div className={`mt-6 sm:mt-8 flex items-center ${compact ? 'gap-5' : 'gap-3 sm:gap-4 md:mt-9 md:gap-5'}`}>
     {socialLinks.map((item) => (
       <a
       key={item.platform}
       href={item.link}
       aria-label={item.platform}
-      className="group flex items-center justify-center rounded-full border border-devcon-lime-500/80 p-2.5 text-foreground transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10"
+      className={`group flex items-center justify-center ${compact ? 'p-1' : 'rounded-full border border-devcon-lime-500/80 p-2.5'} ${color} transition-transform duration-200 hover:border-devcon-lime hover:bg-devcon-lime/10`}
       target="_blank"
       >
         <span aria-hidden className="block opacity-80 group-hover:opacity-100 transition-opacity duration-200">{item.icon}</span>
