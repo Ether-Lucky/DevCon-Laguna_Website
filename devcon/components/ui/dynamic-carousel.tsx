@@ -2,13 +2,15 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/16/solid';
+import clsx from 'clsx';
 
 interface CarouselProps {
 	tiles: React.ReactNode[];
 	gap?: number; // Gap between cards in px (matches Tailwind gap-6 = 24)
+	className?: string;
 }
 
-export default function HorizontalGallery({ tiles, gap = 24 }: CarouselProps) {
+function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(true);
@@ -59,7 +61,7 @@ export default function HorizontalGallery({ tiles, gap = 24 }: CarouselProps) {
 	const iconClassName = 'w-6 transition-transform duration-200';
 
 	return (
-		<div className="relative w-full mx-auto">
+		<div className={clsx("relative w-full mx-auto", className)}>
 			{/* Scrollable Track */}
 			<div
 				ref={containerRef}
@@ -94,3 +96,5 @@ export default function HorizontalGallery({ tiles, gap = 24 }: CarouselProps) {
 		</div>
 	);
 }
+
+export { DynamicCarousel }

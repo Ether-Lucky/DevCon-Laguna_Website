@@ -3,7 +3,7 @@
 import React from 'react';
 import Button from '@/components/ui/button';
 import { EventItem, events } from '@/lib/content/events';
-import HorizontalGallery from '../dynamic-carousel';
+import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
 const CalendarIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -48,33 +48,26 @@ function EventCard({ event }: { event: EventItem }) {
   );
 }
 
-export default function EventsCarousel() {
+export default function Events() {
   return (
     <section id="events" className="w-full bg-background px-4 py-32 md:px-6 md:py-24">
-      {/* Header */}
       <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 px-4 sm:px-8">
         <div>
           <h2 className="text-4xl md:text-6xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
             Featured <span className="text-devcon-purple-700">Events</span>
           </h2>
-          <p className="mt-4 max-w-2xl text-body-sm sm:text-body-md font-light text-foreground">
+          <p className="mt-4 max-w-2xl text-body-sm sm:text-body-md font-light text-foreground text-muted">
             Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.
           </p>
         </div>
-
-        <div className="[&>*]:!w-full sm:[&>*]:!w-[260px] [&>*]:!h-[56px] sm:[&>*]:!h-[76px] [&>*]:!text-[16px] sm:[&>*]:!text-[20px] [&>*]:!leading-[20px] [&>*]:!font-bold [&>*]:!flex [&>*]:!items-center [&>*]:!justify-center [&>*]:!gap-2 [&>*]:!whitespace-nowrap [&_svg]:!flex-shrink-0">
-          <Button label="View All Events" href="/events" />
-        </div>
+        <Button label="View All Events" href="/events" icon="" />
       </div>
 
-      {/* Dynamic Gallery/Carousel */}
-      <div className="relative w-full max-w-[1440px] mx-auto py-6 px-4 sm:px-8">
-        <HorizontalGallery 
-          tiles={events.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        />
-      </div>
+      <DynamicCarousel className="relative w-full max-w-[1440px] mx-auto py-6 px-4 sm:px-8"
+        tiles={events.map((event) => (
+          <EventCard key={event.id} event={event} />
+        ))}
+      />
     </section>
   );
 }

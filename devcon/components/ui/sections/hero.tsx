@@ -4,10 +4,7 @@ import SocialMedia from '@/components/ui/sections/social-media';
 
 export default function Hero() {
   return (
-    <section
-      id="hero"
-      className="max-w-7xl mx-auto"
-    >
+    <section id="hero" className="max-w-7xl mx-auto">
       <div className="relative w-full flex flex-col md:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
         <div className="px-8 xl:pl-8 mt-8 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
@@ -63,30 +60,6 @@ export default function Hero() {
             priority
             className="w-[140vw] max-w-none -my-[50vw] md:hidden z-0"
           />
-        {/* Mobile Buttons — below image */}
-        {/* <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
-          <Image 
-            src="/hero/look-here.png"
-            alt="Look Here"
-            width={50}
-            height={31}
-            className="absolute -top-6 left-[calc(50%-120px)]"
-          />
-          <Button
-            label="Volunteer"
-            href="#"
-            variant="primary"
-            hasArrow
-            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
-          />
-          <Button
-            label="Learn More"
-            href="#"
-            variant="outline"
-            hasArrow
-            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold"
-          />
-        </div> */}
       </div>
     </section>
   );

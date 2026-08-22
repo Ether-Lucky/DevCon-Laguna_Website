@@ -23,7 +23,7 @@ export default function Button({
 }: ButtonProps) {
 
   const buttonFinalClassName = clsx(
-    "group font-sans text-lg font-semibold flex flex-row items-center justify-center rounded-full gap-2 px-6 py-2 cursor-pointer w-max",
+    "group font-sans text-lg font-semibold flex flex-row items-center text-center justify-center rounded-full gap-2 px-6 py-2 cursor-pointer w-max",
     className,
     {
       "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
