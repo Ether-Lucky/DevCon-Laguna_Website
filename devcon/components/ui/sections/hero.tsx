@@ -8,7 +8,7 @@ export default function Hero() {
       id="hero"
       className="max-w-7xl mx-auto"
     >
-      <div className="relative w-full flex flex-col xl:flex-row items-center xl:justify-between gap-6 xl:gap-4">
+      <div className="relative w-full flex flex-col md:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
         <div className="px-8 xl:pl-8 mt-8 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-none text-foreground">
@@ -48,12 +48,12 @@ export default function Hero() {
 
         {/* Image Content */}
           <Image
-            src="/hero/test.png"
+            src="/hero/web.png"
             alt="DevCon Laguna community collage"
             width={2286}
             height={2286}
             priority
-            className="w-[200vw] w-[100vw] -my-[25%] -mx-[15%] flex-shrink-0 hidden xl:block z-0"
+            className="w-[60vw] -my-[10%] flex-shrink-0 hidden md:block z-0"
           />
          <Image
             src="/hero/mobile.png"
@@ -61,7 +61,7 @@ export default function Hero() {
             width={2286}
             height={2286}
             priority
-            className="w-[140vw] max-w-none -my-[50vw] xl:hidden z-0"
+            className="w-[140vw] max-w-none -my-[50vw] md:hidden z-0"
           />
         {/* Mobile Buttons — below image */}
         {/* <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
