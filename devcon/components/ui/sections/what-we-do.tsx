@@ -5,21 +5,21 @@ import Image from 'next/image';
 
 export default function WhatWeDo() {
   return (
-    <section className="w-full bg-background px-4 py-32 md:px-6 md:py-24">
+    <section id="what-we-do" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       {/* Heading */}
       <div className="mb-12 text-center">
-        <h2 className="text-4xl md:text-6xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
-          What <span className="text-devcon-purple-700">We Do</span>
+        <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
+          What <span className="text-devcon-purple-500">We Do</span>
         </h2>
 
-        <p className="mx-auto mt-4 max-w-xl text-center text-muted">
+        <p className="mx-auto mt-6 max-w-xl text-center text-base text-muted">
           We create opportunities for developers of all skill levels to learn,
           connect, and grow through community-driven initiatives.
         </p>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_2.8fr_1.4fr] sm:grid-rows-2 gap-4 sm:gap-7 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_2.8fr_1.4fr] sm:grid-rows-2 gap-4 sm:gap-7 w-full">
         {whatWeDo.map((item) => (
           <div
             key={item.id}

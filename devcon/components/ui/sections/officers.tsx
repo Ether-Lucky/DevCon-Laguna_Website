@@ -1,8 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@/components/ui/button';
-import { TeamMember, team, membersPerPage } from '@/lib/content/officers'
+import { TeamMember, team } from '@/lib/content/officers'
 import Image from 'next/image'
+import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
 function initials(name: string) {
   return name
@@ -14,16 +15,16 @@ function initials(name: string) {
 }
  
 function TeamCard({ member }: { member: TeamMember }) {
-  const toAccentColor = {
+  const toAccentColor: Record<string, string> = {
     'yellow': 'to-devcon-yellow-500',
     'orange': 'to-devcon-orange-500',
     'purple': 'to-devcon-purple-700',
     'lime': 'to-devcon-lime-500',
   } 
   return (
-    <div className="flex flex-col items-center text-center font-sans">
+    <div className="flex flex-col items-center text-center font-sans w-40 sm:w-48 md:w-56 px-2">
       {/* 1. AVATAR */}
-      <div className={`relative w-28 h-28 sm:w-40 sm:h-40 md:w-61 md:h-62 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent]} flex items-center justify-center`}>
+      <div className={`relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent] || 'to-devcon-purple-700'} flex items-center justify-center`}>
         {member.img ? (
           <Image
             src={member.img}
@@ -34,102 +35,55 @@ function TeamCard({ member }: { member: TeamMember }) {
             priority
           />
         ) : (
-          <span className="text-devcon-white/70 text-4xl font-bold">{initials(member.name)}</span>
+          <span className="text-devcon-white-500/70 text-4xl font-bold">{initials(member.name)}</span>
         )}
       </div>
 
-        <h3 className="mt-4 text-2xl font-semibold leading-tight text-foreground font-bold">
+      <h3 className="mt-6 text-xl md:text-2xl font-bold leading-tight text-foreground">
         {member.name}
-        </h3>
-        <p className="mt-1 text-xl font-normal uppercase tracking-[10%] leading-tight text-muted">
+      </h3>
+      <p className="mt-2 text-sm md:text-base font-normal uppercase tracking-widest leading-tight text-muted">
         {member.role}
-        </p>
+      </p>
     </div>
   );
 }
  
 export default function TeamSection() {
-  const totalPages = Math.max(1, Math.ceil(team.length / membersPerPage));
-  const [currentPage, setCurrentPage] = useState(0);
- 
-  const pages = Array.from({ length: totalPages }, (_, i) =>
-    team.slice(i * membersPerPage, i * membersPerPage + membersPerPage)
-  );
- 
-  const nextPage = () => setCurrentPage((prev) => (prev + 1) % totalPages);
-  const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  // Group members into columns of 2 for a two-row carousel
+  const carouselTiles = [];
+  for (let i = 0; i < team.length; i += 2) {
+    carouselTiles.push(
+      <div key={i} className="flex flex-col gap-10 md:gap-16">
+        <TeamCard member={team[i]} />
+        {team[i + 1] && <TeamCard member={team[i + 1]} />}
+      </div>
+    );
+  }
 
   return (
-    <section id="officers" className="max-w-7xl mx-auto bg-background py-16 md:px-6 md:py-24">
+    <section id="officers" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 overflow-hidden">
       {/* 2. CONTAINER */}
       <div className="relative">
         
         {/* HEADER SECTION */}
-        <div className="mb-16 flex flex-col items-center text-center">
-          <h2 className="mb-6 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
+        <div className="mb-12 flex flex-col items-center text-center">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
             Meet Our <span className="text-devcon-purple-500">Officers</span>
           </h2>
-          <p className="max-w-xl text-muted">
-            {"Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs."}
+          <p className="mt-6 max-w-xl text-base text-muted">
+            Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
           </p>
         </div>
         
-        {/* Next button */}
-        <button
-          onClick={nextPage}
-          className="absolute -right-2 sm:-right-4 md:-right-12 top-[55%] -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
-          aria-label="Next page"
-        >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Previous button */}
-        <button
-          onClick={prevPage}
-          className="absolute -left-2 sm:-left-4 md:-left-12 top-[55%] -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 bg-white hover:bg-white/90 text-black rounded-full flex items-center justify-center shadow-md transition-all"
-          aria-label="Previous page"
-        >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        <div className="overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentPage * 100}%)` }}
-          >
-            {pages.map((pageMembers, pageIdx) => (
-              <div
-                key={pageIdx}
-                className="w-full flex-shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-x-4 sm:gap-x-12 gap-y-10 sm:gap-y-20"
-              >
-                {pageMembers.map((member) => (
-                  <TeamCard key={member.id} member={member} />
-                ))}
-              </div>
-            ))}
-          </div>
+        <DynamicCarousel 
+          className="w-full py-8 px-4"
+          tiles={carouselTiles}
+        />
+ 
+        <div className="flex justify-center mt-12">
+          <Button label="Meet the Team" href="/team" variant="primary" />
         </div>
- 
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-10">
-            {pages.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentPage(idx)}
-                className={`h-3 rounded-full transition-all duration-300 ${
-                  currentPage === idx ? 'w-7 bg-foreground' : 'w-3 bg-foreground/30'
-                }`}
-                aria-label={`Go to page ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
- 
-            <Button label="Meet the Team" href="/team" />
       </div>
     </section>
   );

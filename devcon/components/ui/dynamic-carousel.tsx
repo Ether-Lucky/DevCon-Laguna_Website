@@ -39,14 +39,13 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 		};
 	}, [tiles]);
 
-	// Scroll by individual tile width or viewport width
+	// Scroll by container width for a full page swipe
 	const scroll = (direction: 'left' | 'right') => {
 		const container = containerRef.current;
 		if (!container) return;
 
-		const firstChild = container.firstElementChild as HTMLElement;
-		// Get tile width including gap, or fallback to container width
-		const step = firstChild ? firstChild.getBoundingClientRect().width + gap : container.clientWidth;
+		// Scroll by the container's visible width, allowing CSS scroll-snap to align it perfectly
+		const step = container.clientWidth;
 
 		container.scrollBy({
 			left: direction === 'right' ? step : -step,

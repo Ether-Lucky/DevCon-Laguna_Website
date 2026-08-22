@@ -37,13 +37,13 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <Officers />
         </ScrollReveal>
-        {/* <ScrollReveal className="w-full">
+        <ScrollReveal className="w-full">
           <ProgramsAndActivities />
-        </ScrollReveal> */}
+        </ScrollReveal>
       </main> 
-      {/* <ScrollReveal className="w-full" variant="fade">
+      <ScrollReveal className="w-full" variant="fade">
           <Footer/>
-      </ScrollReveal> */}
+      </ScrollReveal>
     </>
   );
 }

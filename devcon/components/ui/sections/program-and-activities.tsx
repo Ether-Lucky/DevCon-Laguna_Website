@@ -71,7 +71,7 @@ export default function ProgramsAndActivities() {
   const currentSlide = programsAndActivities[currentIndex];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-3 py-8 sm:px-4 sm:py-12 md:px-4 md:py-12">
+    <section id="activities" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       <div 
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -79,7 +79,7 @@ export default function ProgramsAndActivities() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative w-full rounded-[20px] sm:rounded-[32px] overflow-hidden bg-devcon-black border border-devcon-gray/20 p-4 sm:p-8 md:p-16 shadow-2xl h-[400px] sm:h-[480px] md:h-[540px] flex flex-col justify-between cursor-grab active:cursor-grabbing select-none"
+        className="relative w-full rounded-[28px] overflow-hidden bg-zinc-900 border border-border p-4 sm:p-8 md:p-16 shadow-2xl h-[400px] sm:h-[480px] md:h-[540px] flex flex-col justify-between cursor-grab active:cursor-grabbing select-none"
       >
         
         {/* Background Layer */}
@@ -92,19 +92,22 @@ export default function ProgramsAndActivities() {
               }`}
             >
               {slide.bannerImg ? (
-                <Image
-                  src={slide.bannerImg}
-                  alt={slide.title}
-                  fill
-                  sizes="(max-width: 1280px) 100vw, 1280px"
-                  className="object-cover object-center w-full h-full"
-                  priority={index === 0}
-                />
+                <>
+                  <Image
+                    src={slide.bannerImg}
+                    alt={slide.title}
+                    fill
+                    sizes="(max-width: 1280px) 100vw, 1280px"
+                    className="object-cover object-center w-full h-full"
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+                </>
               ) : (
                 /* Placeholder card: no photo yet */
-                <div className="absolute inset-0 bg-gradient-to-br from-devcon-purple-dark to-devcon-black flex items-center justify-center">
-                  <ImageIcon className="w-16 h-16 text-devcon-white/10" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-devcon-purple-700 to-devcon-black flex items-center justify-center">
+                  <ImageIcon className="w-16 h-16 text-white/10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                 </div>
               )}
             </div>
@@ -117,12 +120,7 @@ export default function ProgramsAndActivities() {
           <div className="flex flex-col flex-end space-y-6">
 
             {/* VISIBLE BUTTONS */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 ml-0 sm:ml-14
-              [&>*]:!px-[16px] sm:[&>*]:!px-[24px] [&>*]:!py-[10px] sm:[&>*]:!py-[12px]
-              [&>*]:!text-[14px] sm:[&>*]:!text-[20px] [&>*]:!font-[700] [&>*]:!leading-[20px] [&>*]:!tracking-[0%] 
-              [&>*]:![font-family:var(--font-sans)]
-              [&>*]:flex [&>*]:items-center [&>*]:justify-center"
-            >
+            <div className="flex flex-wrap items-center gap-4 pt-4 ml-0 sm:ml-8">
               <Button 
                 label={currentSlide.primaryBtnLabel} 
                 variant="primary" 
@@ -131,7 +129,6 @@ export default function ProgramsAndActivities() {
                 <Button
                   label={currentSlide.secondaryBtnLabel} 
                   variant="outline" 
-                  className="!bg-[var(--color-devcon-black)] !border !border-[var(--color-devcon-lime)] !text-[var(--color-devcon-white)]"
                 />
               }
             </div>
@@ -149,7 +146,7 @@ export default function ProgramsAndActivities() {
                 key={slide.id}
                 onClick={() => setCurrentIndex(index)}
                 className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  currentIndex === index ? "w-8 bg-devcon-white" : "w-2.5 bg-devcon-gray/40 hover:bg-devcon-gray"
+                  currentIndex === index ? "w-8 bg-white" : "w-2.5 bg-white/40 hover:bg-white/60"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
