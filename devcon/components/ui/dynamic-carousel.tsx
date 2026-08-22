@@ -56,8 +56,8 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 	if (!tiles.length) return null;
 
 	const buttonClassName =
-		'group absolute top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-foreground text-background shadow-md cursor-pointer transition-opacity duration-200 disabled:opacity-0 disabled:pointer-events-none';
-	const iconClassName = 'w-6 transition-transform duration-200';
+		'group absolute top-1/2 z-20 flex h-10 w-10 md:h-12 md:w-12 -translate-y-1/2 items-center justify-center rounded-full bg-foreground text-background shadow-md cursor-pointer transition-opacity duration-200 disabled:opacity-0 disabled:pointer-events-none';
+	const iconClassName = 'w-5 md:w-6 transition-transform duration-200';
 
 	return (
 		<div className={clsx("relative w-full mx-auto", className)}>
@@ -78,7 +78,7 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 			<button
 				onClick={() => scroll('left')}
 				disabled={!canScrollLeft}
-				className={`${buttonClassName} -left-5`}
+				className={`${buttonClassName} -left-2 sm:-left-5`}
 				aria-label="Scroll left"
 			>
 				<ArrowLeftIcon className={`${iconClassName} group-hover:-translate-x-0.5`} />
@@ -87,7 +87,7 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 			<button
 				onClick={() => scroll('right')}
 				disabled={!canScrollRight}
-				className={`${buttonClassName} -right-5`}
+				className={`${buttonClassName} -right-2 sm:-right-5`}
 				aria-label="Scroll right"
 			>
 				<ArrowRightIcon className={`${iconClassName} group-hover:translate-x-0.5`} />

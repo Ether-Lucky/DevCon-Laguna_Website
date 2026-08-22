@@ -50,7 +50,7 @@ function EventCard({ event }: { event: EventItem }) {
 
 export default function Events() {
   return (
-    <section id="events" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 overflow-hidden">
+    <section id="events" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       <div className="w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 px-4">
         <div>
           <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">

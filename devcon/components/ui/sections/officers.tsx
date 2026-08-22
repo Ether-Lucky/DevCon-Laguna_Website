@@ -62,7 +62,7 @@ export default function TeamSection() {
   }
 
   return (
-    <section id="officers" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 overflow-hidden">
+    <section id="officers" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       {/* 2. CONTAINER */}
       <div className="relative">
         
