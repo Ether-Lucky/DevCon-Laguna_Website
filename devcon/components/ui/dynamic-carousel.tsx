@@ -68,7 +68,7 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 				style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 			>
 				{tiles.map((tile, idx) => (
-					<div key={idx} className="flex-shrink-0 snap-start">
+					<div key={idx} className="flex-shrink-0 snap-start h-auto flex">
 						{tile}
 					</div>
 				))}

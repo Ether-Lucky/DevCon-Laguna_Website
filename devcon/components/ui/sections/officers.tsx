@@ -22,7 +22,7 @@ function TeamCard({ member }: { member: TeamMember }) {
     'lime': 'to-devcon-lime-500',
   } 
   return (
-    <div className="flex flex-col items-center text-center font-sans w-40 sm:w-48 md:w-56 px-2">
+    <div className="flex flex-col items-center justify-start text-center font-sans w-40 sm:w-48 md:w-56 px-2 h-full">
       {/* 1. AVATAR */}
       <div className={`relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent] || 'to-devcon-purple-700'} flex items-center justify-center`}>
         {member.img ? (
@@ -54,9 +54,9 @@ export default function TeamSection() {
   const carouselTiles = [];
   for (let i = 0; i < team.length; i += 2) {
     carouselTiles.push(
-      <div key={i} className="flex flex-col gap-10 md:gap-16">
+      <div key={i} className="grid grid-rows-2 gap-6 md:gap-10 h-full w-full">
         <TeamCard member={team[i]} />
-        {team[i + 1] && <TeamCard member={team[i + 1]} />}
+        {team[i + 1] ? <TeamCard member={team[i + 1]} /> : <div />}
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function TeamSection() {
           <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
             Meet Our <span className="text-devcon-purple-500">Officers</span>
           </h2>
-          <p className="mt-6 max-w-xl text-base text-muted">
+        <p className="mt-6 max-w-xl text-base text-muted">
             Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function TeamSection() {
         />
  
         <div className="flex justify-center mt-12">
-          <Button label="Meet the Team" href="/team" variant="primary" />
+          <Button label="Meet the Team" href="/team" variant="primary" icon="" />
         </div>
       </div>
     </section>
