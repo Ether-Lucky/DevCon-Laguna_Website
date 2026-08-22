@@ -5,12 +5,7 @@ import Button from '@/components/ui/button';
 import { EventItem, events } from '@/lib/content/events';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
-const CalendarIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <rect x="3" y="5" width="18" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8 3v4M16 3v4M3 10h18" />
-  </svg>
-);
+import { CalendarIcon } from '@heroicons/react/24/outline';
 
 function EventCard({ event }: { event: EventItem }) {
   return (
@@ -60,7 +55,7 @@ export default function Events() {
             Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.
           </p>
         </div>
-        <Button label="View All Events" href="/events" variant="primary" icon="" className="mb-2" />
+        <Button label="View All Events" href="/events" variant="primary" className="mb-2" />
       </div>
 
       <DynamicCarousel className="w-full py-12 px-4"

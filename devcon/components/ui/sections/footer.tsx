@@ -4,7 +4,7 @@ import SocialMedia from './social-media';
 
 export default function Footer() {
   return (
-    <footer id="contact" className="w-full bg-gradient-to-b from-transparent via-devcon-purple-500/50 to-devcon-purple-500 text-white pt-16 md:pt-24 pb-8 px-4 md:px-8 mt-16 md:mt-24">
+    <footer id="contact" className="w-full bg-gradient-to-b from-background via-devcon-purple-500/50 to-devcon-purple-500 text-white pt-16 pb-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-16">
         
         {/* Main Footer Content */}
@@ -17,7 +17,7 @@ export default function Footer() {
               <Logo />
             </div>
 
-            <p className="text-sm sm:text-base font-light text-white/90 mb-6 max-w-sm"> Empowering the next generation of developers through innovation, collaboration, and community.</p>
+            <p className="text-sm sm:text-base font-light text-foreground mb-6 max-w-sm"> Empowering the next generation of developers through innovation, collaboration, and community.</p>
 
             {/* Integrated Social Media Component */}
             <SocialMedia />
