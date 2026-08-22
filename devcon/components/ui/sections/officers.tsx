@@ -5,6 +5,12 @@ import { TeamMember, team } from '@/lib/content/officers'
 import Image from 'next/image'
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
+/**
+ * initials — derives up to 2 uppercase initials from a full name.
+ * Used as the avatar fallback when a member photo is unavailable.
+ *
+ * @example initials("Lucky Guevarra") // → "LG"
+ */
 function initials(name: string) {
   return name
     .split(' ')
@@ -14,6 +20,15 @@ function initials(name: string) {
     .toUpperCase();
 }
  
+/**
+ * TeamCard — displays a single officer's circular avatar, name, and role.
+ *
+ * `toAccentColor` maps the member's `accent` keyword to a Tailwind `to-*` gradient
+ * class used in the avatar circle background. If no matching key is found it falls
+ * back to `devcon-purple-700`.
+ *
+ * When no `img` is provided, initials are shown inside the gradient circle.
+ */
 function TeamCard({ member }: { member: TeamMember }) {
   const toAccentColor: Record<string, string> = {
     'yellow': 'to-devcon-yellow-500',
@@ -49,6 +64,16 @@ function TeamCard({ member }: { member: TeamMember }) {
   );
 }
  
+/**
+ * TeamSection — the "Meet Our Officers" homepage section.
+ *
+ * Officer data from `lib/content/officers.ts` is grouped into pairs, where each pair
+ * becomes a two-row grid tile in the carousel. This produces a 2×N grid of officer
+ * cards that scrolls horizontally.
+ *
+ * Accent colors are resolved inside `TeamCard` via the `toAccentColor` map.
+ * Adding a new officer only requires updating `lib/content/officers.ts`.
+ */
 export default function TeamSection() {
   // Group members into columns of 2 for a two-row carousel
   const carouselTiles = [];

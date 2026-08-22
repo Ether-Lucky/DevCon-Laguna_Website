@@ -1,3 +1,17 @@
+/**
+ * Props for `InfoCard`.
+ *
+ * @property id            - Unique identifier used as the React `key`.
+ * @property title         - Large heading shown on the card (e.g. "Mission").
+ * @property description   - Body text below the title.
+ * @property themeClass    - Tailwind gradient/background classes that define the card's color.
+ * @property icon          - Path to an SVG file used as a decorative watermark.
+ * @property iconPosition  - Where to anchor the watermark: `"top-right"` or `"bottom-left"`.
+ * @property iconWidth     - Width in pixels of the watermark element.
+ * @property iconHeight    - Height in pixels of the watermark element.
+ * @property contentAlign  - Vertical alignment of the text content inside the card.
+ * @property iconClassName - Additional classes applied to the watermark `<span>`.
+ */
 export interface InfoCardProps {
   id: string;
   title: string;
@@ -11,6 +25,16 @@ export interface InfoCardProps {
   iconClassName?: string;
 }
 
+/**
+ * InfoCard — a large gradient card used for Mission and Vision content.
+ *
+ * The decorative icon watermark is rendered using CSS `mask-image` with an SVG path.
+ * A second fade mask is composited over it so the watermark fades toward the open edge
+ * of the card, creating depth without an explicit `<img>` element.
+ *
+ * `themeClass` controls the card's gradient. `contentAlign` shifts the text block
+ * to the top, center, or bottom of the card using flexbox justify-content.
+ */
 export default function InfoCard({
   title,
   description,

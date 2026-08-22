@@ -7,6 +7,21 @@ import { ProgramOrActivity, programsAndActivities} from '@/lib/content/programs-
 
 import { PhotoIcon as ImageIcon } from '@heroicons/react/24/outline';
 
+/**
+ * ProgramsAndActivities — a full-bleed banner carousel for featured programs.
+ *
+ * Currently **disabled** on the home page (`page.tsx`) pending content readiness.
+ * To re-enable, uncomment its `<ScrollReveal>` block in `app/page.tsx`.
+ *
+ * Features:
+ * - Auto-advances every 10 seconds via `setInterval`.
+ * - Supports touch swipe (left/right) and mouse drag for manual navigation.
+ * - A swipe/drag distance > 50px triggers a slide change.
+ * - Dot indicators at the bottom show current slide and allow direct navigation.
+ * - If a slide has no `bannerImg`, a purple placeholder gradient is shown.
+ *
+ * Slide data is sourced from `lib/content/programs-and-activities.ts`.
+ */
 export default function ProgramsAndActivities() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef<number>(0);

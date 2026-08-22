@@ -5,6 +5,16 @@ import NavLinks from "./nav-links";
 import NavActions from "./nav-actions";
 import { Bars3BottomRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+/**
+ * MobileNav — hamburger menu for the navigation bar on small screens (below `xl`).
+ *
+ * - Renders a toggle button (Bars icon → X icon) with proper `aria-expanded`
+ *   and `aria-controls` attributes for accessibility.
+ * - When open, drops down a full-width panel containing `NavLinks` (vertical)
+ *   and `NavActions`.
+ * - `closeMenu` is passed to `NavLinks` via `onNavigate` so the drawer closes
+ *   automatically after the user taps a link.
+ */
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
 

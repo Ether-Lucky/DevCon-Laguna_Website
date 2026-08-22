@@ -11,6 +11,18 @@ import Footer from '@/components/ui/sections/footer';
 import ScrollReveal from '@/components/ui/scroll-reveal';
 
 
+/**
+ * Home — the root page of the DevCon Laguna website.
+ *
+ * Composes all homepage sections in order:
+ *   NavBar → Hero → Stats → About → MissionVision → WhatWeDo
+ *   → Events → Officers → Footer
+ *
+ * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
+ * that triggers once when it enters the viewport.
+ *
+ * `ProgramsAndActivities` is currently commented out pending content readiness.
+ */
 export default function Home() {
   return (
     <>
@@ -37,9 +49,9 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <Officers />
         </ScrollReveal>
-        <ScrollReveal className="w-full">
+        {/* <ScrollReveal className="w-full">
           <ProgramsAndActivities />
-        </ScrollReveal>
+        </ScrollReveal> */}
       </main> 
       <ScrollReveal className="w-full" variant="fade">
           <Footer/>

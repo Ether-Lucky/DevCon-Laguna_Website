@@ -2,6 +2,17 @@ import Image from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
 
+/**
+ * Hero — the full-width landing section at the top of the homepage.
+ *
+ * Layout (desktop): two-column row — text content left, hero image right.
+ * Layout (mobile): single column, image below text.
+ *
+ * - `web.png`: large circular collage, shown on `md` and above.
+ * - `mobile.png`: full-bleed version optimised for small screens.
+ * - `look-here.png`: a small decorative doodle above the CTA buttons.
+ * - `SocialMedia` renders the row of social platform icon links.
+ */
 export default function Hero() {
   return (
     <section id="hero" className="max-w-7xl mx-auto">

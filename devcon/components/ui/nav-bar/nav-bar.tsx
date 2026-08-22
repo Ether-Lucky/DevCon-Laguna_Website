@@ -3,6 +3,18 @@ import NavLinks from "./nav-links";
 import NavActions from "./nav-actions";
 import MobileNav from "./mobile-nav";
 
+/**
+ * NavBar — the sticky site-wide navigation header.
+ *
+ * Layout:
+ * - Left: `Logo` (DevCon Laguna wordmark)
+ * - Center: `NavLinks` (horizontal, hidden below `xl` breakpoint)
+ * - Right: `NavActions` (Join Us + ThemeButton, hidden below `xl`)
+ * - Right (mobile): `MobileNav` (hamburger, visible below `xl`)
+ *
+ * Uses `backdrop-blur` and a semi-transparent background so content
+ * scrolling behind the bar remains readable.
+ */
 export default function NavBar() {
   return (
     <header className="relative sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md p-4">

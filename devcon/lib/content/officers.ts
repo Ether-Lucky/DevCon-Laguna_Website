@@ -1,3 +1,25 @@
+/**
+ * officers.ts — content data for the "Meet Our Officers" section.
+ *
+ * To add a new officer: append an entry to `team` with the next available `id`.
+ * To update an existing officer: find by `id` and edit the relevant fields.
+ * Images should be placed in `public/images/officers/` at 960×960 or 1200×1200 px.
+ */
+
+/**
+ * Represents a single team member / officer.
+ *
+ * @property id     - Unique numeric identifier. Must not be duplicated.
+ * @property name   - Full display name.
+ * @property role   - Position title (e.g. "VP for Technology").
+ * @property img    - Optional path to a photo in `public/images/officers/`.
+ *                    When omitted, initials are shown inside the avatar circle.
+ * @property width  - Intrinsic image width (px) used by next/image for layout.
+ * @property height - Intrinsic image height (px) used by next/image for layout.
+ * @property accent - Controls the gradient accent on the avatar circle.
+ *                    Maps to a Tailwind `to-devcon-*` color in `TeamCard`.
+ *                    Allowed values: 'yellow' | 'orange' | 'purple' | 'lime'
+ */
 interface TeamMember {
   id: number;
   name: string;
@@ -61,7 +83,7 @@ const team: TeamMember[] = [
     img: '/images/officers/membership.png', 
     width: 960,
     height: 960,
-    accent: 'lime' 
+    accent: 'yellow' 
   },
   { 
     id: 7, 
@@ -97,7 +119,7 @@ const team: TeamMember[] = [
     img: '/images/officers/campus-devcon.png', 
     width: 1200,
     height: 1200,
-    accent: 'orange' 
+    accent: 'purple' 
   },
   { 
     id: 11,
@@ -106,7 +128,7 @@ const team: TeamMember[] = [
      img: '/images/officers/devcon-kids.png', 
      width: 1200,
      height: 1200,
-     accent: 'purple' 
+     accent: 'yellow' 
     },
   { 
     id: 12,

@@ -2,6 +2,18 @@ import Link from "next/link";
 import clsx from "clsx";
 import { ArrowUpRightIcon } from '@heroicons/react/16/solid'
 
+/**
+ * Props for the `Button` component.
+ *
+ * @property label      - Visible button text.
+ * @property onClick    - Click handler. Used only when `href` is not provided.
+ * @property href       - If provided, renders a Next.js `<Link>` instead of `<button>`.
+ * @property variant    - Visual style. `"primary"` = lime fill; `"outline"` = bordered ghost.
+ * @property icon       - Icon rendered to the right of the label. Defaults to `ArrowUpRightIcon`.
+ *                        Pass `null` to suppress the icon entirely.
+ * @property iconWidth  - Tailwind width class applied to the icon wrapper (e.g. `"w-6"`).
+ * @property className  - Additional Tailwind classes merged onto the root element.
+ */
 interface ButtonProps {
   label: string;
   onClick?: () => void;
@@ -12,6 +24,19 @@ interface ButtonProps {
   className?: string;
 }
 
+/**
+ * Button — the primary interactive element across the site.
+ *
+ * Renders a `<Link>` when `href` is supplied, otherwise a plain `<button>`.
+ * The icon animates up-right on hover using a CSS group-hover transform.
+ *
+ * @example
+ * // Lime CTA with link
+ * <Button label="Join Us" href="/join" variant="primary" />
+ *
+ * // Outline button without an icon
+ * <Button label="Learn More" onClick={handleClick} variant="outline" icon={null} />
+ */
 export default function Button({
   label,
   onClick,

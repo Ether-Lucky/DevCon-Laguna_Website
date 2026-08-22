@@ -5,6 +5,16 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
+/**
+ * ThemeButton — an icon button that toggles between dark and light mode.
+ *
+ * Uses a `mounted` guard to delay rendering until after client hydration,
+ * preventing a server/client mismatch caused by `resolvedTheme` being undefined
+ * on the server.
+ *
+ * - Dark mode → shows SunIcon (click to switch to light)
+ * - Light mode → shows MoonIcon (click to switch to dark)
+ */
 export default function ThemeButton() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);

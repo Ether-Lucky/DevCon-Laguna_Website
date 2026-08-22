@@ -2,6 +2,13 @@ import Image from 'next/image';
 import { slides } from '@/lib/content/about-devcon-slideshow';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
+/**
+ * ImageSlideTiles — maps the `slides` content array into a list of
+ * rounded image cards suitable for use as `DynamicCarousel` tiles.
+ *
+ * The first slide gets `priority` loading for LCP performance.
+ * Each card has a subtle bottom gradient overlay for visual polish.
+ */
 function ImageSlideTiles() {
   return slides.map((slide) => (
     <div
@@ -21,6 +28,12 @@ function ImageSlideTiles() {
   ));
 }
 
+/**
+ * About — the "Who We Are" homepage section.
+ *
+ * Two-column layout on large screens: descriptive copy on the left,
+ * `DynamicCarousel` of community event photos on the right (hidden on mobile).
+ */
 export default function About() {
   return (
     <section id="about" className="max-w-7xl mx-auto py-12 lg:py-20 px-6 lg:px-12">

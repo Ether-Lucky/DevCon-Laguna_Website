@@ -1,5 +1,15 @@
 import { socialLinks } from "@/lib/content/social-links";
 
+/**
+ * SocialMedia — a horizontal row of social platform icon links.
+ *
+ * Links and icons are sourced from `lib/content/social-links.tsx`.
+ * Each link opens in a new tab (`target="_blank"`) and uses an `aria-label`
+ * set to the platform name for screen reader accessibility.
+ * The icon itself is hidden from assistive technology via `aria-hidden`.
+ *
+ * Rendered in both the `Hero` section and the `Footer`.
+ */
 export default function SocialMedia() {
   return (
     <div className="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-4 md:mt-9 md:gap-5">

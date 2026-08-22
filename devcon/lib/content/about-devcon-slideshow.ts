@@ -1,4 +1,21 @@
 
+/**
+ * about-devcon-slideshow.ts — image data for the About section slideshow.
+ *
+ * Update this file whenever the visual story of the organization changes.
+ * Keep asset paths in `public/`, preserve the `id` values, and ensure alt text
+ * remains descriptive for accessibility and SEO.
+ */
+
+/**
+ * Represents a single slide in the About section image carousel.
+ *
+ * @property id     - Unique numeric identifier.
+ * @property src    - Public image path.
+ * @property alt    - Accessible alt text describing the image.
+ * @property width  - Original image width.
+ * @property height - Original image height.
+ */
 interface Slide {
   id: number;
   src: string;
@@ -38,4 +55,4 @@ const slides: Slide[] = [
   },
 ];
 
-export { slides }
+export { slides };

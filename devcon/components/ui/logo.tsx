@@ -1,5 +1,14 @@
 import Image from "next/image";
 
+/**
+ * Logo — renders the DevCon Laguna wordmark with the "Laguna" chapter label below.
+ *
+ * Two versions of the logo image are included:
+ * - `/logo/dark-logo.png`  → shown when the `.dark` class is active on `<html>`.
+ * - `/logo/light-logo.png` → shown in light mode.
+ *
+ * Switching is handled purely with Tailwind's `dark:` variant so there is no JS flash.
+ */
 export default function Logo() {
   const logoClassName = "h-auto w-[120px] md:w-[200px]"
 

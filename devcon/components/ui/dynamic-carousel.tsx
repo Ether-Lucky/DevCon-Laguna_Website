@@ -4,12 +4,33 @@ import React, { useRef, useState, useEffect } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/16/solid';
 import clsx from 'clsx';
 
+/**
+ * Props for the `DynamicCarousel` component.
+ *
+ * @property tiles     - Array of React nodes to render as carousel slides.
+ * @property gap       - Pixel gap between tiles. Defaults to 24 (matches Tailwind `gap-6`).
+ * @property className - Additional Tailwind classes applied to the outer wrapper.
+ */
 interface CarouselProps {
 	tiles: React.ReactNode[];
 	gap?: number; // Gap between cards in px (matches Tailwind gap-6 = 24)
 	className?: string;
 }
 
+/**
+ * DynamicCarousel — a horizontally scrollable tile carousel with arrow navigation.
+ *
+ * - Uses native CSS `scroll-snap` for smooth, predictable alignment.
+ * - Arrow buttons are automatically hidden/disabled when there is nothing to scroll.
+ * - Scroll state is recalculated on scroll and window resize events.
+ * - Clicking an arrow scrolls by the full visible container width.
+ *
+ * @example
+ * <DynamicCarousel
+ *   tiles={events.map(e => <EventCard key={e.id} event={e} />)}
+ *   className="w-full py-8"
+ * />
+ */
 function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);

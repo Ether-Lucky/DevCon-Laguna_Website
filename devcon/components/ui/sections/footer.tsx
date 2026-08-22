@@ -2,9 +2,22 @@ import Link from 'next/link';
 import Logo from '../logo';
 import SocialMedia from './social-media';
 
+/**
+ * Footer — the site-wide footer, anchored with `id="contact"`.
+ *
+ * Structure:
+ * - Left column: Logo, tagline, and `SocialMedia` icon links.
+ * - Right columns: 4 link groups (Explore, Resources, Support, Connect).
+ * - Bottom bar: copyright, Terms, and Privacy Policy links.
+ *
+ * The purple gradient background (`from-background via-devcon-purple-500/50 to-devcon-purple-500`)
+ * creates a gradual color transition from the page background into the brand purple footer.
+ *
+ * Link `href` values are currently `"#"` placeholders — update them as pages are built.
+ */
 export default function Footer() {
   return (
-    <footer id="contact" className="w-full bg-gradient-to-b from-background via-devcon-purple-500/50 to-devcon-purple-500 text-white pt-16 pb-8 px-4 md:px-8">
+    <footer id="contact" className="w-full bg-gradient-to-b from-background via-devcon-purple-500/0 to-devcon-purple-500 text-foreground pt-16 pb-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-16">
         
         {/* Main Footer Content */}
@@ -27,38 +40,38 @@ export default function Footer() {
             {/* Column 1 */}
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-lg mb-2">Explore</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">About Us</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Our Chapters</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">What We Do</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Events</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Join Us</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">About Us</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Our Chapters</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">What We Do</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Events</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Join Us</Link>
             </div>
 
             {/* Column 2 */}
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-lg mb-2">Resources</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Blog</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">FAQ</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Handbook</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Blog</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">FAQ</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Handbook</Link>
             </div>
 
             {/* Column 3 */}
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-lg mb-2">Support</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Volunteer</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Donate</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Partners</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Sponsors</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Chat support</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Volunteer</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Donate</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Partners</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Sponsors</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Chat support</Link>
             </div>
 
             {/* Column 4 */}
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-lg mb-2">Connect</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Discord</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Twitter</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Instagram</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-white/70 hover:text-white transition-colors">Youtube</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Discord</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Twitter</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Instagram</Link>
+              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Youtube</Link>
             </div>
           </div>
         </div>

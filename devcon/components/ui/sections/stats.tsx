@@ -1,6 +1,15 @@
 import Image from 'next/image';
 import { stats } from '@/lib/content/stats';
 
+/**
+ * Stats — a 2×2 (mobile) / 4-column (desktop) grid of community statistics.
+ *
+ * Each stat displays an SVG icon, a numeric value with a `+` suffix, and a label.
+ * Data is sourced from `lib/content/stats.ts` — update the values there.
+ *
+ * Note: this section uses `id="partners"` because it currently sits in the page
+ * position intended for a partners/stats band. Update the id if that changes.
+ */
 export default function Stats() {
   return (
     <section id="partners" className="max-w-7xl mx-auto">

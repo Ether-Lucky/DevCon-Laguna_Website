@@ -1,5 +1,11 @@
 import InfoCard, { InfoCardProps } from "@/components/ui/sections/mission-vision/info-card";
 
+/**
+ * Static data for the Mission and Vision cards.
+ * Each entry is an `InfoCardProps` object consumed directly by `InfoCard`.
+ * To update the text, edit the `description` field.
+ * To change the card's gradient or icon, update `themeClass` and `icon`.
+ */
 const companyValues: InfoCardProps[] = [
   {
     id: "mission",

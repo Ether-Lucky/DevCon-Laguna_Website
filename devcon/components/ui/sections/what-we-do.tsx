@@ -3,6 +3,17 @@ import { whatWeDo } from '@/lib/content/what-we-do';
 import clsx from 'clsx';
 import Image from 'next/image';
 
+/**
+ * WhatWeDo — a bento-style photo grid showcasing DevCon Laguna's activities.
+ *
+ * Uses a 3-column asymmetric grid on `sm` and above:
+ *   [short card] [tall center card (row-span-2)] [short card]
+ *   [short card]                                 [short card]
+ *
+ * The center card is marked with `isTall: true` in the data.
+ * Each card is an image with a subtle bottom gradient and a hover zoom effect.
+ * Images and titles are sourced from `lib/content/what-we-do.ts`.
+ */
 export default function WhatWeDo() {
   return (
     <section id="what-we-do" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
