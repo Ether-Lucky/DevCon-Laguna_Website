@@ -92,7 +92,22 @@ lands on the metric that is hardest to attribute.
 | `test` | Functional and regression suites pass (`home`, `regression`, `seo`) |
 | `visual-regression` | Rendered output matches the committed Linux baselines — see [visual-regression.md](./visual-regression.md) |
 | `lighthouse` | The thresholds above |
-| `deploy` | Runs only on `prod`, and only after `lint`, `test` and `lighthouse` succeed |
+| `deploy` | Publishes to **production** on `prod`, after `lint`, `test` and `lighthouse` succeed |
+
+### Deploy must pass `--prod`
+
+`amondnet/vercel-action` publishes a **preview** deployment unless `vercel-args: '--prod'` is
+set. A preview gets a throwaway URL and never updates the production alias, while the job
+still reports success — so the live site silently stayed on an old build through an entire
+sprint. Do not remove that argument.
+
+After a merge to `prod`, confirm the deploy actually landed:
+
+```bash
+curl -s https://<production-url>/robots.txt | head -3
+```
+
+A robots file means the new build is live; the 404 page means it is not.
 
 All checks run on pull requests as well as pushes. They previously carried an
 `if: github.ref == 'refs/heads/prod'` guard that is never true during a pull request, so

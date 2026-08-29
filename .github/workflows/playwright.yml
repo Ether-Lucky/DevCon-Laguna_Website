@@ -133,6 +133,10 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         vercel-version: 'latest'
+        # Without --prod this publishes a PREVIEW deployment, which gets a
+        # throwaway URL and never updates the production alias. The job still
+        # reports success, so prod silently stayed on an old build.
+        vercel-args: '--prod'
 
   lighthouse:
     timeout-minutes: 10
