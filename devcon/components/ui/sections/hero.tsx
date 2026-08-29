@@ -67,9 +67,12 @@ export default function Hero() {
             removes the dilemma, so it can be eager and high priority.
           */}
           {(() => {
-            const common = { alt: "DevCon Laguna community collage", width: 2286, height: 2286 };
-            const { props: { srcSet: desktop } } = getImageProps({ ...common, src: "/hero/web.png", sizes: "60vw" });
-            const { props: { srcSet: mobile, ...rest } } = getImageProps({ ...common, src: "/hero/mobile.png", sizes: "140vw" });
+            // Each variant declares its own true intrinsic size. They were previously
+            // both given 2286x2286, which matched neither file and left the browser
+            // reserving the wrong aspect ratio before the image loaded.
+            const alt = "DevCon Laguna community collage";
+            const { props: { srcSet: desktop } } = getImageProps({ alt, src: "/hero/web.webp", width: 2048, height: 2036, sizes: "60vw" });
+            const { props: { srcSet: mobile, ...rest } } = getImageProps({ alt, src: "/hero/mobile.webp", width: 786, height: 1194, sizes: "140vw" });
 
             // The <picture> carries the layout classes so it is the flex item with the
             // exact box the <img> used to have. Do NOT use `display: contents` here:
@@ -80,7 +83,7 @@ export default function Hero() {
                 <source media="(min-width: 768px)" srcSet={desktop} sizes="60vw" />
                 <img
                   {...rest}
-                  alt={common.alt}
+                  alt={alt}
                   srcSet={mobile}
                   fetchPriority="high"
                   loading="eager"
