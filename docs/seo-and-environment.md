@@ -84,3 +84,28 @@ When changing the hero:
 - keep `sizes` matching the rendered width (`140vw` mobile, `60vw` from `md` up).
 
 `tests/regression.spec.ts` enforces all three.
+
+## Organization structured data (SEO-03)
+
+[`components/ui/structured-data.tsx`](../devcon/components/ui/structured-data.tsx) emits a
+schema.org `Organization` block as JSON-LD from the root layout, so it applies site-wide —
+the framework's recommended placement for organization-level data.
+
+What it publishes: name and alternate name, canonical URL, logo, contact email, description,
+region, and the official social profiles as `sameAs`.
+
+Two things to know when editing it:
+
+- **Social profiles are read from `lib/content/social-links`**, so there is a single source of
+  truth. Adding a platform there also advertises it to search engines — no change needed here.
+- **`<` is escaped to `\u003c`** before the payload is written into the `<script>` tag. Without
+  that, a string containing `</script>` could close the element early, which is an XSS vector.
+  The framework documentation calls for this explicitly; do not remove it. A regression test
+  asserts the rendered payload contains no raw `<`.
+
+`url` and `logo` must be absolute for schema.org, so they come from the same environment-driven
+`siteConfig` as the sitemap — **they are only correct in production once
+`NEXT_PUBLIC_SITE_URL` is set.** A regression test asserts the JSON-LD host matches the sitemap
+host, so the two can never drift apart.
+
+Validate changes with Google's Rich Results Test or the schema.org validator.

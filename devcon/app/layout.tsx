@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ThemeProvider from "@/components/theme-provider";
+import StructuredData from "@/components/ui/structured-data";
 import { dmSans, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${jetBrainsMono.variable}`}>
       <body className="antialiased min-h-full flex flex-col">
+        <StructuredData />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
