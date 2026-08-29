@@ -77,6 +77,30 @@ supplies the optimized `srcSet` for each variant, and a `<picture>` element lets
 evaluate the media condition and fetch **exactly one** candidate. That single `<img>` is then
 marked `loading="eager"` with `fetchPriority="high"`, since it is the LCP element.
 
+### Source assets
+
+The hero sources are **WebP**, not PNG:
+
+| Asset | Was | Now |
+|---|---|---|
+| `web.webp` (desktop) | `web.png` 3258×3239, 2.97 MB | 2048×2036, **0.51 MB** |
+| `mobile.webp` (mobile, the LCP element) | `mobile.png` 786×1194, 0.47 MB | 786×1194, **0.15 MB** |
+
+Encoded at WebP quality 90, which measures an RMS difference of 2.4–4.7 against the originals
+at display size — not perceptible. WebP is used because the collages need alpha, which rules
+out JPEG, and because a smaller source is faster for the image optimizer to decode and
+re-encode on each cold request.
+
+The desktop source was 10.5 megapixels for a slot that is at most ~1536 CSS px wide. 2048 was
+chosen because it preserves the served 828w candidate's rounded height of 823px, so the page
+layout is byte-identical — verified by measuring the hero at 507.359px before and after.
+
+If you re-export these from a design tool, keep the aspect ratios and re-check that the hero
+still measures 507.359px at a 1280px viewport, or the visual baselines will need refreshing.
+
+Each variant now declares its own true intrinsic `width`/`height`. They were previously both
+given `2286×2286`, which matched neither file.
+
 When changing the hero:
 
 - keep exactly one `<img>` — do not add a second variant toggled with CSS;

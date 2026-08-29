@@ -39,10 +39,10 @@ test.describe('#83/#94 hero images', () => {
     // through a media-qualified <source>, so phones never request it.
     const source = page.locator('#hero picture source[media]');
     await expect(source).toHaveCount(1);
-    await expect(source).toHaveAttribute('srcset', /web\.png/);
+    await expect(source).toHaveAttribute('srcset', /web\.webp/);
     // ...and the fallback <img> serves the mobile variant.
     const collage = page.locator('img[alt="DevCon Laguna community collage"]');
-    await expect(collage).toHaveAttribute('srcset', /mobile\.png/);
+    await expect(collage).toHaveAttribute('srcset', /mobile\.webp/);
   });
 
   test('no device is asked to preload more than one hero image', async ({ page }) => {
