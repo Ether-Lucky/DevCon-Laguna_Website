@@ -7,6 +7,8 @@ What CI enforces, what it merely reports, and how to change either.
 Configured in [`lighthouserc.json`](../lighthouserc.json) and run by the `lighthouse` job on
 every push to `prod` and every pull request.
 
+Scores are the **median of 3 runs**, not a single sample — see *Why three runs* below.
+
 | Category | Level | Threshold | Current | Enforced? |
 |---|---|---|---|---|
 | Accessibility | `error` | ≥ 0.90 | 0.96 | ✅ fails the build |
@@ -28,6 +30,29 @@ would block every merge until the underlying LCP problem is fixed.
 **Promote performance to `error` as soon as PERF-02 (#94) lands and the score clears 0.90.**
 That is the last step of this gate, and the Sprint 2 Definition of Done is not met until it
 is done.
+
+## Why three runs
+
+Lighthouse originally ran **once** per CI execution and asserted against that single sample.
+Three consecutive runs, on code that was identical or strictly improved between them, produced:
+
+| Run | Context | Performance |
+|---|---|---|
+| `33261148335` | prod baseline | 0.78 |
+| `33262534313` | PERF-02 mid-fix | 0.83 |
+| `33263582237` | PERF-02 final | 0.74 |
+
+A **±0.09 swing** — wider than many real regressions. That made the gate untrustworthy in both
+directions: PERF-02 could not be given a verdict, and promoting performance to `error` would
+have produced builds failing at random.
+
+The job now collects **3 runs** and asserts against the **median**, stated explicitly with
+`aggregationMethod` rather than relying on a default. The tradeoff is that the Lighthouse job
+takes roughly three times as long — about a minute becomes about three. That is worth paying
+for a number anyone can act on.
+
+If a score still moves without a corresponding change, raise the run count rather than
+assuming the result is real.
 
 ## Changing a threshold
 
