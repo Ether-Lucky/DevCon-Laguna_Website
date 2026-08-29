@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import SplashScreen from "@/components/ui/splash-screen";
 import ThemeProvider from "@/components/theme-provider";
 import { dmSans, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
@@ -20,7 +19,6 @@ export const metadata: Metadata = {
  * - Injects DM Sans and JetBrains Mono as CSS variables (`--font-dm-sans`,
  *   `--font-jet-brains-mono`) which are consumed in `globals.css`.
  * - Wraps all children in `ThemeProvider` (dark-first, no system preference).
- * - `SplashScreen` is intentionally commented out until it is ready for production.
  */
 export default function RootLayout({
   children,
@@ -28,9 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${jetBrainsMono.variable}`}>
       <body className="antialiased min-h-full flex flex-col">
-        {/* <SplashScreen /> */}
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

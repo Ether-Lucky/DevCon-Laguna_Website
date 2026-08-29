@@ -55,12 +55,20 @@ export default function Hero() {
         </div>
 
         {/* Image Content */}
+          {/*
+            Both variants stay in the DOM and are toggled with CSS. They must NOT
+            use `priority`: it emits a <link rel="preload"> regardless of CSS
+            visibility, so every device would download both files. Left lazy, the
+            browser skips the `display: none` variant entirely and fetches only
+            the one for the current breakpoint. `sizes` lets the srcset pick a
+            candidate matched to the rendered width instead of the declared 2286px.
+          */}
           <Image
             src="/hero/web.png"
             alt="DevCon Laguna community collage"
             width={2286}
             height={2286}
-            priority
+            sizes="60vw"
             className="w-[60vw] -my-[10%] flex-shrink-0 hidden md:block z-0"
           />
          <Image
@@ -68,7 +76,7 @@ export default function Hero() {
             alt="DevCon Laguna community collage"
             width={2286}
             height={2286}
-            priority
+            sizes="140vw"
             className="w-[140vw] max-w-none -my-[50vw] md:hidden z-0"
           />
       </div>

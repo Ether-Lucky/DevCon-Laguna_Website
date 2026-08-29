@@ -20,6 +20,10 @@ export default function ThemeButton() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Deliberate one-time mount flag, not a cascading state update: `resolvedTheme`
+    // is undefined during SSR, so the button is only rendered once hydrated to
+    // avoid a server/client mismatch. Required by next-themes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
