@@ -63,6 +63,28 @@ source assets from the designer. Once provided, place them in `app/` using the N
 metadata file convention (`icon.png`, `apple-icon.png`) and they are picked up
 automatically — no code change required.
 
+## Hero image art direction (PERF-02)
+
+The hero renders two different collages — a square-ish one for desktop and a wider one for
+mobile. Rendering both as `<Image>` and hiding one with CSS forces an unpleasant choice:
+
+- with `priority` on both, every device preloads **both** files;
+- without it, the Largest Contentful Paint image loads lazily and the browser discovers it
+  late — measured at ~990ms of avoidable delay, with LCP at 4.6s.
+
+The hero therefore uses the framework's documented art-direction approach: `getImageProps`
+supplies the optimized `srcSet` for each variant, and a `<picture>` element lets the browser
+evaluate the media condition and fetch **exactly one** candidate. That single `<img>` is then
+marked `loading="eager"` with `fetchPriority="high"`, since it is the LCP element.
+
+When changing the hero:
+
+- keep exactly one `<img>` — do not add a second variant toggled with CSS;
+- keep it eager and high priority;
+- keep `sizes` matching the rendered width (`140vw` mobile, `60vw` from `md` up).
+
+`tests/regression.spec.ts` enforces all three.
+
 ## Organization structured data (SEO-03)
 
 [`components/ui/structured-data.tsx`](../devcon/components/ui/structured-data.tsx) emits a

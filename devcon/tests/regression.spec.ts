@@ -14,34 +14,44 @@ test.beforeEach(async ({ page }) => {
   await page.waitForLoadState('networkidle');
 });
 
-// HERO-01-BT-01 (#83) — the hero must not preload both image variants.
-test.describe('#83 hero images', () => {
-  test('neither hero variant is preloaded', async ({ page }) => {
-    // `priority` emits <link rel="preload"> regardless of CSS visibility, which
-    // made every device fetch both the desktop and the mobile collage.
+// HERO-01-BT-01 (#83) + PERF-02 (#94) — exactly one hero variant may be fetched,
+// and it must load eagerly because it is the Largest Contentful Paint element.
+//
+// The original defect preloaded both variants. The first fix made both lazy, which
+// stopped the double download but delayed the LCP image by ~990ms. Art direction
+// via <picture> resolves both: the browser fetches one candidate, eagerly.
+test.describe('#83/#94 hero images', () => {
+  test('only one hero collage image is rendered', async ({ page }) => {
+    const collage = page.locator('img[alt="DevCon Laguna community collage"]');
+    await expect(collage).toHaveCount(1);
+  });
+
+  test('the hero image loads eagerly at high priority', async ({ page }) => {
+    // Lazy loading here is what pushed LCP to 4.6s, so it must not come back.
+    const collage = page.locator('img[alt="DevCon Laguna community collage"]');
+    await expect(collage).toHaveAttribute('loading', 'eager');
+    await expect(collage).toHaveAttribute('fetchpriority', 'high');
+    await expect(collage).toHaveAttribute('sizes', /.+/);
+  });
+
+  test('a separate desktop candidate is offered via picture/source', async ({ page }) => {
+    // Proves art direction is in place: the desktop file is reachable only
+    // through a media-qualified <source>, so phones never request it.
+    const source = page.locator('#hero picture source[media]');
+    await expect(source).toHaveCount(1);
+    await expect(source).toHaveAttribute('srcset', /web\.png/);
+    // ...and the fallback <img> serves the mobile variant.
+    const collage = page.locator('img[alt="DevCon Laguna community collage"]');
+    await expect(collage).toHaveAttribute('srcset', /mobile\.png/);
+  });
+
+  test('no device is asked to preload more than one hero image', async ({ page }) => {
     const heroPreloads = await page
       .locator('link[rel="preload"][as="image"]')
       .evaluateAll((links) =>
         links.filter((l) => (l.getAttribute('imagesrcset') ?? '').includes('hero')).length,
       );
-    expect(heroPreloads).toBe(0);
-  });
-
-  test('both hero variants are lazy and declare sizes', async ({ page }) => {
-    const heroImages = page.locator('#hero img[src*="hero"]');
-    const count = await heroImages.count();
-    expect(count).toBeGreaterThan(0);
-
-    for (let i = 0; i < count; i++) {
-      const img = heroImages.nth(i);
-      // The collage images must stay lazy so the hidden breakpoint variant is
-      // never downloaded; the decorative doodle is exempt.
-      const alt = await img.getAttribute('alt');
-      if (alt === 'DevCon Laguna community collage') {
-        await expect(img).toHaveAttribute('loading', 'lazy');
-        await expect(img).toHaveAttribute('sizes', /.+/);
-      }
-    }
+    expect(heroPreloads).toBeLessThanOrEqual(1);
   });
 });
 

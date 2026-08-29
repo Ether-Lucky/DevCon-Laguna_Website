@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
 
@@ -56,29 +56,39 @@ export default function Hero() {
 
         {/* Image Content */}
           {/*
-            Both variants stay in the DOM and are toggled with CSS. They must NOT
-            use `priority`: it emits a <link rel="preload"> regardless of CSS
-            visibility, so every device would download both files. Left lazy, the
-            browser skips the `display: none` variant entirely and fetches only
-            the one for the current breakpoint. `sizes` lets the srcset pick a
-            candidate matched to the rendered width instead of the declared 2286px.
+            Art direction via getImageProps + <picture>: the browser evaluates the
+            media conditions and fetches exactly ONE candidate, so no device pays
+            for the variant it will not display.
+
+            Rendering both as <Image> and toggling with CSS forced a bad trade.
+            With `priority` on both, every device preloaded both files. Without it,
+            the LCP image was lazy and the browser found it ~990ms late, which is
+            what dropped Largest Contentful Paint to 4.6s. One image per breakpoint
+            removes the dilemma, so it can be eager and high priority.
           */}
-          <Image
-            src="/hero/web.png"
-            alt="DevCon Laguna community collage"
-            width={2286}
-            height={2286}
-            sizes="60vw"
-            className="w-[60vw] -my-[10%] flex-shrink-0 hidden md:block z-0"
-          />
-         <Image
-            src="/hero/mobile.png"
-            alt="DevCon Laguna community collage"
-            width={2286}
-            height={2286}
-            sizes="140vw"
-            className="w-[140vw] max-w-none -my-[50vw] md:hidden z-0"
-          />
+          {(() => {
+            const common = { alt: "DevCon Laguna community collage", width: 2286, height: 2286 };
+            const { props: { srcSet: desktop } } = getImageProps({ ...common, src: "/hero/web.png", sizes: "60vw" });
+            const { props: { srcSet: mobile, ...rest } } = getImageProps({ ...common, src: "/hero/mobile.png", sizes: "140vw" });
+
+            // The <picture> carries the layout classes so it is the flex item with the
+            // exact box the <img> used to have. Do NOT use `display: contents` here:
+            // that promotes the <source> to a flex item too, adding one extra `gap`
+            // (16px) which narrows the text column and rewraps the heading.
+            return (
+              <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
+                <source media="(min-width: 768px)" srcSet={desktop} sizes="60vw" />
+                <img
+                  {...rest}
+                  alt={common.alt}
+                  srcSet={mobile}
+                  fetchPriority="high"
+                  loading="eager"
+                  className="block w-full h-auto"
+                />
+              </picture>
+            );
+          })()}
       </div>
     </section>
   );
