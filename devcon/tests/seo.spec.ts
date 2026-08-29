@@ -69,3 +69,65 @@ test.describe('SEO-02 consistency', () => {
     expect(robotsHost).toBe(sitemapHost);
   });
 });
+
+/**
+ * SEO-03 (#64) — schema.org Organization structured data.
+ *
+ * Asserted against the rendered page rather than an HTTP route, since the JSON-LD
+ * is embedded in the document head by the root layout.
+ */
+test.describe('SEO-03 structured data', () => {
+  test('emits exactly one Organization JSON-LD block', async ({ page }) => {
+    await page.goto('/');
+    const blocks = page.locator('script[type="application/ld+json"]');
+    await expect(blocks).toHaveCount(1);
+  });
+
+  test('is valid JSON with the required Organization fields', async ({ page }) => {
+    await page.goto('/');
+    const raw = await page.locator('script[type="application/ld+json"]').innerText();
+
+    const data = JSON.parse(raw); // throws if the payload is malformed
+    expect(data['@context']).toBe('https://schema.org');
+    expect(data['@type']).toBe('Organization');
+    expect(data.name).toBeTruthy();
+    expect(data.description).toBeTruthy();
+
+    // schema.org requires absolute URLs for url and logo.
+    expect(data.url).toMatch(/^https?:\/\//);
+    expect(data.logo).toMatch(/^https?:\/\//);
+  });
+
+  test('advertises the official social profiles via sameAs', async ({ page }) => {
+    await page.goto('/');
+    const raw = await page.locator('script[type="application/ld+json"]').innerText();
+    const data = JSON.parse(raw);
+
+    expect(Array.isArray(data.sameAs)).toBe(true);
+    expect(data.sameAs.length).toBeGreaterThan(0);
+    for (const profile of data.sameAs) {
+      expect(profile).toMatch(/^https:\/\//);
+    }
+  });
+
+  test('escapes angle brackets so the payload cannot close the script tag', async ({ page }) => {
+    await page.goto('/');
+    // A raw "<" in the JSON would allow a crafted string to break out of the
+    // script element, so the payload must never contain one.
+    const html = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluate((el) => el.innerHTML);
+    expect(html).not.toContain('<');
+  });
+
+  test('the structured data host matches the sitemap host', async ({ page, request }) => {
+    await page.goto('/');
+    const raw = await page.locator('script[type="application/ld+json"]').innerText();
+    const jsonLdHost = JSON.parse(raw).url.match(/^(https?:\/\/[^/]+)/)?.[1];
+
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    const sitemapHost = sitemap.match(/<loc>(https?:\/\/[^/<]+)/)?.[1];
+
+    expect(jsonLdHost).toBe(sitemapHost);
+  });
+});
