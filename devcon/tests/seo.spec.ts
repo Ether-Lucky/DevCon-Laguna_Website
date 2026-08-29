@@ -131,3 +131,64 @@ test.describe('SEO-03 structured data', () => {
     expect(jsonLdHost).toBe(sitemapHost);
   });
 });
+
+/**
+ * SEO-01 (#62) — page metadata and social sharing.
+ *
+ * Absolute URLs come from the environment-driven `metadataBase`, so these assert
+ * on shape and internal consistency rather than a hardcoded domain.
+ */
+test.describe('SEO-01 page metadata', () => {
+  const content = (page: import('@playwright/test').Page, sel: string) =>
+    page.locator(sel).first().getAttribute('content');
+
+  test('declares a title, description and canonical URL', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle(/DevCon Laguna/);
+    expect(await content(page, 'meta[name="description"]')).toBeTruthy();
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+    expect(canonical).toMatch(/^https?:\/\//);
+  });
+
+  test('declares Open Graph tags for a link preview', async ({ page }) => {
+    await page.goto('/');
+    expect(await content(page, 'meta[property="og:type"]')).toBe('website');
+    expect(await content(page, 'meta[property="og:site_name"]')).toBe('DevCon Laguna');
+    expect(await content(page, 'meta[property="og:title"]')).toBeTruthy();
+    expect(await content(page, 'meta[property="og:description"]')).toBeTruthy();
+    expect(await content(page, 'meta[property="og:url"]')).toMatch(/^https?:\/\//);
+  });
+
+  test('declares a large-image Twitter card', async ({ page }) => {
+    await page.goto('/');
+    expect(await content(page, 'meta[name="twitter:card"]')).toBe('summary_large_image');
+    expect(await content(page, 'meta[name="twitter:title"]')).toBeTruthy();
+    expect(await content(page, 'meta[name="twitter:image"]')).toMatch(/^https?:\/\//);
+  });
+
+  test('the share image is absolute, 1200x630 and actually served', async ({ page, request }) => {
+    await page.goto('/');
+    const image = await content(page, 'meta[property="og:image"]');
+    // Social platforms reject relative image URLs.
+    expect(image).toMatch(/^https?:\/\//);
+    expect(await content(page, 'meta[property="og:image:width"]')).toBe('1200');
+    expect(await content(page, 'meta[property="og:image:height"]')).toBe('630');
+    expect(await content(page, 'meta[property="og:image:alt"]')).toBeTruthy();
+
+    // Fetch by path so the assertion does not depend on the configured host.
+    const path = new URL(image!).pathname + new URL(image!).search;
+    const response = await request.get(path);
+    expect(response.status()).toBe(200);
+    expect(response.headers()['content-type']).toContain('image/png');
+  });
+
+  test('metadata, sitemap and structured data agree on the host', async ({ page, request }) => {
+    await page.goto('/');
+    const ogHost = (await content(page, 'meta[property="og:url"]'))!.match(/^(https?:\/\/[^/]+)/)![1];
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(ogHost).toBe(sitemap.match(/<loc>(https?:\/\/[^/<]+)/)![1]);
+
+    const raw = await page.locator('script[type="application/ld+json"]').innerText();
+    expect(ogHost).toBe(JSON.parse(raw).url.match(/^(https?:\/\/[^/]+)/)![1]);
+  });
+});

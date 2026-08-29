@@ -109,6 +109,36 @@ When changing the hero:
 
 `tests/regression.spec.ts` enforces all three.
 
+## Page metadata and social sharing (SEO-01)
+
+Declared in `app/layout.tsx` via the Next.js metadata API.
+
+`metadataBase` is set from `siteConfig.url`, which is what makes the Open Graph and canonical
+URLs absolute — **social platforms reject relative image URLs**, so this is the difference
+between a working preview card and none at all.
+
+`title.template` is set to `%s | DevCon Laguna`, so a future route exporting `title: "Events"`
+renders as `Events | DevCon Laguna` with no extra work.
+
+### The share image is generated, not a design export
+
+`app/opengraph-image.tsx` builds the 1200×630 card at build time with `ImageResponse`, using
+the brand palette and the hero headline. It is a static route (`/opengraph-image`), so there is
+no per-request cost, and it stays in sync with `siteConfig` rather than drifting from a
+separate PNG.
+
+If a designed card is provided later, drop an `opengraph-image.png` into `app/` and delete the
+`.tsx` — the file convention accepts either, and the meta tags are emitted automatically.
+
+Note for editing: the card is rendered by Satori, which supports only a flexbox subset of CSS.
+Every container needs an explicit `display: flex`; there is no grid or float.
+
+### Verifying a preview
+
+Use Facebook's Sharing Debugger or X's Card Validator against the deployed URL. Both need the
+site publicly reachable, so this can only be checked properly once `NEXT_PUBLIC_SITE_URL` is
+set and the site is live.
+
 ## Organization structured data (SEO-03)
 
 [`components/ui/structured-data.tsx`](../devcon/components/ui/structured-data.tsx) emits a
