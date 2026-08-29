@@ -24,9 +24,10 @@ the SRS non-functional bar for performance, accessibility, and SEO.
 
 **Out of scope (deferred to later sprints)**
 
-- Authentication, member dashboard, admin panel — Sprint 4 / Sprint 5
-- Database-backed content, full CMS — Sprint 5
-- Additional pages (events detail, blog/news) — Sprint 3
+- Headless CMS adoption; CMS-driven events, officers, and section images; content caching and
+  on-demand publishing — Sprint 3
+- Authentication, member dashboard, member application — handled by a separate DevCon website
+- Event detail pages, blog/news, event registration — deferred beyond Phase 2
 
 ## Backlog
 
@@ -47,18 +48,20 @@ Estimates use story points (Fibonacci). Core = 39 pts, plus 1 stretch story (3 p
 **Acceptance:** submitting a valid form delivers an email to the DevCon inbox in production;
 invalid input is blocked with helpful messages; spam attempts are filtered.
 
-### US-202 — Content Data Layer (8 pts)
+### US-202 — Content Type Models & Programs Data (3 pts) · *rescoped*
 
-> As a content editor, I want officers, events, and programs stored as structured data so updates don't require editing components.
+> As a developer, I want typed content models defined so this sprint's content and the Sprint 3 CMS build on the same shapes.
 
-- [ ] Define typed data models for Officers, Events, and Programs
-- [ ] Extract existing hard-coded content into data files (TS/JSON/MDX)
-- [ ] Refactor `officers.tsx`, `events-carousel.tsx`, and `program-and-activities.tsx` to render from data
+**Rescoped:** Sprint 3 moves Events and Officers to a hosted headless CMS, so extracting them
+into local data files here would be throwaway work. Only the parts that carry forward remain.
+
+- [ ] Define typed content models for Officers, Events, and Programs (these become the CMS schema)
+- [ ] Extract Programs & Activities into a local data file (Programs is not in the Sprint 3 CMS scope)
 - [ ] Document how to add/update an entry in `docs/`
 - [ ] Remove the stray `next-theme@0.1.5` dependency in `devcon/package.json` (keep `next-themes`)
 
-**Acceptance:** a non-developer can add an officer/event/program by editing one data file;
-no visual regression in Playwright snapshots.
+**Acceptance:** typed models exist and are used by the Programs section; no visual regression
+in Playwright snapshots. Events and Officers extraction moves to Sprint 3 (CMS-02, CMS-03).
 
 ### US-203 — SEO & Metadata (5 pts)
 

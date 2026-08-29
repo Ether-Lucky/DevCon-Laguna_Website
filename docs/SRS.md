@@ -19,10 +19,11 @@ acceptance criteria).
 
 Phase 2 extends the existing landing page rather than replacing it. The immediate scope
 (Sprint 2) covers a working contact form, a content data layer, SEO and metadata,
-accessibility and performance improvements, and web analytics. Later sprints (3–5) expand the
-site with additional pages, membership features, and content administration; those
-requirements are listed in Section 5 as planned/future requirements and will be detailed at
-their respective sprint planning sessions.
+accessibility and performance improvements, and web analytics. Sprint 3 makes the page
+dynamic: events, officers, and key section images move to a hosted headless CMS, with cached
+revalidation and instant on-demand publishing; those requirements are listed in Section 5 as
+planned/future requirements and will be detailed at the Sprint 3 planning session. Member application and account management are handled by a
+separate DevCon website and are out of scope.
 
 ## 2. Overall Description
 
@@ -32,7 +33,8 @@ The website is a web-based application built with Next.js, React, and Tailwind C
 on Vercel. Phase 1 delivered the responsive landing page. Phase 2 introduces the first
 server-side functionality (contact form submission), a structured content layer that
 decouples content from code, and quality and discoverability improvements. It remains the
-foundation for future member-facing and administrative features.
+foundation for future public content features (events, news). Member-facing and
+administrative features live on a separate DevCon website.
 
 ### 2.2 Product Objectives
 
@@ -53,7 +55,11 @@ The website should:
 - Event participants
 - Potential partners and sponsors
 - General website visitors
-- **Content editors / administrators** (introduced in later Phase 2 sprints)
+- **Content editors** — team members who maintain officers, events, and programs via the
+  content data layer (FR-12)
+
+> Member application and account management are served by a separate DevCon website; this
+> project has no authenticated end-user or administrator roles.
 
 ## 3. Functional Requirements (Sprint 2)
 
@@ -232,24 +238,35 @@ Firefox, and Safari.
 - Content shall be decoupled from presentation via the content data layer (FR-12).
 - New functionality shall be covered by automated tests in the CI pipeline.
 
-## 5. Planned / Future Requirements (Sprints 3–5)
+## 5. Planned / Future Requirements (Sprint 3)
 
-These are captured for roadmap visibility and will be detailed at their sprint planning
-sessions.
+These are captured for roadmap visibility and will be detailed at the Sprint 3 planning
+session. They complete Phase 2.
+
+Sprint 3's theme is **Dynamic Content via Headless CMS**: the landing page stops being static,
+with content managed by editors in a hosted CMS rather than by developers in code.
 
 | ID | Requirement | Target Sprint |
 |---|---|---|
-| FR-18 | Multi-page routing and site navigation beyond the landing page | Sprint 3 |
-| FR-19 | Event detail pages | Sprint 3 |
-| FR-20 | Blog / News section | Sprint 3 |
-| FR-21 | Event registration | Sprint 3 |
-| FR-22 | User authentication | Sprint 4 |
-| FR-23 | Member dashboard | Sprint 4 |
-| FR-24 | Database integration for dynamic content | Sprint 4 |
-| FR-25 | Admin panel | Sprint 5 |
-| FR-26 | Full content management system (CMS) | Sprint 5 |
-| FR-27 | Role and permission management | Sprint 5 |
-| FR-28 | Analytics dashboard | Sprint 5 |
+| FR-18 | Headless CMS adoption and content modeling (Events, Officers, Landing Page Images) | Sprint 3 |
+| FR-19 | Events section rendered from CMS data | Sprint 3 |
+| FR-20 | Officers section rendered from CMS data | Sprint 3 |
+| FR-21 | CMS-managed landing page images (hero, Who We Are carousel, What We Do, bottom section) | Sprint 3 |
+| FR-22 | Content caching with scheduled revalidation (~30 minute interval) | Sprint 3 |
+| FR-23 | Authenticated on-demand revalidation for instant publishing | Sprint 3 |
+
+**Content freshness model (FR-22, FR-23).** The public site shall serve cached CMS content
+rather than calling the CMS on every request; the cache shall revalidate on an approximately
+30-minute interval, so edits appear without a redeploy. Administrators shall additionally be
+able to trigger an immediate, authenticated revalidation so urgent changes publish instantly.
+If a revalidation fetch fails, the last known good content shall continue to be served.
+
+> **Out of scope:** Member application, user authentication, member dashboards, and
+> database-backed accounts are handled by a **separate DevCon website** and are not
+> requirements of this project; the public "Join Us" call-to-action links out to that site.
+> Content administration for this site is provided by the **hosted headless CMS**, not by a
+> bespoke admin application built in this project. Event detail pages, a blog/news section,
+> and event registration are deferred beyond Phase 2.
 
 ## 6. Acceptance Criteria (Sprint 2)
 
