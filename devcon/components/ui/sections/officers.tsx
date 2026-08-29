@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import Button from '@/components/ui/button';
 import { TeamMember, team } from '@/lib/content/officers'
 import Image from 'next/image'
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
@@ -46,8 +45,8 @@ function TeamCard({ member }: { member: TeamMember }) {
             alt={member.name}
             width={member.width}
             height={member.height}
+            sizes="(max-width: 640px) 9rem, (max-width: 768px) 11rem, 13rem"
             className="absolute inset-0 w-full h-full object-cover object-bottom"
-            priority
           />
         ) : (
           <span className="text-devcon-white-500/70 text-4xl font-bold">{initials(member.name)}</span>
@@ -97,7 +96,7 @@ export default function TeamSection() {
             Meet Our <span className="text-devcon-purple-500">Officers</span>
           </h2>
         <p className="mt-6 max-w-xl text-base text-muted">
-            Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna's initiatives and programs.
+            Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna&apos;s initiatives and programs.
           </p>
         </div>
         
@@ -105,11 +104,7 @@ export default function TeamSection() {
           className="w-full py-8 px-4"
           tiles={carouselTiles}
         />
- 
-        <div className="flex justify-center mt-12">
-          <Button label="Meet the Team" href="/team" variant="primary" icon="" />
-        </div>
-      </div>
+       </div>
     </section>
   );
 }

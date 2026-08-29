@@ -85,8 +85,8 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 			{/* Scrollable Track */}
 			<div
 				ref={containerRef}
-				className="flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 scroll-smooth"
-				style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+				className="flex overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 scroll-smooth"
+				style={{ gap: `${gap}px`, scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 			>
 				{tiles.map((tile, idx) => (
 					<div key={idx} className="flex-shrink-0 snap-start h-auto flex">

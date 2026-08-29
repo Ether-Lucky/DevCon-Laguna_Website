@@ -51,16 +51,20 @@ test('renders the Featured Events heading', async ({ page }) => {
 });
 
 test('renders the featured events carousel', async ({ page }) => {
+  // The per-section carousels were replaced by the shared DynamicCarousel,
+  // whose controls are labelled "Scroll left"/"Scroll right", so scope by section.
+  const events = page.locator('#events');
   await expect(page.getByRole('heading', { name: 'Featured Events' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Next events' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Previous events' })).toBeVisible();
+  await expect(events.getByRole('button', { name: 'Scroll right' })).toBeVisible();
+  await expect(events.getByRole('button', { name: 'Scroll left' })).toBeVisible();
 });
 
 // Test cases for Officers Section
 test('renders officers section', async ({ page }) => {
+  const officers = page.locator('#officers');
   await expect(page.getByRole('heading', { name: 'Meet Our Officers' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Next page' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Previous page' })).toBeVisible();
+  await expect(officers.getByRole('button', { name: 'Scroll right' })).toBeVisible();
+  await expect(officers.getByRole('button', { name: 'Scroll left' })).toBeVisible();
 });
 
 // Test cases for Stats Section
@@ -93,13 +97,11 @@ test('renders about section with heading and paragraph', async ({ page }) => {
 });
 
 test('renders about slideshow navigation', async ({ page }) => {
+  // The bespoke slideshow (with "Go to slide N" dots) was replaced by the shared
+  // DynamicCarousel, which exposes only scroll-left/right controls.
   const about = page.locator('#about');
-  await expect(about.getByRole('button', { name: 'Next slide' })).toBeVisible();
-  await expect(about.getByRole('button', { name: 'Previous slide' })).toBeVisible();
-  await expect(about.getByRole('button', { name: 'Go to slide 1' })).toBeVisible();
-  await expect(about.getByRole('button', { name: 'Go to slide 2' })).toBeVisible();
-  await expect(about.getByRole('button', { name: 'Go to slide 3' })).toBeVisible();
-  await expect(about.getByRole('button', { name: 'Go to slide 4' })).toBeVisible();
+  await expect(about.getByRole('button', { name: 'Scroll right' })).toBeVisible();
+  await expect(about.getByRole('button', { name: 'Scroll left' })).toBeVisible();
 });
 
 // Test cases for Mission and Vision Section

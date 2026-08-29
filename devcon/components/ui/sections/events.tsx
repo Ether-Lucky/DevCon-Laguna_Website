@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Button from '@/components/ui/button';
+import Image from 'next/image';
 import { Category, EventItem, events } from '@/lib/content/events';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
@@ -41,10 +41,12 @@ function EventCard({ event }: { event: EventItem }) {
     <div className="relative flex-shrink-0 h-[400px] sm:h-[600px] w-[80vw] sm:w-[45vw] md:w-[30vw] rounded-[28px] overflow-hidden bg-zinc-900 group">
       {event.img ? (
         <>
-          <img
+          <Image
             src={event.img}
             alt={event.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 640px) 80vw, (max-width: 768px) 45vw, 30vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
         </>
@@ -90,9 +92,7 @@ export default function Events() {
           <p className="mt-6 max-w-2xl text-base text-muted">
             Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.
           </p>
-        </div>
-        <Button label="View All Events" href="/events" variant="primary" className="mb-2" />
-      </div>
+        </div>      </div>
 
       <DynamicCarousel className="w-full py-12 px-4"
         tiles={events.map((event) => (

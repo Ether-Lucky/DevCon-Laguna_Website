@@ -12,6 +12,10 @@ export default function SplashScreen() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Deliberate one-time mount flag, not a cascading state update: the server
+    // renders the plain label and only the hydrated client renders the animated
+    // per-character spans, which avoids a hydration mismatch with framer-motion.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReady(true);
 
     const el = ref.current;
