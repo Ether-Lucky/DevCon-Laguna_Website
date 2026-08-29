@@ -77,14 +77,14 @@ export default function Hero() {
             // (16px) which narrows the text column and rewraps the heading.
             return (
               <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
-                <source media="(min-width: 768px)" srcSet={desktop} />
+                <source media="(min-width: 768px)" srcSet={desktop} sizes="60vw" />
                 <img
                   {...rest}
                   alt={common.alt}
                   srcSet={mobile}
                   fetchPriority="high"
                   loading="eager"
-                  className="w-full h-auto"
+                  className="block w-full h-auto"
                 />
               </picture>
             );
