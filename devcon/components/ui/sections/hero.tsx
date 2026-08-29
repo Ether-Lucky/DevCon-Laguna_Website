@@ -2,23 +2,30 @@ import Image from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
 
+/**
+ * Hero — the full-width landing section at the top of the homepage.
+ *
+ * Layout (desktop): two-column row — text content left, hero image right.
+ * Layout (mobile): single column, image below text.
+ *
+ * - `web.png`: large circular collage, shown on `md` and above.
+ * - `mobile.png`: full-bleed version optimised for small screens.
+ * - `look-here.png`: a small decorative doodle above the CTA buttons.
+ * - `SocialMedia` renders the row of social platform icon links.
+ */
 export default function Hero() {
   return (
-    <section
-      id="hero"
-      className="relative overflow-visible bg-background -mt-8 px-6 pt-0 pb-6 text-foreground md:-mt-16 md:px-8 md:pt-0 md:pb-16"
-    >
-      <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4 lg:gap-6">
-        
+    <section id="hero" className="max-w-7xl mx-auto">
+      <div className="relative w-full flex flex-col md:flex-row items-center xl:justify-between gap-6 xl:gap-4">
         {/* Text Content */}
-        <div className="w-full max-w-[640px] md:w-[54%] md:max-w-none md:pl-8 lg:pl-16 z-1 order-1 md:order-none">
-          <h1 className="text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.25] tracking-[0.02em] text-foreground">
-            <span className="block">Building the</span>
-            <span className="mt-1 block text-devcon-lime sm:whitespace-nowrap">Future of Tech,</span>
-            <span className="mt-1 block text-devcon-orange">Together.</span>
+        <div className="px-8 xl:pl-8 mt-8 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-none text-foreground">
+            <span>Building the </span>
+            <span className="mt-1 text-devcon-lime-500">Future of Tech, </span>
+            <span className="mt-1 text-devcon-orange-500">Together.</span>
           </h1>
 
-          <p className="mt-6 max-w-[36rem] text-[clamp(1rem,2vw,1.125rem)] leading-[1.45] text-muted md:mt-7">
+          <p className="mt-6 text-muted">
             DevCon Laguna is a community of developers, students, and technology
             enthusiasts dedicated to learning, collaborating, and creating meaningful
             impact through technology.
@@ -26,7 +33,7 @@ export default function Hero() {
 
           <SocialMedia />
 
-          <div className="mt-8 hidden md:flex md:flex-row md:gap-4 md:mt-12 relative">
+          <div className="flex flex-col md:flex-row mt-12 gap-4 md:gap-8 relative">
             <Image 
               src="/hero/look-here.png"
               alt="Look Here"
@@ -38,64 +45,40 @@ export default function Hero() {
               label="Volunteer"
               href="#"
               variant="primary"
-              hasArrow
-              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
             />
             <Button
               label="Learn More"
               href="#"
               variant="outline"
-              hasArrow
-              className="h-14 min-w-[180px] px-8 text-[1rem] font-bold"
             />
           </div>
         </div>
 
         {/* Image Content */}
-        <div className="flex w-full justify-center md:-mt-60 md:mt-0 md:w-[65vw] md:flex-shrink-0 md:-ml-16 lg:-ml-24 z-0 order-2 md:order-none">
+          {/*
+            Both variants stay in the DOM and are toggled with CSS. They must NOT
+            use `priority`: it emits a <link rel="preload"> regardless of CSS
+            visibility, so every device would download both files. Left lazy, the
+            browser skips the `display: none` variant entirely and fetches only
+            the one for the current breakpoint. `sizes` lets the srcset pick a
+            candidate matched to the rendered width instead of the declared 2286px.
+          */}
           <Image
             src="/hero/web.png"
             alt="DevCon Laguna community collage"
-            width={1200}
-            height={1228}
-            priority
-            className="hidden h-auto w-full md:block"
+            width={2286}
+            height={2286}
+            sizes="60vw"
+            className="w-[60vw] -my-[10%] flex-shrink-0 hidden md:block z-0"
           />
-          <Image
+         <Image
             src="/hero/mobile.png"
             alt="DevCon Laguna community collage"
-            width={420}
-            height={420}
-            priority
-            sizes="(max-width: 767px) 100vw, 0vw"
-            className="h-auto w-full md:hidden"
+            width={2286}
+            height={2286}
+            sizes="140vw"
+            className="w-[140vw] max-w-none -my-[50vw] md:hidden z-0"
           />
-        </div>
-
-        {/* Mobile Buttons — below image */}
-        <div className="flex md:hidden w-full justify-center gap-3 mt-2 order-3 relative z-10">
-          <Image 
-            src="/hero/look-here.png"
-            alt="Look Here"
-            width={50}
-            height={31}
-            className="absolute -top-6 left-[calc(50%-120px)]"
-          />
-          <Button
-            label="Volunteer"
-            href="#"
-            variant="primary"
-            hasArrow
-            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold shadow-[0_0_0_1px_rgba(192,224,11,0.15)]"
-          />
-          <Button
-            label="Learn More"
-            href="#"
-            variant="outline"
-            hasArrow
-            className="h-14 min-w-0 px-6 text-[0.875rem] font-bold"
-          />
-        </div>
       </div>
     </section>
   );

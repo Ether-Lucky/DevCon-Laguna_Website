@@ -1,9 +1,9 @@
 import About from "@/components/ui/sections/about";
-import MissionVision from '@/components/ui/mission-vision/mission-vision';
+import MissionVision from '@/components/ui/sections/mission-vision/mission-vision';
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';
 import Stats from '@/components/ui/sections/stats';
-import Events from '@/components/ui/sections/events-carousel';
+import Events from '@/components/ui/sections/events';
 import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
 import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
@@ -11,11 +11,23 @@ import Footer from '@/components/ui/sections/footer';
 import ScrollReveal from '@/components/ui/scroll-reveal';
 
 
+/**
+ * Home — the root page of the DevCon Laguna website.
+ *
+ * Composes all homepage sections in order:
+ *   NavBar → Hero → Stats → About → MissionVision → WhatWeDo
+ *   → Events → Officers → Footer
+ *
+ * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
+ * that triggers once when it enters the viewport.
+ *
+ * `ProgramsAndActivities` is currently commented out pending content readiness.
+ */
 export default function Home() {
   return (
     <>
       <NavBar />
-      <main className="flex min-h-screen flex-col items-center justify-center bg-background pt-0 pb-24 px-6 text-foreground font-inter -mt-2">  
+      <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground mt-0 overflow-hidden">  
         <ScrollReveal className="w-full" variant="fade" amount={0.05}>
           <Hero />
         </ScrollReveal>
@@ -37,13 +49,13 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <Officers />
         </ScrollReveal>
-        <ScrollReveal className="w-full">
+        {/* <ScrollReveal className="w-full">
           <ProgramsAndActivities />
-        </ScrollReveal>
-        <ScrollReveal className="w-full" variant="fade">
-          <Footer/>
-        </ScrollReveal>
+        </ScrollReveal> */}
       </main> 
+      <ScrollReveal className="w-full" variant="fade">
+          <Footer/>
+      </ScrollReveal>
     </>
   );
 }

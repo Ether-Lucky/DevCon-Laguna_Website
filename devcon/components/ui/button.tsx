@@ -1,62 +1,75 @@
 import Link from "next/link";
 import clsx from "clsx";
+import { ArrowUpRightIcon } from '@heroicons/react/16/solid'
 
+/**
+ * Props for the `Button` component.
+ *
+ * @property label      - Visible button text.
+ * @property onClick    - Click handler. Used only when `href` is not provided.
+ * @property href       - If provided, renders a Next.js `<Link>` instead of `<button>`.
+ * @property variant    - Visual style. `"primary"` = lime fill; `"outline"` = bordered ghost.
+ * @property icon       - Icon rendered to the right of the label. Defaults to `ArrowUpRightIcon`.
+ *                        Pass `null` to suppress the icon entirely.
+ * @property iconWidth  - Tailwind width class applied to the icon wrapper (e.g. `"w-6"`).
+ * @property className  - Additional Tailwind classes merged onto the root element.
+ */
 interface ButtonProps {
   label: string;
   onClick?: () => void;
   href?: string;
   variant?: "primary" | "outline";
-  hasArrow?: boolean;
+  icon?: React.ReactNode | null;
+  iconWidth?: string;
   className?: string;
 }
 
+/**
+ * Button — the primary interactive element across the site.
+ *
+ * Renders a `<Link>` when `href` is supplied, otherwise a plain `<button>`.
+ * The icon animates up-right on hover using a CSS group-hover transform.
+ *
+ * @example
+ * // Lime CTA with link
+ * <Button label="Join Us" href="/join" variant="primary" />
+ *
+ * // Outline button without an icon
+ * <Button label="Learn More" onClick={handleClick} variant="outline" icon={null} />
+ */
 export default function Button({
   label,
   onClick,
   href,
   variant = "primary",
-  hasArrow = true,
+  icon = <ArrowUpRightIcon />,
+  iconWidth = "w-6",
   className,
 }: ButtonProps) {
-  const ArrowIcon = () => (
-    <svg
-      className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-      />
-    </svg>
+
+  const buttonFinalClassName = clsx(
+    "group font-sans text-lg font-semibold flex flex-row items-center text-center justify-center rounded-full gap-2 px-6 py-2 cursor-pointer w-max",
+    className,
+    {
+      "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
+      "border border-foreground/40 bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10": variant === "outline",
+    },
   );
 
-  const baseClasses =
-    "group inline-flex items-center justify-center rounded-full px-8 py-3 font-inter text-body-sm font-semibold transition-all duration-200";
+  const iconClassName = `${iconWidth} transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5`
 
-  const variantClasses =
-    variant === "primary"
-      ? "bg-devcon-lime text-devcon-black hover:bg-opacity-90 active:bg-opacity-80"
-      : "border border-border bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10";
-
-  const combinedClasses = clsx(baseClasses, variantClasses, className);
-
-  if (href) {
-    return (
-      <Link href={href} className={combinedClasses}>
+  return (href ?
+    (
+      <Link href={href} className={buttonFinalClassName}>
         {label}
-        {hasArrow && <ArrowIcon />}
+        {icon && <span className={iconClassName}>{icon}</span>}
       </Link>
-    );
-  }
-
-  return (
-    <button onClick={onClick} className={combinedClasses} type="button">
-      {label}
-      {hasArrow && <ArrowIcon />}
-    </button>
+    ) :
+    (
+      <button onClick={onClick} className={buttonFinalClassName} type="button">
+        {label}
+        {icon && <span className={iconClassName}>{icon}</span>}
+      </button>
+    )
   );
 }

@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevCon Laguna Website
+
+The official website for **DevCon Laguna** — a local chapter of Developers Connect (DevCon Philippines). Built with [Next.js 15](https://nextjs.org), [TypeScript](https://www.typescriptlang.org/), and [Tailwind CSS v4](https://tailwindcss.com/).
+
+---
+
+## Tech Stack
+
+| Layer | Tool |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Animations | Framer Motion |
+| Icons | Heroicons, Remixicon |
+| Fonts | DM Sans (headings), JetBrains Mono (body) |
+| Theme | next-themes (dark/light) |
+| Package manager | pnpm |
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Start the development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+devcon/
+├── app/
+│   ├── layout.tsx          # Root layout — fonts, ThemeProvider, metadata
+│   ├── page.tsx            # Home page — composes all sections
+│   └── globals.css         # Tailwind theme tokens and global styles
+│
+├── components/
+│   ├── theme-provider.tsx  # Wraps next-themes provider (dark-first)
+│   └── ui/
+│       ├── button.tsx          # Reusable Button (primary / outline variants)
+│       ├── dynamic-carousel.tsx # Horizontally scrollable carousel with arrow controls
+│       ├── fonts.ts            # Google Font instances (DM Sans, JetBrains Mono)
+│       ├── logo.tsx            # DevCon Laguna logo (dark/light aware)
+│       ├── scroll-reveal.tsx   # Framer Motion scroll-triggered entrance animation
+│       ├── splash-screen.tsx   # Full-screen loading splash (currently disabled)
+│       ├── nav-bar/
+│       │   ├── nav-bar.tsx     # Top-level sticky navigation bar
+│       │   ├── nav-links.tsx   # Horizontal / vertical nav link list
+│       │   ├── nav-actions.tsx # "Join Us" CTA + theme toggle
+│       │   ├── mobile-nav.tsx  # Hamburger menu for mobile breakpoints
+│       │   └── theme-button.tsx # Sun/Moon dark-mode toggle button
+│       └── sections/
+│           ├── hero.tsx                        # Landing hero with headline and CTAs
+│           ├── stats.tsx                       # Community statistics grid
+│           ├── about.tsx                       # "Who We Are" with image carousel
+│           ├── mission-vision/
+│           │   ├── mission-vision.tsx          # Mission + Vision two-card layout
+│           │   └── info-card.tsx               # Reusable gradient card with masked icon
+│           ├── what-we-do.tsx                  # Bento-grid of activity photos
+│           ├── events.tsx                      # Featured Events carousel
+│           ├── officers.tsx                    # Officers carousel (two-row grid)
+│           ├── program-and-activities.tsx      # Auto-sliding banner (currently disabled)
+│           ├── social-media.tsx                # Social media icon links
+│           └── footer.tsx                      # Site footer with links and copyright
+│
+└── lib/
+    └── content/
+        ├── README.md                   # Content layer contributor guide
+        ├── about-devcon-slideshow.ts   # Slide images for the About section
+        ├── events.ts                   # Featured events data
+        ├── officers.ts                 # Officer/team member data
+        ├── programs-and-activities.ts  # Programs & Activities slide data
+        ├── social-links.tsx            # Social media platform links and icons
+        ├── stats.ts                    # Community statistics data
+        └── what-we-do.ts              # What We Do bento-grid items
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Theming & Design Tokens
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All brand colors are defined as CSS custom properties in [`app/globals.css`](app/globals.css) and exposed as Tailwind utilities:
 
-## Deploy on Vercel
+| Token | Value | Usage |
+|---|---|---|
+| `devcon-purple-500` | `#6A0DF2` | Primary brand purple |
+| `devcon-purple-700` | `#6320EE` | Darker purple (seminar tags, gradients) |
+| `devcon-purple-300` | `#3A0066` | Deep purple background accent |
+| `devcon-lime-500` | `#C0E00B` | Lime green (primary CTA, community tags) |
+| `devcon-lime-300` | `#6FC71E` | Darker lime |
+| `devcon-yellow-500` | `#F0C419` | Yellow (workshop tags) |
+| `devcon-orange-500` | `#E06B22` | Orange (career tags) |
+| `devcon-black-500` | `#0B0B0C` | Near-black background |
+| `devcon-white-500` | `#FFFFFF` | White |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The site defaults to **dark mode**. Light mode is supported via the `next-themes` provider.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Content Editing
+
+All website copy and data lives in `lib/content/`. You can update text, images, and links without touching any component code. See [`lib/content/README.md`](lib/content/README.md) for a complete contributor guide.
+
+---
+
+## Event Tag Colors
+
+Category colors for event badges are centrally defined in [`components/ui/sections/events.tsx`](components/ui/sections/events.tsx). To retheme a category, edit the `categoryColors` map — do **not** set colors per-event.
+
+| Category | Color token |
+|---|---|
+| `hackaton` | `devcon-purple-500` |
+| `workshop` | `devcon-yellow-500` |
+| `seminar` | `devcon-purple-700` |
+| `community` | `devcon-lime-500` |
+| `career` | `devcon-orange-500` |
+
+---
+
+## Scripts
+
+```bash
+pnpm dev      # Start development server (http://localhost:3000)
+pnpm build    # Production build
+pnpm start    # Start production server
+pnpm lint     # Run ESLint
+```

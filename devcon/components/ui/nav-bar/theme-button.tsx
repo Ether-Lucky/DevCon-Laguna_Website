@@ -1,29 +1,36 @@
 "use client";
 
-import Image from "next/image";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
+/**
+ * ThemeButton — an icon button that toggles between dark and light mode.
+ *
+ * Uses a `mounted` guard to delay rendering until after client hydration,
+ * preventing a server/client mismatch caused by `resolvedTheme` being undefined
+ * on the server.
+ *
+ * - Dark mode → shows SunIcon (click to switch to light)
+ * - Light mode → shows MoonIcon (click to switch to dark)
+ */
 export default function ThemeButton() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Deliberate one-time mount flag, not a cascading state update: `resolvedTheme`
+    // is undefined during SSR, so the button is only rendered once hydrated to
+    // avoid a server/client mismatch. Required by next-themes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <button
-        type="button"
-        aria-hidden
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-transparent"
-      />
-    );
-  }
+  if (!mounted) return null;
 
   const isDark = resolvedTheme === "dark";
+  const iconClassName = "w-7 stroke-2";
 
   return (
     <button
@@ -31,22 +38,14 @@ export default function ThemeButton() {
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={clsx(
-        "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200",
-        "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200",
+        "inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200 border-foreground/20  text-foreground hover:border-foreground/35 hover:bg-foreground/8 cursor-pointer",
         {
-          "border border-border bg-devcon-white text-foreground hover:border-foreground/60 hover:bg-foreground/10":
-            !isDark,
-          "border-devcon-white/20 bg-transparent text-devcon-white hover:border-devcon-white/35 hover:bg-devcon-white/8":
-            isDark,
+          "bg-devcon-white-500": !isDark,
+          "bg-background":  isDark,
         },
       )}
     >
-      <Image
-        src={isDark ? "/icons/sun.svg" : "/icons/moon.svg"}
-        alt={isDark ? "Light Mode" : "Dark Mode"}
-        width={18}
-        height={18}
-      />
+      {isDark ? <SunIcon className={iconClassName}/> : <MoonIcon className={iconClassName} />}
     </button>
   );
 }

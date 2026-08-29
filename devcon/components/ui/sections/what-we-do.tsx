@@ -1,107 +1,66 @@
 import React from 'react';
+import { whatWeDo } from '@/lib/content/what-we-do';
+import clsx from 'clsx';
+import Image from 'next/image';
 
-interface WhatWeDoItem {
-  id: number;
-  title: string;
-  img: string;
-  span?: 'tall'; // marks the center, larger card
-  objectPosition?: string; // e.g. '30% 20%' to focus on a specific part of the photo
-  zoom?: number; // e.g. 1.3 to zoom in 30%
-  colorOverlay?: string; // CSS gradient/color layered on top with a blend mode for a pastel wash
-}
-
-const ITEMS: WhatWeDoItem[] = [
-  { 
-    id: 1, 
-    title: 'Workshops', 
-    img: '/images/workshops2.png',
-    colorOverlay: 'linear-gradient(135deg, rgba(255, 170, 0, 0.22) 0%, rgba(140, 110, 210, 0.25) 100%)'
-  },
-  {
-    id: 2,
-    title: 'Tech Talks',
-    img: '/images/techtalks2.png',
-    span: 'tall',
-    objectPosition: '15% 15%',
-    zoom: 1.05,
-    // Heavy signature wash: Yellowish/amber top-left passing into deep purple bottom-right
-    colorOverlay: 'linear-gradient(145deg, rgba(248, 174, 0, 0.22) 0%, rgba(210, 160, 245, 0.2) 45%, rgba(120, 90, 200, 0.3) 100%)',
-  },
-  { 
-    id: 3, 
-    title: 'Projects', 
-    img: '/images/projects.png',
-    colorOverlay: 'linear-gradient(135deg, rgba(255, 170, 0, 0.22) 0%, rgba(140, 110, 210, 0.22) 100%)'
-  },
-  { 
-    id: 4, 
-    title: 'Hackathons', 
-    img: '/images/hackathons2.png',
-    objectPosition: '50% 40%',
-    colorOverlay: 'linear-gradient(135deg, rgba(255, 170, 0, 0.22) 0%, rgba(140, 110, 210, 0.25) 100%)'
-  },
-  { 
-    id: 5, 
-    title: 'Community', 
-    img: '/images/community.png',
-    colorOverlay: 'linear-gradient(135deg, rgba(255, 170, 0, 0.22) 0%, rgba(140, 110, 210, 0.22) 100%)'
-  },
-];
-
+/**
+ * WhatWeDo — a bento-style photo grid showcasing DevCon Laguna's activities.
+ *
+ * Uses a 3-column asymmetric grid on `sm` and above:
+ *   [short card] [tall center card (row-span-2)] [short card]
+ *   [short card]                                 [short card]
+ *
+ * The center card is marked with `isTall: true` in the data.
+ * Each card is an image with a subtle bottom gradient and a hover zoom effect.
+ * Images and titles are sourced from `lib/content/what-we-do.ts`.
+ */
 export default function WhatWeDo() {
   return (
-    <section className="w-full bg-background px-4 py-16 sm:px-6 sm:py-20 md:px-6 md:py-24 font-inter">
+    <section id="what-we-do" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       {/* Heading */}
       <div className="mb-12 text-center">
-        <h2 className="text-3xl sm:text-display-sm md:text-display-md font-extrabold text-foreground">
-          What <span className="text-devcon-purple-bright">We Do</span>
+        <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
+          What <span className="text-devcon-purple-500">We Do</span>
         </h2>
 
-        <p className="mx-auto mt-4 max-w-[620px] text-center font-dm text-[18px] font-extralight leading-[30px] tracking-[0px] text-foreground">
+        <p className="mx-auto mt-6 max-w-xl text-center text-base text-muted">
           We create opportunities for developers of all skill levels to learn,
           connect, and grow through community-driven initiatives.
         </p>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_2.8fr_1.4fr] sm:grid-rows-2 gap-4 sm:gap-7 max-w-7xl mx-auto">
-        {ITEMS.map((item) => (
+      <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_2.8fr_1.4fr] sm:grid-rows-2 gap-4 sm:gap-7 w-full">
+        {whatWeDo.map((item) => (
           <div
             key={item.id}
-            className={`relative overflow-hidden rounded-[28px] group ${
-              item.span === 'tall' ? 'sm:row-span-2' : ''
-            }`}
+            className={clsx("relative overflow-hidden rounded-[28px] group", { 'sm:row-span-2': item.isTall })}
           >
-            <img
+            <Image
               src={item.img}
               alt={item.title}
-              style={
-                {
-                  objectPosition: item.objectPosition ?? '50% 50%',
-                  '--zoom': item.zoom ?? 1,
+              width={item.width}
+              height={item.height}
+              style={{
+                  objectPosition: '50% 50%',
+                  '--zoom': 1,
                 } as React.CSSProperties
               }
               className="absolute inset-0 w-full h-full object-cover scale-[var(--zoom)] transition-transform duration-500 group-hover:scale-[calc(var(--zoom)*1.05)]"
             />
 
-            {/*pastel color wash */}
-            {item.colorOverlay && (
-              <div
-                className="absolute inset-0 mix-blend-soft-light"
-                style={{ background: item.colorOverlay }}
-              />
-            )}
-
             {/* Subtle bottom shadow for text legibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-devcon-black/50 via-transparent to-transparent" />
 
             <div
-              className={`relative w-full ${
-                item.span === 'tall' ? 'h-[400px] sm:h-[600px]' : 'h-[220px] sm:h-[288px]'
-              }`}
+              className={clsx("relative w-full",
+                {
+                  'h-[400px] sm:h-[600px]': item.isTall,
+                  'h-[220px] sm:h-[288px]': !item.isTall
+                })}
             />
 
-            <h3 className="absolute bottom-9 left-6 text-devcon-white text-2xl font-bold drop-shadow-lg">
+            <h3 className="absolute bottom-9 left-6 text-devcon-white-500 text-2xl font-bold drop-shadow-lg">
               {item.title}
             </h3>
           </div>

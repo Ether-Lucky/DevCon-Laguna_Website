@@ -1,40 +1,42 @@
 import Image from 'next/image';
+import { stats } from '@/lib/content/stats';
 
-const stats = [
-  { name: 'Community Volunteers', value: 500, icon: { link: '/stat/people.svg', width: 75, height: 59 } },
-  { name: 'Events Organized', value: 30, icon: { link: '/stat/calendar.svg', width: 55, height: 65.39 } },
-  { name: 'Community Reached', value: 100, icon: { link: '/stat/map.svg', width: 66, height: 63.83 } },
-  { name: 'Industry Partners', value: 20, icon: { link: '/stat/shake-hands.svg', width: 102.73, height: 65.39 } },
-]
-
+/**
+ * Stats — a 2×2 (mobile) / 4-column (desktop) grid of community statistics.
+ *
+ * Each stat displays an SVG icon, a numeric value with a `+` suffix, and a label.
+ * Data is sourced from `lib/content/stats.ts` — update the values there.
+ *
+ * Note: this section uses `id="partners"` because it currently sits in the page
+ * position intended for a partners/stats band. Update the id if that changes.
+ */
 export default function Stats() {
   return (
-    <section
-      id="partners"
-      className='grid w-full grid-cols-2 gap-y-8 sm:gap-y-10 px-4 sm:px-6 py-8 sm:py-10 text-center md:grid-cols-4 md:gap-6 md:px-10 lg:px-16'
-    >
-      {stats.map((stat) => {
-        return (
-          <div
-            key={stat.name}
-            className='flex flex-col items-center gap-2'
-          >
-            <Image
-              src={stat.icon.link}
-              alt={stat.name}
-              width={stat.icon.width}
-              height={stat.icon.height}
-              className='h-16 w-auto object-contain'
-            />
-            <p className='text-2xl sm:text-4xl font-semibold leading-none tracking-tight text-foreground md:text-[44px]'>
-              {stat.value}<span className='text-muted'>+</span>
-            </p>
-            <p className='max-w-40 text-xs sm:text-sm font-semibold leading-snug text-muted md:text-base'>
-              {stat.name}
-            </p>
-          </div>
-        );
-      })}
+    <section id="partners" className="max-w-7xl mx-auto">
+      <div className="relative w-full grid grid-cols-2 sm:grid-cols-4 justify-between gap-8 md:gap-6 px-8 md:px-16 pt-0 pb-32 md:py-36 font-sans text-center">
+        {stats.map((stat) => {
+          return (
+            <div
+              key={stat.name}
+              className='flex flex-col items-center gap-2'
+            >
+              <Image
+                src={stat.icon.link}
+                alt={stat.name}
+                width={stat.icon.width}
+                height={stat.icon.height}
+                className='h-12 md:h-16 w-auto object-contain'
+              />
+              <p className='text-3xl md:text-5xl font-semibold leading-none tracking-tight text-foreground'>
+                {stat.value}<span className='text-muted'>+</span>
+              </p>
+              <p className='max-w-40 text-base md:text-2xl font-semibold leading-snug text-muted'>
+                {stat.name}
+              </p>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }
