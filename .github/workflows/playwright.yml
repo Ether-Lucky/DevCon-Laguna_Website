@@ -38,7 +38,9 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run functional and regression tests
-      run: npx playwright test tests/home.spec.ts tests/regression.spec.ts
+      # Every spec except the visual suite, which has its own job below.
+      # Discovered rather than listed so new spec files are picked up automatically.
+      run: npx playwright test $(ls tests/*.spec.ts | grep -v 'visual.spec.ts')
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
