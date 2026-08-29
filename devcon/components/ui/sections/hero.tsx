@@ -71,11 +71,12 @@ export default function Hero() {
             const { props: { srcSet: desktop } } = getImageProps({ ...common, src: "/hero/web.png", sizes: "60vw" });
             const { props: { srcSet: mobile, ...rest } } = getImageProps({ ...common, src: "/hero/mobile.png", sizes: "140vw" });
 
-            // `contents` removes the <picture> box from layout so the <img> stays the
-            // flex item, exactly as before art direction. Without it the inline
-            // <picture> wrapper adds line-box descender space and grew the hero ~40px.
+            // The <picture> carries the layout classes so it is the flex item with the
+            // exact box the <img> used to have. Do NOT use `display: contents` here:
+            // that promotes the <source> to a flex item too, adding one extra `gap`
+            // (16px) which narrows the text column and rewraps the heading.
             return (
-              <picture className="contents">
+              <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
                 <source media="(min-width: 768px)" srcSet={desktop} />
                 <img
                   {...rest}
@@ -83,7 +84,7 @@ export default function Hero() {
                   srcSet={mobile}
                   fetchPriority="high"
                   loading="eager"
-                  className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0"
+                  className="w-full h-auto"
                 />
               </picture>
             );
