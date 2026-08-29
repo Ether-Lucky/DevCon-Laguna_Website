@@ -1,17 +1,58 @@
 import type { Metadata } from "next";
 import ThemeProvider from "@/components/theme-provider";
 import StructuredData from "@/components/ui/structured-data";
+import { siteConfig } from "@/lib/site-config";
 import { dmSans, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
 
 /**
  * Site-wide metadata.
- * Update `title` and `description` to reflect the current page or section
- * when adding additional routes.
+ *
+ * `metadataBase` resolves the canonical host from the environment (see
+ * `lib/site-config`), which is what makes the Open Graph and canonical URLs
+ * absolute — social platforms reject relative ones. The share image itself is
+ * generated at build time by `app/opengraph-image.tsx`, so it does not need to
+ * be listed here.
+ *
+ * `title.template` applies to future routes: a page exporting
+ * `title: "Events"` renders as "Events | DevCon Laguna".
  */
 export const metadata: Metadata = {
-  title: "DevCon Laguna",
-  description: "The official website of DevCon Laguna — empowering developers through community, learning, and collaboration.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  keywords: [
+    "DevCon Laguna",
+    "Developers Connect",
+    "developer community Philippines",
+    "tech community Laguna",
+    "hackathons",
+    "developer events",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    locale: siteConfig.locale,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 /**
