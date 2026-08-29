@@ -71,8 +71,11 @@ export default function Hero() {
             const { props: { srcSet: desktop } } = getImageProps({ ...common, src: "/hero/web.png", sizes: "60vw" });
             const { props: { srcSet: mobile, ...rest } } = getImageProps({ ...common, src: "/hero/mobile.png", sizes: "140vw" });
 
+            // `contents` removes the <picture> box from layout so the <img> stays the
+            // flex item, exactly as before art direction. Without it the inline
+            // <picture> wrapper adds line-box descender space and grew the hero ~40px.
             return (
-              <picture>
+              <picture className="contents">
                 <source media="(min-width: 768px)" srcSet={desktop} />
                 <img
                   {...rest}
