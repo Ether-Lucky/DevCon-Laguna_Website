@@ -65,6 +65,25 @@ a build fix:
 
 If a build fails on one of these gates, the fix is the page, not the threshold.
 
+## Client JavaScript
+
+Under Lighthouse's mobile profile the CPU is throttled 4×, so script evaluation sits on the
+critical path and shows up as LCP **render delay** rather than as an obvious "slow script".
+Keep an eye on the total when adding dependencies:
+
+| | Total client JS |
+|---|---|
+| Before PERF-03 | 792 KB |
+| After PERF-03 | **676 KB** |
+
+framer-motion accounted for a 154.5 KB chunk while being used by a single component for three
+entrance effects. `ScrollReveal` now does the same work with a CSS transition driven by an
+`IntersectionObserver`, and mutates the node directly rather than through React state, so
+revealing a section costs no re-render.
+
+Before adding an animation or UI library, check whether a few lines of CSS would do — the cost
+lands on the metric that is hardest to attribute.
+
 ## The other gates
 
 | Job | What it enforces |
