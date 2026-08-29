@@ -92,7 +92,33 @@ lands on the metric that is hardest to attribute.
 | `test` | Functional and regression suites pass (`home`, `regression`, `seo`) |
 | `visual-regression` | Rendered output matches the committed Linux baselines — see [visual-regression.md](./visual-regression.md) |
 | `lighthouse` | The thresholds above |
-| `deploy` | Runs only on `prod`, and only after `lint`, `test` and `lighthouse` succeed |
+
+
+### Deployment is not part of this pipeline
+
+The live site is served by a Vercel project connected to the
+`laguna-devcon/DevCon-Laguna_Website` fork, not by CI in this repository. This repo previously
+carried a `deploy` job pointing at an older, abandoned Vercel project; it also lacked
+`--prod`, so it only ever published preview deployments while reporting success. It has been
+removed rather than left as a misleading green step.
+
+**Publishing is a push to the fork:**
+
+```bash
+git push deploy prod
+```
+
+(`deploy` is the git remote for `laguna-devcon/DevCon-Laguna_Website`. Add it once with
+`git remote add deploy https://github.com/laguna-devcon/DevCon-Laguna_Website.git`.)
+
+Do this after every merge to `prod`, or the deployed site silently falls behind. Confirm it
+landed:
+
+```bash
+curl -s https://dev-con-laguna-website-nine.vercel.app/robots.txt | head -3
+```
+
+A robots file means the new build is live; the 404 page means it is not.
 
 All checks run on pull requests as well as pushes. They previously carried an
 `if: github.ref == 'refs/heads/prod'` guard that is never true during a pull request, so

@@ -121,18 +121,6 @@ jobs:
         path: devcon/tests/visual.spec.ts-snapshots/
         retention-days: 30
 
-  deploy:
-    needs: [lint, test, lighthouse]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/prod' || github.event_name == 'workflow_dispatch'
-    steps:
-    - uses: actions/checkout@v4
-    - uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-version: 'latest'
 
   lighthouse:
     timeout-minutes: 10
