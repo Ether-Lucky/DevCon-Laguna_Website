@@ -38,7 +38,7 @@ in the sprints below.
 | Sprint | Theme | Duration | Delivers |
 |---|---|---|---|
 | **Sprint 2** | Dynamic Content, Contact & Quality Hardening | 2 weeks | Working contact form (closes FR-07), content data layer, SEO/metadata, accessibility + performance pass, analytics |
-| **Sprint 3** | Events & News Expansion | 2 weeks | Multi-page routing, event detail pages, blog/news section, event registration |
+| **Sprint 3** | Dynamic Content via Headless CMS | 2 weeks | Hosted headless CMS, CMS-driven Events and Officers, CMS-managed landing page images, ~30-minute cached revalidation, instant on-demand publish |
 
 ### Why this order
 
@@ -47,8 +47,17 @@ in the sprints below.
   without code changes), and lifts the SRS non-functional requirements — performance (NFR-01), usability
   (NFR-02), reliability (NFR-03), accessibility (NFR-05) — that a public landing page depends
   on. It introduces the first real backend touchpoint without committing to a full stack.
-- **Sprint 3** grows the site from one page into a content platform, reusing Sprint 2's data
-  layer. Still mostly frontend + light backend. This completes Phase 2.
+- **Sprint 3** makes the landing page genuinely dynamic. Featured events, officers, and the
+  main section images move to a **hosted headless CMS**, so content is updated by editors
+  rather than developers and no longer requires a redeploy. Content is cached and revalidated
+  on roughly a 30-minute interval, with an authenticated on-demand hook so an admin can push
+  an urgent change live instantly. This completes Phase 2.
+  - Content types in scope: **Events**, **Officers**, and the landing page images for the
+    hero/first section, the Who We Are carousel, What We Do, and the bottom section.
+  - A hosted CMS was chosen over building a bespoke admin app so the team gets the admin UI,
+    image hosting, and roles without maintaining a second product.
+  - *Event detail pages, a blog/news section, and event registration — previously proposed
+    for Sprint 3 — are deferred; the dynamic content foundation takes priority.*
 
 The detailed, ready-to-execute plan for the next sprint lives in
 [sprint-2-backlog.md](./sprint-2-backlog.md). Sprint 3 is directional and will be refined at

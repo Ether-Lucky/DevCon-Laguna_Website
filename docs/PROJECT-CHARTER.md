@@ -49,9 +49,11 @@ Phase 2 is delivered across two sprints (Sprint 2–3). The **immediate sprint (
 fully specified below and in the SRS; Sprint 3 is directional and refined at its planning
 session.
 
-> **Scope boundary:** Member application, authentication, member dashboards, and content
-> administration are handled by a **separate DevCon website** and are out of scope for this
-> project. The public "Join Us" call-to-action links out to that external site.
+> **Scope boundary:** Member application, authentication, and member dashboards are handled
+> by a **separate DevCon website** and are out of scope for this project. The public "Join Us"
+> call-to-action links out to that external site. Content administration for *this* site's
+> own content (events, officers, section images) is provided by a **hosted headless CMS**
+> adopted in Sprint 3 — not by a bespoke admin application built here.
 
 ### In Scope — Sprint 2 (current)
 
@@ -66,13 +68,19 @@ session.
 
 ### In Scope — Phase 2 roadmap (Sprint 3)
 
-- **Sprint 3 — Events & News Expansion:** multi-page routing, event detail pages, blog/news
-  section, event registration
+- **Sprint 3 — Dynamic Content via Headless CMS:** adopt a hosted headless CMS; drive the
+  Events and Officers sections and the key landing page images (hero, Who We Are carousel,
+  What We Do, bottom section) from it; cache content with ~30-minute revalidation plus an
+  authenticated on-demand publish for instant updates.
+
+*Event detail pages, a blog/news section, and event registration are deferred beyond Phase 2.*
 
 ### Out of Scope (Phase 2)
 
-- **Member application, authentication, member dashboards, and content administration —
-  handled by a separate DevCon website**
+- **Member application, authentication, and member dashboards — handled by a separate DevCon
+  website**
+- **A bespoke, self-built admin application** — content administration is provided by the
+  hosted headless CMS adopted in Sprint 3, not by an admin app built in this project
 - E-commerce or paid ticketing/payments
 - Native mobile applications
 - Third-party integrations beyond those required by the sprint stories (email, analytics)
@@ -126,7 +134,7 @@ session.
 | Sprint | Theme | Dates (2026) |
 |---|---|---|
 | Sprint 2 | Dynamic Content, Contact & Quality Hardening | Aug 12 – Aug 25 |
-| Sprint 3 | Events & News Expansion | Aug 26 – Sep 8 |
+| Sprint 3 | Dynamic Content via Headless CMS | Aug 26 – Sep 8 |
 
 | Milestone | Target Date (2026) |
 |---|---|
