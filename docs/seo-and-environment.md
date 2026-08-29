@@ -133,3 +133,22 @@ Two things to know when editing it:
 host, so the two can never drift apart.
 
 Validate changes with Google's Rich Results Test or the schema.org validator.
+
+## Why the hero is not scroll-revealed (PERF-02)
+
+Every homepage section is wrapped in `ScrollReveal`, which server-renders its children at
+`opacity: 0` and reveals them only after the bundle loads, React hydrates, framer-motion
+initialises, an IntersectionObserver fires, and a 0.85s animation completes.
+
+For below-the-fold sections that is exactly the intent. For the hero it was costly: the hero
+holds the Largest Contentful Paint element, so the browser had the image decoded and ready but
+could not paint it. It measured as **2255ms of LCP "render delay"** — 64% of LCP — while the
+image itself took only 539ms to load.
+
+The hero therefore renders in a plain `<div className="w-full">`, the same box `ScrollReveal`
+produces on its reduced-motion path, so the layout is unchanged.
+
+**Do not wrap the hero in `ScrollReveal` again.** Three tests in `tests/regression.spec.ts`
+enforce this: no `opacity:0` wrapper may precede `#hero` in the server HTML, the hero image
+must have no transparent ancestor, and below-the-fold sections must still animate — so the
+rule cannot be satisfied by disabling the effect site-wide.

@@ -28,9 +28,18 @@ export default function Home() {
     <>
       <NavBar />
       <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground mt-0 overflow-hidden">  
-        <ScrollReveal className="w-full" variant="fade" amount={0.05}>
+        {/*
+          The hero is above the fold and holds the Largest Contentful Paint
+          element, so it is deliberately NOT scroll-revealed. ScrollReveal
+          server-renders its children at opacity 0 and only reveals them after
+          the bundle loads, React hydrates, framer-motion initialises, an
+          IntersectionObserver fires and a 0.85s animation runs — which showed
+          up as 2255ms of LCP "render delay". A plain wrapper paints immediately
+          and keeps the same `w-full` box ScrollReveal would have rendered.
+        */}
+        <div className="w-full">
           <Hero />
-        </ScrollReveal>
+        </div>
         <ScrollReveal className="w-full" variant="scale">
           <Stats />
         </ScrollReveal>
