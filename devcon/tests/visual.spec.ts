@@ -73,6 +73,16 @@ test('events section snapshot', async ({ page }) => {
   });
 });
 
+// Restored coverage: the Officers section renders from the content data layer
+// and had its snapshot removed in 94e664c. The Programs & Activities section is
+// deliberately still uncovered because it is not rendered on the page (see #87).
+test('officers section snapshot', async ({ page }) => {
+  await expect(page.locator('#officers')).toHaveScreenshot('officers-section.png', {
+    maxDiffPixelRatio: 0.01,
+    timeout: 60000,
+  });
+});
+
 test('footer snapshot', async ({ page }) => {
   await expect(page.locator('footer')).toHaveScreenshot('footer-section.png', {
     maxDiffPixelRatio: 0.01,
