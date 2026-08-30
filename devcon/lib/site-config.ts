@@ -19,12 +19,14 @@ function resolveSiteUrl(): string {
   return 'http://localhost:3000';
 }
 
+// No `email` here on purpose: DevCon Laguna does not own devconlaguna.com, and
+// advertising an address the organisation cannot receive at is worse than none.
+// Visitors are pointed at the contact form and the social profiles instead.
 export const siteConfig = {
   name: 'DevCon Laguna',
   title: 'DevCon Laguna — Developers Connect Laguna',
   description:
     'DevCon Laguna is a community of developers, students, and tech enthusiasts in Laguna, Philippines. Discover our events, officers, and programs.',
   url: resolveSiteUrl(),
-  email: 'hello@devconlaguna.com',
   locale: 'en_PH',
 } as const;

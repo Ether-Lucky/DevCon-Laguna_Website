@@ -16,6 +16,9 @@ import { socialLinks } from '@/lib/content/social-links';
  *
  * Social profile URLs are read from the existing content data so there is a single
  * source of truth; adding a platform there also advertises it to search engines.
+ *
+ * No `email` property: the organisation has no address it owns, and publishing an
+ * unreachable one to search engines is worse than omitting it (CON-01-BT-01).
  */
 export default function StructuredData() {
   const organization = {
@@ -26,7 +29,6 @@ export default function StructuredData() {
     url: siteConfig.url,
     logo: `${siteConfig.url}/logo/dark-logo.png`,
     image: `${siteConfig.url}/logo/dark-logo.png`,
-    email: siteConfig.email,
     description: siteConfig.description,
     address: {
       '@type': 'PostalAddress',
