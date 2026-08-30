@@ -7,6 +7,7 @@ import Events from '@/components/ui/sections/events';
 import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
 import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
+import Contact from '@/components/ui/sections/contact';
 import Footer from '@/components/ui/sections/footer';
 import ScrollReveal from '@/components/ui/scroll-reveal';
 
@@ -57,6 +58,9 @@ export default function Home() {
         </ScrollReveal>
         <ScrollReveal className="w-full">
           <Officers />
+        </ScrollReveal>
+        <ScrollReveal className="w-full">
+          <Contact />
         </ScrollReveal>
         {/* <ScrollReveal className="w-full">
           <ProgramsAndActivities />
