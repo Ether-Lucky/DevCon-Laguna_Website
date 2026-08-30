@@ -45,11 +45,13 @@ export default function Hero() {
               label="Volunteer"
               href="#"
               variant="primary"
+              analyticsId="hero-volunteer"
             />
             <Button
               label="Learn More"
               href="#"
               variant="outline"
+              analyticsId="hero-learn-more"
             />
           </div>
         </div>

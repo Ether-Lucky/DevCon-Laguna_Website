@@ -21,6 +21,8 @@ interface ButtonProps {
   variant?: "primary" | "outline";
   icon?: React.ReactNode | null;
   iconWidth?: string;
+  /** Marks this button as a tracked CTA (ANL-01). Emitted as `data-analytics-id`. */
+  analyticsId?: string;
   className?: string;
 }
 
@@ -45,6 +47,7 @@ export default function Button({
   icon = <ArrowUpRightIcon />,
   iconWidth = "w-6",
   className,
+  analyticsId,
 }: ButtonProps) {
 
   const buttonFinalClassName = clsx(
@@ -60,13 +63,13 @@ export default function Button({
 
   return (href ?
     (
-      <Link href={href} className={buttonFinalClassName}>
+      <Link href={href} className={buttonFinalClassName} data-analytics-id={analyticsId}>
         {label}
         {icon && <span className={iconClassName}>{icon}</span>}
       </Link>
     ) :
     (
-      <button onClick={onClick} className={buttonFinalClassName} type="button">
+      <button onClick={onClick} className={buttonFinalClassName} type="button" data-analytics-id={analyticsId}>
         {label}
         {icon && <span className={iconClassName}>{icon}</span>}
       </button>
