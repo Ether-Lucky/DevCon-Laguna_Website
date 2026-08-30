@@ -58,6 +58,7 @@ export default function Home() {
         <ScrollReveal className="w-full">
           <Officers />
         </ScrollReveal>
+
         {/* <ScrollReveal className="w-full">
           <ProgramsAndActivities />
         </ScrollReveal> */}

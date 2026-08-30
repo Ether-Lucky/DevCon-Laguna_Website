@@ -22,12 +22,12 @@ type NavLinksProps = {
  * Update this array to add, remove, or reorder nav items.
  */
 const navLinks = [
-  { name: "Home", href: "#hero" },
-  { name: "About", href: "#about" },
-  { name: "Events", href: "#events" },
-  { name: "Officers", href: "#officers" },
-  { name: "Partners", href: "#partners" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "/" },
+  { name: "About", href: "/#about" },
+  { name: "Events", href: "/#events" },
+  { name: "Officers", href: "/#officers" },
+  { name: "Partners", href: "/#partners" },
+  { name: "Contact", href: "/contact" },
 ];
 
 /**

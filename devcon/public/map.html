@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #F7F7F5; overflow: hidden; }
+        html.dark body { background-color: #141416; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; }
+
+        /* Light mode tile styling for a minimalist, clean aesthetic */
+        .leaflet-tile {
+            filter: brightness(103%) contrast(88%) grayscale(70%) saturate(70%);
+        }
+
+        /* Dark mode tile styling to match dark prototype */
+        html.dark .leaflet-tile {
+            filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(110%) grayscale(85%);
+        }
+
+        /* Concentric circle radar pins matching the prototype */
+        .radar-pin {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-pin .pulse {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(106, 13, 242, 0.35);
+            border: 1.5px solid rgba(106, 13, 242, 0.7);
+        }
+
+        .radar-pin .core {
+            position: relative;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6A0DF2;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        /* Dark mode POI chips like the dark mockup */
+        .poi-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            color: #ffffff;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+        .poi-blue { background: #3B82F6; width: 22px; height: 22px; }
+        .poi-orange { background: #F97316; width: 22px; height: 22px; }
+        .poi-red { background: #EF4444; width: 22px; height: 22px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const theme = urlParams.get('theme') || 'light';
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+
+        // Center on Laguna, Philippines
+        const centerCoords = [14.2198, 121.3576];
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: true,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            touchZoom: true
+        }).setView(centerCoords, 14);
+
+        // Standard OpenStreetMap tiles - completely open & no API key required
+        const osmTiles = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+        
+        L.tileLayer(osmTiles, {
+            maxZoom: 19,
+            subdomains: ['a','b','c']
+        }).addTo(map);
+
+        // Navigation route matching the prototype
+        const routeCoords = [
+            [14.2120, 121.3480],
+            [14.2160, 121.3540],
+            [14.2185, 121.3530],
+            [14.2250, 121.3620],
+            [14.2230, 121.3650]
+        ];
+
+        L.polyline(routeCoords, {
+            color: '#6A0DF2',
+            weight: 4,
+            opacity: 0.9,
+            lineCap: 'round',
+            lineJoin: 'round'
+        }).addTo(map);
+
+        // Custom Radar Icons
+        const radarIcon = L.divIcon({
+            className: 'radar-pin',
+            html: '<div class="pulse"></div><div class="core"></div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        L.marker([14.2120, 121.3480], { icon: radarIcon }).addTo(map);
+        L.marker([14.2230, 121.3650], { icon: radarIcon }).addTo(map);
+
+        // Add additional decorative POIs if in dark mode
+        if (theme === 'dark') {
+            const hotelIcon = L.divIcon({
+                className: 'poi-pin poi-blue',
+                html: '<span>&#128716;</span>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
+            const foodIcon = L.divIcon({
+                className: 'poi-pin poi-orange',
+                html: '<span>&#127860;</span>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
+            const hospIcon = L.divIcon({
+                className: 'poi-pin poi-red',
+                html: '<span>H</span>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
+
+            L.marker([14.2260, 121.3510], { icon: hotelIcon }).addTo(map);
+            L.marker([14.2155, 121.3600], { icon: foodIcon }).addTo(map);
+            L.marker([14.2240, 121.3680], { icon: hospIcon }).addTo(map);
+        }
+
+        // Parent window listener for live theme changes
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'THEME_CHANGE') {
+                const newTheme = event.data.theme;
+                if (newTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
