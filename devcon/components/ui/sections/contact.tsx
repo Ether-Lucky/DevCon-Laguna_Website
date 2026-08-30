@@ -34,6 +34,7 @@ export default function Contact() {
 
   // Bot mitigation: capture timestamp when form mounted
   const formLoadTimestamp = useRef<number | null>(null);
+  const mapIframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -48,6 +49,15 @@ export default function Contact() {
     setMounted(true);
     formLoadTimestamp.current = Date.now();
   }, []);
+
+  useEffect(() => {
+    if (mapIframeRef.current && mapIframeRef.current.contentWindow) {
+      mapIframeRef.current.contentWindow.postMessage(
+        { type: 'THEME_CHANGE', theme: resolvedTheme },
+        '*'
+      );
+    }
+  }, [resolvedTheme]);
 
   const validate = () => {
     const errors: { [key: string]: string } = {};
@@ -147,6 +157,7 @@ export default function Contact() {
           <div className="w-full h-48 sm:h-64 lg:h-72 rounded-[32px] overflow-hidden bg-surface border border-border relative shadow-sm">
             {mounted && (
               <iframe
+                ref={mapIframeRef}
                 src={`/map.html?theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
                 className="w-full h-full border-0 transition-opacity duration-500"
                 title="DevCon Laguna Community Hub Map"
@@ -190,7 +201,7 @@ export default function Contact() {
                 aria-invalid={!!fieldErrors.name}
               />
               {fieldErrors.name && (
-                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1">
+                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1" role="alert">
                   <span aria-hidden>ⓘ</span> {fieldErrors.name}
                 </p>
               )}
@@ -212,7 +223,7 @@ export default function Contact() {
                 aria-invalid={!!fieldErrors.email}
               />
               {fieldErrors.email && (
-                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1">
+                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1" role="alert">
                   <span aria-hidden>ⓘ</span> {fieldErrors.email}
                 </p>
               )}
@@ -234,7 +245,7 @@ export default function Contact() {
                 aria-invalid={!!fieldErrors.subject}
               />
               {fieldErrors.subject && (
-                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1">
+                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1" role="alert">
                   <span aria-hidden>ⓘ</span> {fieldErrors.subject}
                 </p>
               )}
@@ -256,20 +267,20 @@ export default function Contact() {
                 aria-invalid={!!fieldErrors.message}
               />
               {fieldErrors.message && (
-                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1">
+                <p className="text-xs font-mono text-devcon-orange-500 flex items-center gap-1 mt-1" role="alert">
                   <span aria-hidden>ⓘ</span> {fieldErrors.message}
                 </p>
               )}
             </div>
 
             {status === 'error' && errorMessage && (
-              <div className="p-4 border border-devcon-orange-500 bg-devcon-orange-500/10 text-devcon-orange-500 text-sm font-sans">
+              <div className="p-4 border border-devcon-orange-500 bg-devcon-orange-500/10 text-devcon-orange-500 text-sm font-sans" role="alert">
                 {errorMessage}
               </div>
             )}
 
             {status === 'success' ? (
-              <div className="p-4 border border-devcon-lime-500 rounded-xl bg-transparent flex items-center gap-3 mt-4">
+              <div className="p-4 border border-devcon-lime-500 rounded-xl bg-transparent flex items-center gap-3 mt-4" role="status" aria-live="polite">
                 <div className="w-6 h-6 bg-devcon-lime-500 flex items-center justify-center rounded-sm shrink-0">
                   <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1 5L4.5 8.5L12.5 1" stroke="#141416" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -281,8 +292,9 @@ export default function Contact() {
               </div>
             ) : (
               <Button 
+                type="submit"
+                disabled={status === 'submitting'}
                 label={status === 'submitting' ? 'SENDING...' : 'SEND MESSAGE'} 
-                onClick={() => handleSubmit()} 
                 className="w-full mt-4 rounded-[32px] !py-4 uppercase tracking-widest text-sm"
                 icon={null}
               />

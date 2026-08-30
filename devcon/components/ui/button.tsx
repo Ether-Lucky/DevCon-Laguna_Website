@@ -22,6 +22,8 @@ interface ButtonProps {
   icon?: React.ReactNode | null;
   iconWidth?: string;
   className?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 /**
@@ -45,14 +47,17 @@ export default function Button({
   icon = <ArrowUpRightIcon />,
   iconWidth = "w-6",
   className,
+  type = "button",
+  disabled = false,
 }: ButtonProps) {
 
   const buttonFinalClassName = clsx(
-    "group font-sans text-lg font-semibold flex flex-row items-center text-center justify-center rounded-full gap-2 px-6 py-2 cursor-pointer w-max",
+    "group font-sans text-lg font-semibold flex flex-row items-center text-center justify-center rounded-full gap-2 px-6 py-2 cursor-pointer w-max transition-opacity",
     className,
     {
       "bg-devcon-lime-500 text-devcon-black-500 hover:bg-opacity-90 active:bg-opacity-80": variant === "primary",
       "border border-foreground/40 bg-transparent text-foreground hover:border-foreground/60 hover:bg-foreground/10": variant === "outline",
+      "opacity-60 cursor-not-allowed pointer-events-none": disabled,
     },
   );
 
@@ -66,7 +71,7 @@ export default function Button({
       </Link>
     ) :
     (
-      <button onClick={onClick} className={buttonFinalClassName} type="button">
+      <button onClick={onClick} className={buttonFinalClassName} type={type} disabled={disabled}>
         {label}
         {icon && <span className={iconClassName}>{icon}</span>}
       </button>
