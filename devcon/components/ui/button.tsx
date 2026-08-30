@@ -61,9 +61,18 @@ export default function Button({
 
   const iconClassName = `${iconWidth} transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5`
 
+  // An absolute href points off-site (for example the DevConnect Portal), so open
+  // it in a new tab and add rel="noopener noreferrer" for safety.
+  const isExternal = Boolean(href && /^https?:\/\//.test(href));
+
   return (href ?
     (
-      <Link href={href} className={buttonFinalClassName} data-analytics-id={analyticsId}>
+      <Link
+        href={href}
+        className={buttonFinalClassName}
+        data-analytics-id={analyticsId}
+        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      >
         {label}
         {icon && <span className={iconClassName}>{icon}</span>}
       </Link>

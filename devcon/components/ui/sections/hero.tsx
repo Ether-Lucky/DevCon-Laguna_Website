@@ -1,6 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
+import { siteConfig } from '@/lib/site-config';
 
 /**
  * Hero — the full-width landing section at the top of the homepage.
@@ -43,13 +44,13 @@ export default function Hero() {
             />
             <Button
               label="Volunteer"
-              href="#"
+              href={siteConfig.portalUrl}
               variant="primary"
               analyticsId="hero-volunteer"
             />
             <Button
               label="Learn More"
-              href="#"
+              href={siteConfig.portalUrl}
               variant="outline"
               analyticsId="hero-learn-more"
             />

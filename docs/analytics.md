@@ -57,6 +57,36 @@ Delegation keeps `Button` a server component.
 Nothing else is needed — the listener picks it up. Event names live in `lib/analytics.ts`, so
 a typo cannot silently split a metric into two.
 
+## ⚠️ Custom events need a Vercel Pro plan
+
+The project is on the **Hobby (free)** plan, where Web Analytics records **pageviews only**.
+`cta_click` and `contact_submitted` are accepted client-side and queued, but never recorded,
+so they will not appear in the dashboard.
+
+The instrumentation is deliberately kept anyway: it is correct, tested, and starts reporting
+the moment the project moves to Pro, with no code change. But **do not treat an empty custom
+event list as a bug** — on Hobby it is expected.
+
+If event-level tracking matters before any plan upgrade, GA4 is the usual alternative: it
+reports custom events on its free tier, but it uses cookies and would require a consent
+banner, which is exactly why Vercel Analytics was chosen first.
+
+## Verifying it works
+
+The analytics script is served from a **randomised path**, not `/_vercel/insights/script.js` —
+Vercel does this so content blockers cannot recognise it by URL. Checking for the old path
+gives a false negative.
+
+To confirm: open DevTools → Network, filter for the hash in the script URL, and reload. A
+`script.js` returning **200** means the integration is live.
+
+Two things will stop data appearing even when the code is correct:
+
+- **The deployment predates enabling Analytics.** The routes are provisioned at deploy time, so
+  enabling it does not retrofit a running deployment — redeploy.
+- **Automated traffic is filtered.** Vercel excludes bot and scripted sessions by design, so a
+  headless browser cannot be used to confirm a counted pageview. That check needs a real visit.
+
 ## Cost
 
 `@vercel/analytics` adds about **20KB** to the client bundle (676KB → 696KB). Worth watching if

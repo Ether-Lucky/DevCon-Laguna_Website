@@ -29,4 +29,11 @@ export const siteConfig = {
     'DevCon Laguna is a community of developers, students, and tech enthusiasts in Laguna, Philippines. Discover our events, officers, and programs.',
   url: resolveSiteUrl(),
   locale: 'en_PH',
+  /**
+   * DevConnect Portal — the separate application where visitors register as
+   * members or volunteers, and where officers and admins manage events,
+   * officers and members. Every "Join Us" / "Volunteer" call to action on this
+   * landing page sends people here.
+   */
+  portalUrl: 'https://devconnect-portal-seven.vercel.app/',
 } as const;
