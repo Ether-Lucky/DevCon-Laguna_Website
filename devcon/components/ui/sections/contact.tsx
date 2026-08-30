@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { validateContact, type ContactErrors, type ContactPayload } from '@/lib/contact-schema';
+import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import SocialMedia from '@/components/ui/sections/social-media';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
@@ -83,6 +84,9 @@ export default function Contact() {
 
       setValues(EMPTY);
       setStatus('sent');
+      // Reported only on a confirmed send, so the metric counts real enquiries
+      // rather than submit attempts (ANL-01).
+      trackEvent(ANALYTICS_EVENTS.contactSubmitted);
     } catch {
       setFormError('We could not reach the server. Please try again shortly.');
       setStatus('error');
