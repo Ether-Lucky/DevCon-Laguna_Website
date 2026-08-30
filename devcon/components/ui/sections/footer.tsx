@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { siteConfig } from '@/lib/site-config';
 import Logo from '../logo';
 import SocialMedia from './social-media';
 
@@ -47,7 +48,7 @@ export default function Footer() {
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Our Chapters</Link>
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">What We Do</Link>
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Events</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Join Us</Link>
+              <Link href={siteConfig.portalUrl} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Join Us</Link>
             </div>
 
             {/* Column 2 */}
@@ -61,7 +62,7 @@ export default function Footer() {
             {/* Column 3 */}
             <div className="flex flex-col gap-3">
               <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">Support</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Volunteer</Link>
+              <Link href={siteConfig.portalUrl} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Volunteer</Link>
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Donate</Link>
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Partners</Link>
               <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Sponsors</Link>

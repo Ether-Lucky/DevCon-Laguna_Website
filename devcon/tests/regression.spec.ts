@@ -169,3 +169,46 @@ test.describe('#90 orphan asset', () => {
     expect(response.status()).toBe(404);
   });
 });
+
+// CTA-01 (#112) — the primary calls to action must actually convert.
+//
+// "Join Us" had no href at all, so Button rendered an inert <button>; the hero
+// CTAs pointed at "#". They now link to the DevConnect Portal, the separate app
+// where visitors register as members or volunteers.
+test.describe('#112 primary CTAs', () => {
+  const PORTAL = 'devconnect-portal-seven.vercel.app';
+
+  test('every Join Us, Volunteer and Learn More links to the portal', async ({ page }) => {
+    const ctas = page.locator('a', { hasText: /^(Join Us|Volunteer|Learn More)$/ });
+    const count = await ctas.count();
+    expect(count, 'the CTAs should be present').toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      await expect(ctas.nth(i)).toHaveAttribute('href', new RegExp(PORTAL));
+    }
+  });
+
+  test('the nav Join Us is a real link, not an inert button', async ({ page }) => {
+    // With no href, Button renders <button> with no handler — nothing happens on click.
+    const navJoin = page.locator('[data-analytics-id="nav-join-us"]').first();
+    expect(await navJoin.evaluate((el) => el.tagName)).toBe('A');
+    await expect(navJoin).toHaveAttribute('href', new RegExp(PORTAL));
+  });
+
+  test('portal links open in a new tab with a safe rel', async ({ page }) => {
+    const links = page.locator(`a[href*="${PORTAL}"]`);
+    const count = await links.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      await expect(links.nth(i)).toHaveAttribute('target', '_blank');
+      // Without noopener the opened page can reach back via window.opener.
+      await expect(links.nth(i)).toHaveAttribute('rel', /noopener/);
+    }
+  });
+
+  test('no primary CTA is left pointing at "#"', async ({ page }) => {
+    const dead = page.locator('a[href="#"]', { hasText: /^(Join Us|Volunteer|Learn More)$/ });
+    await expect(dead).toHaveCount(0);
+  });
+});
