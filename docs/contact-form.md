@@ -21,6 +21,9 @@ Set these in the Vercel project. **Never commit them.**
 | `GMAIL_USER` | **yes, to deliver** | Gmail address messages are sent from |
 | `GMAIL_APP_PASSWORD` | **yes, to deliver** | 16-character Google app password |
 | `CONTACT_TO_EMAIL` | no | Destination inbox. Defaults to `GMAIL_USER` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | no | Turnstile site key. **Must be set at build time** |
+| `TURNSTILE_SECRET` | no | Turnstile secret key, server only |
+| `TURNSTILE_HOSTNAMES` | with Turnstile | Comma-separated hostnames the widget may be solved on |
 
 ### Why Gmail SMTP and not Resend
 
@@ -59,6 +62,67 @@ channel, alongside the form and the other social profiles. `siteConfig` delibera
 **Do not reintroduce an email address unless the organisation actually controls it.** Four
 tests in `tests/contact.spec.ts` enforce this: no `mailto:` link, no occurrence of the domain
 in the served HTML, no `email` in the structured data, and the Facebook link present.
+
+## Bot protection (CON-02)
+
+Two independent layers.
+
+### 1. Honeypot — always on
+
+A hidden `website` field. A real user never fills it; a naive bot often does. The endpoint
+answers **200** and sends nothing, so a bot gets no signal it was detected. No configuration.
+
+### 2. Cloudflare Turnstile — active once configured
+
+Turnstile is **opt-in**. With no `TURNSTILE_SECRET`, verification returns `skipped` and the
+form works normally with the honeypot alone. That keeps the form usable during setup rather
+than locking it behind a challenge that is not there yet.
+
+Once a secret **is** set, every failure path is closed: a missing or oversized token, an
+unreachable siteverify, a non-2xx response, a non-JSON body, a mismatched action or an
+unexpected hostname all reject with **403**.
+
+**Three checks, not one.** `success === true` on its own is not sufficient:
+
+- **`action`** must equal `contact`. Otherwise a token minted for a different surface using the
+  same site key would pass. This is not theoretical — during testing, a bogus token was
+  rejected specifically by the action check.
+- **`hostname`** must be in `TURNSTILE_HOSTNAMES`. Otherwise a token solved on an attacker's
+  page using the same site key would pass.
+
+> ⚠️ A production `TURNSTILE_HOSTNAMES` must **not** include `localhost` or `127.0.0.1`.
+> Accepting those in production lets a token solved locally be replayed against the live site.
+
+**Tokens are single-use.** The widget is rendered explicitly so the form can hold its id and
+call `turnstile.reset()` after every attempt. Without that, a second attempt would reuse a
+spent token and fail verification for no visible reason.
+
+**Verification is server-side only.** The browser sends the token to our endpoint; our endpoint
+calls siteverify. A browser must never call siteverify — that would expose the secret.
+
+### Setting it up
+
+1. Create a widget at Cloudflare → Turnstile, **Managed** mode.
+2. Add the domains: the production hostname, plus `localhost` for development.
+3. Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` and `TURNSTILE_HOSTNAMES`.
+4. **Redeploy.** `NEXT_PUBLIC_*` variables are inlined at build time, so the widget will not
+   appear until a build runs with the key present. Setting it on a running deployment does
+   nothing.
+
+### Testing it
+
+Cloudflare publishes [test keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/)
+that always pass or always fail, which is how the enforced path was verified here.
+
+Note the automated suite covers only the unconfigured state. **Turnstile deliberately resists
+headless automation**, so a real token cannot be obtained in CI — that is the product working
+as intended. The enforced path was checked by hand:
+
+```
+no token          → 403  "missing-token"
+bogus token       → 403  "action-mismatch"
+unconfigured      → 200  (honeypot only, form works)
+```
 
 ## Behaviour
 

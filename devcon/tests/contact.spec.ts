@@ -234,3 +234,65 @@ test.describe('CON-01-BT-01 no unowned contact address', () => {
     await expect(link).toHaveAttribute('rel', /noopener/);
   });
 });
+
+/**
+ * CON-02 (#60) — bot protection.
+ *
+ * Two layers: the honeypot (always on) and Cloudflare Turnstile (active once keys
+ * are configured). These run against the default build, where Turnstile is not
+ * configured, so they assert the unconfigured behaviour is safe and that the
+ * honeypot still does its job.
+ *
+ * The enforced path cannot be exercised here: Turnstile deliberately resists
+ * headless automation, so a real token cannot be obtained in CI. It was verified
+ * manually with Cloudflare's official test keys — see docs/contact-form.md.
+ */
+test.describe('CON-02 bot protection', () => {
+  test('the honeypot silently drops a bot submission', async ({ request }) => {
+    const response = await request.post('/api/contact', {
+      data: {
+        name: 'Bot Name',
+        email: 'bot@spam.example',
+        subject: 'Cheap watches',
+        message: 'Buy our products right now please',
+        website: 'http://spam.example',
+      },
+    });
+    // 200 so the bot gets no signal that it was detected.
+    expect(response.status()).toBe(200);
+  });
+
+  test('the honeypot field is present but hidden from real users', async ({ page }) => {
+    await page.goto('/#contact');
+    const honeypot = page.locator('#website');
+    await expect(honeypot).toHaveCount(1);
+    await expect(honeypot).toBeHidden();
+  });
+
+  test('the form submits a cf-turnstile-response field', async ({ page }) => {
+    // Present even when Turnstile is unconfigured, so enabling it needs no
+    // client change — only environment variables.
+    let body: Record<string, unknown> = {};
+    await page.route('**/api/contact', (route) => {
+      body = JSON.parse(route.request().postData() ?? '{}');
+      return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+    });
+
+    await page.goto('/#contact');
+    await page.fill('#name', 'Juan Dela Cruz');
+    await page.fill('#email', 'juan@example.com');
+    await page.fill('#subject', 'Speaking proposal');
+    await page.fill('#message', 'I would love to speak at the next DevCon Laguna event.');
+    await page.getByRole('button', { name: /send message/i }).click();
+    await expect(page.getByTestId('contact-success')).toBeVisible();
+
+    expect(Object.keys(body)).toContain('cf-turnstile-response');
+  });
+
+  test('with Turnstile unconfigured the form still works', async ({ page }) => {
+    // Turnstile must be opt-in: a missing site key cannot block legitimate use.
+    await page.goto('/#contact');
+    await expect(page.getByTestId('turnstile-widget')).toHaveCount(0);
+    await expect(page.locator('#name')).toBeVisible();
+  });
+});
