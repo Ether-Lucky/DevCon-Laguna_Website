@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 import { validateContact, type ContactPayload } from '@/lib/contact-schema';
-import { siteConfig } from '@/lib/site-config';
 
 /**
- * Contact form submission endpoint (CON-01).
+ * Contact form submission endpoint (CON-01, CON-01-BT-01).
  *
- * Delivery uses Resend over plain HTTP rather than its SDK, to avoid adding a
- * dependency for one request. Configure with environment variables — never commit
- * credentials:
+ * Delivery goes through Gmail SMTP with an app password. DevCon Laguna does not
+ * own a domain — the site is served from a Vercel subdomain — so providers that
+ * require a verified sending domain (Resend, Postmark, SES) cannot be used.
  *
- *   RESEND_API_KEY    server-side API key
- *   CONTACT_TO_EMAIL  destination inbox (defaults to siteConfig.email)
- *   CONTACT_FROM_EMAIL sender on a Resend-verified domain
+ * Configure with environment variables; never commit credentials:
  *
- * Until RESEND_API_KEY is set the endpoint validates input and returns 503 with a
- * clear message, so the form is testable end-to-end and fails honestly rather than
- * pretending to have sent something.
+ *   GMAIL_USER          the Gmail address messages are sent from
+ *   GMAIL_APP_PASSWORD  16-character app password (needs 2-Step Verification)
+ *   CONTACT_TO_EMAIL    destination inbox; defaults to GMAIL_USER
+ *
+ * With the credentials unset the endpoint validates input and returns 503 with a
+ * clear message, so the form is testable end to end and fails honestly rather
+ * than pretending to have sent something.
  */
-
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 /** Escapes text before it is placed into the HTML email body. */
 function escapeHtml(value: string): string {
@@ -54,50 +54,42 @@ export async function POST(request: Request) {
   const subject = body.subject!.trim();
   const message = body.message!.trim();
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!user || !pass) {
     // Configuration gap, not user error — say so plainly instead of a fake success.
-    console.error('[contact] RESEND_API_KEY is not set; cannot deliver message.');
+    console.error('[contact] GMAIL_USER / GMAIL_APP_PASSWORD are not set; cannot deliver.');
     return NextResponse.json(
-      { error: 'The contact form is not configured yet. Please email us directly.' },
+      { error: 'The contact form is not configured yet. Please reach us on social media.' },
       { status: 503 },
     );
   }
 
-  const to = process.env.CONTACT_TO_EMAIL ?? siteConfig.email;
-  const from = process.env.CONTACT_FROM_EMAIL ?? `DevCon Laguna <onboarding@resend.dev>`;
+  const to = process.env.CONTACT_TO_EMAIL ?? user;
 
   try {
-    const response = await fetch(RESEND_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        reply_to: email,
-        subject: `[Website] ${subject}`,
-        html: `
-          <h2>New message from the DevCon Laguna website</h2>
-          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
-          <p><strong>Message:</strong></p>
-          <p>${escapeHtml(message).replace(/\n/g, '<br />')}</p>
-        `,
-      }),
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass },
     });
 
-    if (!response.ok) {
-      const detail = await response.text();
-      console.error('[contact] Resend rejected the message:', response.status, detail);
-      return NextResponse.json(
-        { error: 'We could not send your message. Please try again shortly.' },
-        { status: 502 },
-      );
-    }
+    await transport.sendMail({
+      from: `DevCon Laguna Website <${user}>`,
+      to,
+      // Replying goes to the visitor, not to the site's own mailbox.
+      replyTo: `${name} <${email}>`,
+      subject: `[Website] ${subject}`,
+      text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,
+      html: `
+        <h2>New message from the DevCon Laguna website</h2>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+        <p><strong>Message:</strong></p>
+        <p>${escapeHtml(message).replace(/\n/g, '<br />')}</p>
+      `,
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {

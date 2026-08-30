@@ -202,3 +202,35 @@ test.describe('CON-01 endpoint', () => {
     }
   });
 });
+
+/**
+ * CON-01-BT-01 (#109) — the site must not advertise an address it cannot receive at.
+ *
+ * DevCon Laguna does not own a domain, so `hello@devconlaguna.com` reached nobody.
+ * It was live in the Contact section and in the JSON-LD published to search engines.
+ */
+test.describe('CON-01-BT-01 no unowned contact address', () => {
+  test('no mailto link is offered anywhere on the page', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+  });
+
+  test('the unowned domain appears nowhere in the served HTML', async ({ request }) => {
+    const html = await (await request.get('/')).text();
+    expect(html).not.toContain('devconlaguna.com');
+  });
+
+  test('structured data publishes no email to search engines', async ({ page }) => {
+    await page.goto('/');
+    const raw = await page.locator('script[type="application/ld+json"]').innerText();
+    expect(JSON.parse(raw).email).toBeUndefined();
+  });
+
+  test('the Facebook page is offered as the direct channel instead', async ({ page }) => {
+    await page.goto('/#contact');
+    const link = page.locator('#contact a[href*="facebook.com/DEVCONLAGUNA"]').first();
+    await expect(link).toBeVisible();
+    // External link hygiene.
+    await expect(link).toHaveAttribute('rel', /noopener/);
+  });
+});

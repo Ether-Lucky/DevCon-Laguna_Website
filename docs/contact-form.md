@@ -10,7 +10,7 @@ that is configured. Implements **CON-01** (#59), closing **FR-07**.
 | [`lib/contact-schema.ts`](../devcon/lib/contact-schema.ts) | Validation rules, shared by client and server |
 | [`components/ui/sections/contact.tsx`](../devcon/components/ui/sections/contact.tsx) | The section and form UI |
 | [`app/api/contact/route.ts`](../devcon/app/api/contact/route.ts) | Submission endpoint and email delivery |
-| [`tests/contact.spec.ts`](../devcon/tests/contact.spec.ts) | 15 tests covering the form and the endpoint |
+| [`tests/contact.spec.ts`](../devcon/tests/contact.spec.ts) | 19 tests covering the form, the endpoint, and the no-unowned-address rule |
 
 ## Environment variables
 
@@ -18,25 +18,47 @@ Set these in the Vercel project. **Never commit them.**
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `RESEND_API_KEY` | **yes, to deliver** | Server-side Resend API key |
-| `CONTACT_TO_EMAIL` | no | Destination inbox. Defaults to `siteConfig.email` |
-| `CONTACT_FROM_EMAIL` | recommended | Sender address on a Resend-verified domain |
+| `GMAIL_USER` | **yes, to deliver** | Gmail address messages are sent from |
+| `GMAIL_APP_PASSWORD` | **yes, to deliver** | 16-character Google app password |
+| `CONTACT_TO_EMAIL` | no | Destination inbox. Defaults to `GMAIL_USER` |
 
-### Until the key is set
+### Why Gmail SMTP and not Resend
+
+DevCon Laguna does not own a domain — the site is served from a Vercel subdomain.
+Resend, Postmark and SES all require a **verified sending domain**, so none of them can
+deliver in production here. Gmail SMTP needs no domain.
+
+### Creating the app password
+
+1. Enable **2-Step Verification** on the Google account (app passwords require it).
+2. Go to Google Account → Security → **App passwords**.
+3. Generate one for "Mail"; you get 16 characters.
+4. Store it as `GMAIL_APP_PASSWORD` in Vercel. It is a credential — treat it like any password.
+
+Use a project or team Gmail account rather than a personal one, since anyone with access to
+the deployment settings can read it.
+
+### Until the credentials are set
 
 The endpoint validates the submission and returns **503** with
-*"The contact form is not configured yet. Please email us directly."*
+*"The contact form is not configured yet. Please reach us on social media."*
 
-That is deliberate. Showing a success message for a mail that was never sent is far worse than
-an honest failure — a visitor would believe they had made contact. The form is fully testable
-in this state, and the section still shows the direct email address.
+That is deliberate. Showing a success message for mail that was never sent is far worse than
+an honest failure — a visitor would believe they had made contact.
 
-### Sender domain
+## No email address is displayed
 
-Resend only sends from a **verified domain**. Verifying `devconlaguna.com` means adding DNS
-records, which is usually the slowest part of setting this up — start it early. Until then
-Resend's shared `onboarding@resend.dev` sender works for testing, but should not be used in
-production.
+The site previously advertised `hello@devconlaguna.com`, taken from the UI/UX mockup. **That
+domain is not owned by DevCon Laguna**, so the address reached nobody, and it was also being
+published to search engines in the JSON-LD `email` field.
+
+Both are removed. The Contact section now points at the **Facebook page**, a real staffed
+channel, alongside the form and the other social profiles. `siteConfig` deliberately has no
+`email` property.
+
+**Do not reintroduce an email address unless the organisation actually controls it.** Four
+tests in `tests/contact.spec.ts` enforce this: no `mailto:` link, no occurrence of the domain
+in the served HTML, no `email` in the structured data, and the Facebook link present.
 
 ## Behaviour
 

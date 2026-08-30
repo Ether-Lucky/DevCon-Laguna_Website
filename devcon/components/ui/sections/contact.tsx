@@ -2,12 +2,14 @@
 
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { validateContact, type ContactErrors, type ContactPayload } from '@/lib/contact-schema';
-import { siteConfig } from '@/lib/site-config';
 import SocialMedia from '@/components/ui/sections/social-media';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 
 const EMPTY: ContactPayload = { name: '', email: '', subject: '', message: '' };
+
+/** Real, staffed channel shown in place of an email address. */
+const FACEBOOK_PAGE = 'https://www.facebook.com/DEVCONLAGUNA';
 
 const FIELD_CLASS =
   'w-full rounded-md border bg-background/60 px-4 py-3 font-mono text-sm text-foreground ' +
@@ -113,15 +115,22 @@ export default function Contact() {
       <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Contact details */}
         <div className="flex flex-col gap-8">
+          {/*
+            No email address is shown: DevCon Laguna does not own a domain, so any
+            address here would be unreachable. The Facebook page is a real, staffed
+            channel and is the direct alternative to the form (CON-01-BT-01).
+          */}
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
-              {'// Email direct'}
+              {'// Message us directly'}
             </p>
             <a
-              href={`mailto:${siteConfig.email}`}
+              href={FACEBOOK_PAGE}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-2 inline-block text-lg font-semibold text-foreground underline-offset-4 hover:underline"
             >
-              {siteConfig.email}
+              facebook.com/DEVCONLAGUNA
             </a>
           </div>
           <div>
