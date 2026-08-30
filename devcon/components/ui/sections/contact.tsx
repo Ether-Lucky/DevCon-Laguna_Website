@@ -1,12 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { submitContact } from '@/app/actions/contact';
 import Button from '@/components/ui/button';
 import SocialMedia from '@/components/ui/sections/social-media';
 import { siteConfig } from '@/lib/site-config';
 import { useTheme } from 'next-themes';
 
+/**
+ * Contact — Dedicated Contact section/page for DevCon Laguna.
+ *
+ * ## Map Implementation Architecture & Decisions:
+ * - **Choice: Interactive Sandboxed Embed (`/map.html`) vs Static Map Image:**
+ *   An interactive embed powered by Leaflet and public OpenStreetMap tiles was chosen over
+ *   a static image or vendor SDK for the following reasons:
+ *   1. **Zero Client Secrets**: No third-party API keys (e.g. Mapbox, Google Maps) are exposed on the client.
+ *   2. **Zero Runtime Dependencies**: Avoids bulky bundle overhead and React 19 peer-dependency conflicts.
+ *   3. **Theme & Retina Responsiveness**: Seamlessly syncs between Light (clean grayscale) and Dark (inverted charcoal)
+ *      via CSS filters and parent-theme synchronization without downloading new static assets.
+ *   4. **Scroll & Mobile Friendliness**: Disables scroll-wheel hijacking on mobile while preserving touch panning.
+ *
+ * ## Bot & Spam Mitigation (SRS FR-11):
+ * - Hidden Honeypot Field (`company_website`): Invisible to legitimate users; traps automated bot scrapers.
+ * - Form Velocity Validation: Tracks render-to-submission delta to reject superhuman bot submissions (< 1.5s).
+ * - Optional Cloudflare Turnstile: Supported through environment variable configuration.
+ */
 export default function Contact() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -14,16 +32,21 @@ export default function Contact() {
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
+  // Bot mitigation: capture timestamp when form mounted
+  const formLoadTimestamp = useRef<number | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
+    honeypot: '', // Hidden honeypot field
   });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    formLoadTimestamp.current = Date.now();
   }, []);
 
   const validate = () => {
@@ -43,12 +66,20 @@ export default function Contact() {
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!validate()) return;
-    
+
     setStatus('submitting');
     setErrorMessage('');
 
     try {
-      const response = await submitContact(formData);
+      const response = await submitContact({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        honeypot: formData.honeypot,
+        timestamp: formLoadTimestamp.current ?? undefined,
+      });
+
       if (response.success) {
         setStatus('success');
       } else {
@@ -73,7 +104,7 @@ export default function Contact() {
   return (
     <section id="contact" className="max-w-7xl mx-auto py-12 lg:py-20 px-6 lg:px-12 w-full">
       <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-24 w-full">
-        {/* Left Column */}
+        {/* Left Column: Organization Details & Map */}
         <div className="w-full lg:w-5/12 flex flex-col">
           <span className="text-base sm:text-lg font-mono tracking-wide text-devcon-lime-500 mb-2">
             {'// GET IN TOUCH WITH THE COMMUNITY'}
@@ -112,23 +143,37 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Map */}
-          <div className="w-full h-48 sm:h-64 lg:h-72 rounded-[32px] overflow-hidden bg-surface border border-border relative">
+          {/* Interactive Map Panel */}
+          <div className="w-full h-48 sm:h-64 lg:h-72 rounded-[32px] overflow-hidden bg-surface border border-border relative shadow-sm">
             {mounted && (
               <iframe
                 src={`/map.html?theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
                 className="w-full h-full border-0 transition-opacity duration-500"
-                title="DevCon Laguna Location"
-                aria-label="Map showing DevCon Laguna location"
+                title="DevCon Laguna Community Hub Map"
+                aria-label="Map showing DevCon Laguna physical community hub in Laguna, Philippines"
                 loading="lazy"
               ></iframe>
             )}
           </div>
         </div>
 
-        {/* Right Column (Form) */}
+        {/* Right Column: Contact Form */}
         <div className="w-full lg:w-7/12 flex flex-col pt-2 lg:pt-0">
           <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
+            {/* Honeypot anti-spam field (hidden from assistive tech and visual display) */}
+            <div className="hidden opacity-0 -z-50 absolute pointer-events-none" aria-hidden="true">
+              <label htmlFor="company_website">Company Website</label>
+              <input
+                type="text"
+                id="company_website"
+                name="honeypot"
+                value={formData.honeypot}
+                onChange={handleChange}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               <label htmlFor="name" className="text-xs font-mono tracking-[0.1em] text-foreground uppercase">
                 Full Name
