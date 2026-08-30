@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { validateContact, type ContactPayload } from '@/lib/contact-schema';
+import { verifyTurnstile } from '@/lib/turnstile';
+import { TURNSTILE_ACTION } from '@/components/ui/turnstile-widget';
 
 /**
  * Contact form submission endpoint (CON-01, CON-01-BT-01).
@@ -11,6 +13,7 @@ import { validateContact, type ContactPayload } from '@/lib/contact-schema';
  *
  * Configure with environment variables; never commit credentials:
  *
+ *   TURNSTILE_SECRET    Cloudflare Turnstile secret (see lib/turnstile.ts)
  *   GMAIL_USER          the Gmail address messages are sent from
  *   GMAIL_APP_PASSWORD  16-character app password (needs 2-Step Verification)
  *   CONTACT_TO_EMAIL    destination inbox; defaults to GMAIL_USER
@@ -30,7 +33,7 @@ function escapeHtml(value: string): string {
 }
 
 export async function POST(request: Request) {
-  let body: Partial<ContactPayload> & { website?: string };
+  let body: Partial<ContactPayload> & { website?: string; 'cf-turnstile-response'?: string };
 
   try {
     body = await request.json();
@@ -47,6 +50,25 @@ export async function POST(request: Request) {
   const errors = validateContact(body);
   if (Object.keys(errors).length > 0) {
     return NextResponse.json({ errors }, { status: 400 });
+  }
+
+  // Turnstile (CON-02). Verified server-side before anything is sent. Returns
+  // `skipped` until a secret is configured, so the form keeps working during
+  // setup with the honeypot still active.
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const clientIp = forwardedFor?.split(',')[0]?.trim() ?? null;
+  const turnstile = await verifyTurnstile(
+    body['cf-turnstile-response'],
+    TURNSTILE_ACTION,
+    clientIp,
+  );
+
+  if (turnstile.status === 'failed') {
+    console.warn('[contact] Turnstile verification failed:', turnstile.reason);
+    return NextResponse.json(
+      { error: 'We could not verify that you are human. Please try again.' },
+      { status: 403 },
+    );
   }
 
   const name = body.name!.trim();

@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { validateContact, type ContactErrors, type ContactPayload } from '@/lib/contact-schema';
 import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
+import TurnstileWidget from '@/components/ui/turnstile-widget';
 import SocialMedia from '@/components/ui/sections/social-media';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
@@ -43,6 +44,12 @@ export default function Contact() {
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<Status>('idle');
   const [formError, setFormError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  // Bumped after every attempt: Turnstile tokens are single-use, so the widget
+  // must be reset before the visitor can try again.
+  const [resetSignal, setResetSignal] = useState(0);
+
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const update =
     (field: keyof ContactPayload) =>
@@ -70,9 +77,16 @@ export default function Contact() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // `website` is the honeypot; a real user leaves it empty.
-        body: JSON.stringify({ ...values, website: '' }),
+        body: JSON.stringify({
+          ...values,
+          // `website` is the honeypot; a real user leaves it empty.
+          website: '',
+          // Verified server-side; the browser never calls siteverify itself.
+          'cf-turnstile-response': turnstileToken ?? '',
+        }),
       });
+      // The token has now been spent whatever the outcome, so force a fresh one.
+      setResetSignal((n) => n + 1);
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
@@ -258,6 +272,14 @@ export default function Contact() {
               </p>
             )}
           </div>
+
+          {turnstileSiteKey && (
+            <TurnstileWidget
+              siteKey={turnstileSiteKey}
+              onToken={setTurnstileToken}
+              resetSignal={resetSignal}
+            />
+          )}
 
           <button
             type="submit"
