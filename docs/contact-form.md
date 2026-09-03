@@ -21,8 +21,8 @@ Set these in the Vercel project. **Never commit them.**
 | `GMAIL_USER` | **yes, to deliver** | Gmail address messages are sent from |
 | `GMAIL_APP_PASSWORD` | **yes, to deliver** | 16-character Google app password |
 | `CONTACT_TO_EMAIL` | no | Destination inbox. Defaults to `GMAIL_USER` |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | no | Turnstile site key. **Must be set at build time** |
-| `TURNSTILE_SECRET` | no | Turnstile secret key, server only |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | **set in production** | Turnstile site key. **Must be set at build time** |
+| `TURNSTILE_SECRET` | **set in production** | Turnstile secret key, server only |
 | `TURNSTILE_HOSTNAMES` | with Turnstile | Comma-separated hostnames the widget may be solved on |
 
 ### Why Gmail SMTP and not Resend
@@ -72,11 +72,12 @@ Two independent layers.
 A hidden `website` field. A real user never fills it; a naive bot often does. The endpoint
 answers **200** and sends nothing, so a bot gets no signal it was detected. No configuration.
 
-### 2. Cloudflare Turnstile — active once configured
+### 2. Cloudflare Turnstile — live in production
 
-Turnstile is **opt-in**. With no `TURNSTILE_SECRET`, verification returns `skipped` and the
-form works normally with the honeypot alone. That keeps the form usable during setup rather
-than locking it behind a challenge that is not there yet.
+Turnstile is **opt-in by configuration**. With no `TURNSTILE_SECRET`, verification returns
+`skipped` and the form works normally with the honeypot alone. That kept the form usable during
+setup rather than locking it behind a challenge that was not there yet, and it is still how
+local development and CI behave.
 
 Once a secret **is** set, every failure path is closed: a missing or oversized token, an
 unreachable siteverify, a non-2xx response, a non-JSON body, a mismatched action or an
@@ -102,12 +103,79 @@ calls siteverify. A browser must never call siteverify — that would expose the
 
 ### Setting it up
 
-1. Create a widget at Cloudflare → Turnstile, **Managed** mode.
-2. Add the domains: the production hostname, plus `localhost` for development.
-3. Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` and `TURNSTILE_HOSTNAMES`.
-4. **Redeploy.** `NEXT_PUBLIC_*` variables are inlined at build time, so the widget will not
-   appear until a build runs with the key present. Setting it on a running deployment does
-   nothing.
+Turnstile is **live in production** as of Sprint 2. These are the steps that were followed, kept
+here for rotating keys or standing up another environment.
+
+#### 1. Create the widget
+
+1. Sign in at [dash.cloudflare.com](https://dash.cloudflare.com). A free account is enough —
+   **Turnstile does not require a domain on Cloudflare**, which matters here because the
+   organisation owns no domain at all.
+2. Sidebar → **Turnstile** → **Add widget**.
+3. Configure it:
+
+   | Field | Value |
+   |---|---|
+   | Widget name | `devcon-laguna-website` |
+   | Hostnames | `dev-con-laguna-website-nine.vercel.app` and `localhost` |
+   | Widget Mode | **Managed** |
+
+4. Create. Cloudflare returns a **site key** and a **secret key**.
+
+The site key is public and ships in the browser bundle — that is by design. The secret key is
+shown once and is a credential: Vercel environment variables only, never a commit, never a
+screenshot. If it leaks, rotate it in the Cloudflare dashboard rather than trying to contain it.
+
+#### 2. Set the environment variables
+
+In the Vercel project that serves production (`devcon-laguna-website`) →
+**Settings → Environment Variables**:
+
+| Variable | Value | Environments |
+|---|---|---|
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | site key | Production, Preview, Development |
+| `TURNSTILE_SECRET` | secret key | Production, Preview, Development |
+| `TURNSTILE_HOSTNAMES` | `dev-con-laguna-website-nine.vercel.app` | **Production only** |
+
+> ⚠️ `TURNSTILE_HOSTNAMES` is the one variable that is **not** set identically everywhere.
+> A production value including `localhost` would let a token solved on a local page be replayed
+> against the live site. Local development sets `localhost` in `.env.local` instead, where it
+> cannot reach production.
+
+#### 3. Redeploy
+
+**Deployments → most recent → ⋯ → Redeploy.**
+
+`NEXT_PUBLIC_*` values are inlined at **build** time. Setting the site key on a running
+deployment does nothing whatsoever — the widget simply will not appear. This has caught the team
+twice already, first with the Gmail credentials and again with analytics.
+
+#### 4. Verify
+
+On the deployed site, scroll to the contact form:
+
+- A Cloudflare challenge widget appears above the Send button.
+- A real submission still arrives in the destination inbox.
+- **Submit a second time after reloading.** Tokens are single-use, so this is what proves the
+  widget reset works. A broken reset fails the second attempt with no visible reason, and that
+  is exactly the failure most likely to go unnoticed.
+
+If the widget never appears, it is almost always the site key missing from the build — check the
+browser console for a Turnstile error and confirm the redeploy ran *after* the variable was
+saved.
+
+#### Local development
+
+`devcon/.env.local`, gitignored, never committed:
+
+```bash
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_site_key
+TURNSTILE_SECRET=your_secret_key
+TURNSTILE_HOSTNAMES=localhost
+```
+
+Omit all three to develop against the unconfigured path, where verification returns `skipped`
+and the honeypot alone applies.
 
 ### Testing it
 
@@ -137,10 +205,9 @@ Losing a long message to a network error is the worst outcome here, and a test e
 **Errors are announced.** Invalid fields get `aria-invalid` and `aria-describedby`, each message
 carries `role="alert"`, and the success/error banner sits in an `aria-live="polite"` region.
 
-**The honeypot is already in place.** The form includes a hidden `website` field; a real user
-never fills it, a naive bot often does. The endpoint answers **200** to those submissions while
-sending nothing, so a bot gets no signal it was detected. This is the cheap half of **CON-02**
-(#60) — the CAPTCHA half still needs Turnstile keys.
+**Both bot layers are active.** The honeypot needs no configuration and has been on since
+CON-01. The Turnstile layer went live once its keys were set, which closes **CON-02** (#60) in
+full. See *Bot protection* above.
 
 ## The `#contact` anchor
 
