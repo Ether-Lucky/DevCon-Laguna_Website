@@ -21,7 +21,7 @@ below.
 | Ticket | Outcome |
 |---|---|
 | CON-01 Contact Form | ✅ **Closes FR-07** — delivering mail in production |
-| CON-02 Spam Protection | ✅ Honeypot live; Turnstile ready, awaiting keys |
+| CON-02 Spam Protection | ✅ Honeypot and Cloudflare Turnstile both live in production |
 | DATA-01 Content Models | ✅ Delivered by the team before the sprint's own work began |
 | SEO-01 Metadata & Sharing | ✅ Includes a generated share image |
 | SEO-02 Sitemap & Robots | ✅ |
@@ -173,7 +173,7 @@ This needs resolving either way, and is the oldest open question on the board.
 
 | Item | Unblocks |
 |---|---|
-| Cloudflare Turnstile keys, then redeploy | Activates the CAPTCHA layer (honeypot works today) |
+| ~~Cloudflare Turnstile keys~~ | ✅ Done — keys set and redeployed; the CAPTCHA layer is live |
 | Vercel **Pro** plan | Custom analytics events; pageviews work on Hobby |
 | Decision on #87 | FR-06 compliance |
 
