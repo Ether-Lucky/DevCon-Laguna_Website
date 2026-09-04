@@ -97,7 +97,7 @@ export default function TeamSection({ members = team }: { members?: TeamMember[]
         {/* HEADER SECTION */}
         <div className="mb-12 flex flex-col items-center text-center">
           <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
-            Meet Our <span className="text-devcon-purple-500">Officers</span>
+            Meet Our <span className="text-accent-purple">Officers</span>
           </h2>
         <p className="mt-6 max-w-xl text-base text-muted">
             Behind every successful community is a passionate team of volunteers dedicated to creating meaningful experiences for developers. Meet the officers leading DevCon Laguna&apos;s initiatives and programs.
@@ -105,6 +105,7 @@ export default function TeamSection({ members = team }: { members?: TeamMember[]
         </div>
         
         <DynamicCarousel 
+          label="DevCon Laguna officers"
           className="w-full py-8 px-4"
           tiles={carouselTiles}
         />

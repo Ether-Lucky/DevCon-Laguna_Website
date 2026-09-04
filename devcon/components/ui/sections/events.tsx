@@ -87,14 +87,14 @@ export default function Events() {
       <div className="w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 px-4">
         <div>
           <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
-            Featured <span className="text-devcon-purple-500">Events</span>
+            Featured <span className="text-accent-purple">Events</span>
           </h2>
           <p className="mt-6 max-w-2xl text-base text-muted">
             Explore the latest events and activities organized by DevCon to inspire learning, innovation, and community engagement.
           </p>
         </div>      </div>
 
-      <DynamicCarousel className="w-full py-12 px-4"
+      <DynamicCarousel label="Featured events" className="w-full py-12 px-4"
         tiles={events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}

@@ -56,7 +56,7 @@ export default function NavLinks({
           key={link.name}
           href={link.href}
           onClick={onNavigate}
-          className='text-base font-semibold leading-none text-foreground/75 transition-colors duration-150 hover:text-foreground'
+          className='text-base font-semibold leading-none text-foreground/85 transition-colors duration-150 hover:text-foreground'
         >
           {link.name}
         </Link>

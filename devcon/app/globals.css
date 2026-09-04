@@ -50,7 +50,17 @@
   --background: var(--color-devcon-black-500);
   --foreground: var(--color-devcon-white-500);
   --surface: var(--color-devcon-black-600);
-  --muted: var(--color-devcon-gray-500);
+  /* A11Y-01: gray-500 (#737272) measured 4.10:1 on this background, below the
+     4.5:1 WCAG AA minimum for body text. Lightened to clear it on both the
+     background (5.69:1) and the surface (5.32:1). */
+  --muted: #8A8A89;
+  --accent-lime: var(--color-devcon-lime-500);
+  /* A11Y-01: the brand purple measured 2.76:1 against this background — below
+     even the 3:1 minimum for large text, and it is used for the highlighted
+     word in five section headings. Lightened until it clears AA for body text
+     too (4.65:1), since a heading accent should not depend on staying large. */
+  --accent-purple: #8B5CF6;
+  --accent-error: var(--color-devcon-orange-500);
   --border: rgb(var(--color-devcon-gray-500), 0.2);
 /* 
   --splash-yellow: #F0C419;
@@ -63,7 +73,20 @@
   --background: var(--color-devcon-white-600);
   --foreground: var(--color-devcon-gray-300);
   --surface: var(--color-devcon-white-500);
-  --muted: var(--color-devcon-gray-500);
+  /* A11Y-01: gray-500 measured 4.47:1 here — a near miss, but still a fail.
+     Darkened to 4.97:1. */
+  --muted: #6B6B6A;
+  /* A11Y-01: the brand lime (#C0E00B) measured 1.41:1 on this background and is
+     unreadable in the light theme at any size. This is the same hue darkened
+     until it clears AA for body text (4.82:1), so light-theme accents stay
+     green rather than changing colour. The dark theme keeps the brand lime,
+     where it measures 14:1 and is exactly right. */
+  --accent-lime: #417B0E;
+  --accent-purple: var(--color-devcon-purple-500);
+  /* A11Y-01: brand orange measured 3.11:1 here, and form error text is 12px, so
+     it needs 4.5:1. Darkened to 4.67:1. The dark theme keeps the brand orange,
+     where it measures 5.90:1. */
+  --accent-error: #B8500F;
   --border: rgba(var(--color-devcon-black-500), 0.18);
 }
 
@@ -75,6 +98,9 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-muted: var(--muted);
+  --color-accent-lime: var(--accent-lime);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-error: var(--accent-error);
   --color-border: var(--border);
 }
 
