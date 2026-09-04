@@ -22,7 +22,7 @@ export default function Hero() {
         <div className="px-8 xl:pl-8 mt-8 xl:mt-0 h-fit z-1 max-w-full xl:max-w-xl">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-none text-foreground">
             <span>Building the </span>
-            <span className="mt-1 text-devcon-lime-500">Future of Tech, </span>
+            <span className="mt-1 text-accent-lime">Future of Tech, </span>
             <span className="mt-1 text-devcon-orange-500">Together.</span>
           </h1>
 

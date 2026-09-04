@@ -10,11 +10,15 @@ import clsx from 'clsx';
  * @property tiles     - Array of React nodes to render as carousel slides.
  * @property gap       - Pixel gap between tiles. Defaults to 24 (matches Tailwind `gap-6`).
  * @property className - Additional Tailwind classes applied to the outer wrapper.
+ * @property label     - Accessible name for the scrollable track (A11Y-01). Every
+ *                       carousel on a page needs a distinct one, or a screen
+ *                       reader user hears three identically named regions.
  */
 interface CarouselProps {
 	tiles: React.ReactNode[];
 	gap?: number; // Gap between cards in px (matches Tailwind gap-6 = 24)
 	className?: string;
+	label?: string;
 }
 
 /**
@@ -24,6 +28,8 @@ interface CarouselProps {
  * - Arrow buttons are automatically hidden/disabled when there is nothing to scroll.
  * - Scroll state is recalculated on scroll and window resize events.
  * - Clicking an arrow scrolls by the full visible container width.
+ * - The track itself is focusable, so the carousel can be scrolled with the
+ *   arrow keys and not only by clicking the buttons (A11Y-01).
  *
  * @example
  * <DynamicCarousel
@@ -31,7 +37,7 @@ interface CarouselProps {
  *   className="w-full py-8"
  * />
  */
-function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
+function DynamicCarousel({ tiles, gap=24, className, label = 'Carousel' }: CarouselProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(true);
@@ -83,9 +89,23 @@ function DynamicCarousel({ tiles, gap=24, className }: CarouselProps) {
 	return (
 		<div className={clsx("relative w-full mx-auto", className)}>
 			{/* Scrollable Track */}
+			{/*
+				A scrollable region must be reachable by keyboard (A11Y-01). Without
+				`tabIndex`, a keyboard user could only move the carousel with the arrow
+				BUTTONS, and any content scrolled out of view was unreachable — axe
+				reports this as a serious violation, and it was one of two found on the
+				page. With it, the track takes focus and the browser's native arrow-key
+				scrolling applies.
+
+				`role="group"` plus a name is what stops a screen reader announcing a
+				bare focusable div with no indication of what it is.
+			*/}
 			<div
 				ref={containerRef}
-				className="flex overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 scroll-smooth"
+				tabIndex={0}
+				role="group"
+				aria-label={label}
+				className="flex overflow-x-auto scrollbar-none snap-x snap-mandatory py-4 scroll-smooth rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-devcon-purple-500"
 				style={{ gap: `${gap}px`, scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 			>
 				{tiles.map((tile, idx) => (
