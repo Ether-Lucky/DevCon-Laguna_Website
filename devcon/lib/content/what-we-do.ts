@@ -64,4 +64,5 @@ const whatWeDo: WhatWeDoItem[] = [
   },
 ];
 
+export type { WhatWeDoItem };
 export { whatWeDo };
