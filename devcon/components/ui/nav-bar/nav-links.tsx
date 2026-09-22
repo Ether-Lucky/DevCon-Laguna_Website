@@ -17,17 +17,21 @@ type NavLinksProps = {
 };
 
 /**
- * Ordered list of in-page anchor links shown in the navigation bar.
- * Each `href` value corresponds to a section `id` on the home page.
- * Update this array to add, remove, or reorder nav items.
+ * Ordered list of links to sections of the home page, shown in the navigation bar.
+ * Each `href` is a section `id` on the home page, **prefixed with `/`**.
+ *
+ * The prefix matters once there is more than one page (LEGAL-01). A bare `#about`
+ * resolves against the current page, so on `/privacy` it meant `/privacy#about`,
+ * which doesn't exist, and every nav link there was dead. `/#about` goes home and
+ * then scrolls. On the home page itself it still just scrolls.
  */
 const navLinks = [
-  { name: "Home", href: "#hero" },
-  { name: "About", href: "#about" },
-  { name: "Events", href: "#events" },
-  { name: "Officers", href: "#officers" },
-  { name: "Partners", href: "#partners" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "/#hero" },
+  { name: "About", href: "/#about" },
+  { name: "Events", href: "/#events" },
+  { name: "Officers", href: "/#officers" },
+  { name: "Partners", href: "/#partners" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 /**

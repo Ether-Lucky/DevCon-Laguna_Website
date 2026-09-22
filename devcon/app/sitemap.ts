@@ -2,10 +2,9 @@ import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/lib/site-config';
 
 /**
- * The site is a single landing page. In-page anchors (#about, #events, ...) are
- * not separate URLs, so they are intentionally not listed here — crawlers treat
- * them as the same document. Additional entries belong here once real routes
- * exist (see LEGAL-01 for the Terms and Privacy pages).
+ * The landing page plus the legal pages (LEGAL-01). In-page anchors (#about,
+ * #events, ...) are not separate URLs, so they are intentionally not listed:
+ * crawlers treat them as the same document.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -15,5 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    { url: `${siteConfig.url}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteConfig.url}/terms`, changeFrequency: 'yearly', priority: 0.3 },
   ];
 }
