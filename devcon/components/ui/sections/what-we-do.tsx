@@ -1,5 +1,5 @@
 import React from 'react';
-import { whatWeDo } from '@/lib/content/what-we-do';
+import { whatWeDo as bundledWhatWeDo, type WhatWeDoItem } from '@/lib/content/what-we-do';
 import clsx from 'clsx';
 import Image from 'next/image';
 
@@ -12,9 +12,10 @@ import Image from 'next/image';
  *
  * The center card is marked with `isTall: true` in the data.
  * Each card is an image with a subtle bottom gradient and a hover zoom effect.
- * Images and titles are sourced from `lib/content/what-we-do.ts`.
+ * Images and titles come from the portal's `what-we-do` slot (CMS-04) when it
+ * holds all five cards, and from `lib/content/what-we-do.ts` otherwise.
  */
-export default function WhatWeDo() {
+export default function WhatWeDo({ items = bundledWhatWeDo }: { items?: WhatWeDoItem[] }) {
   return (
     <section id="what-we-do" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       {/* Heading */}
@@ -31,14 +32,14 @@ export default function WhatWeDo() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_2.8fr_1.4fr] sm:grid-rows-2 gap-4 sm:gap-7 w-full">
-        {whatWeDo.map((item) => (
+        {items.map((item) => (
           <div
             key={item.id}
             className={clsx("relative overflow-hidden rounded-[28px] group", { 'sm:row-span-2': item.isTall })}
           >
             <Image
               src={item.img}
-              alt={item.title}
+              alt={item.alt ?? item.title}
               width={item.width}
               height={item.height}
               style={{
@@ -60,9 +61,13 @@ export default function WhatWeDo() {
                 })}
             />
 
-            <h3 className="absolute bottom-9 left-6 text-devcon-white-500 text-2xl font-bold drop-shadow-lg">
-              {item.title}
-            </h3>
+            {/* A portal card may have no caption; an empty heading would be an
+                accessibility error, so it is left out rather than rendered blank. */}
+            {item.title && (
+              <h3 className="absolute bottom-9 left-6 text-devcon-white-500 text-2xl font-bold drop-shadow-lg">
+                {item.title}
+              </h3>
+            )}
           </div>
         ))}
       </div>

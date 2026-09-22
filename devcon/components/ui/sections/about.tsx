@@ -1,15 +1,19 @@
 import Image from 'next/image';
-import { slides } from '@/lib/content/about-devcon-slideshow';
+import { slides as bundledSlides, type Slide } from '@/lib/content/about-devcon-slideshow';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 
 /**
  * ImageSlideTiles — maps the `slides` content array into a list of
  * rounded image cards suitable for use as `DynamicCarousel` tiles.
  *
- * The first slide gets `priority` loading for LCP performance.
  * Each card has a subtle bottom gradient overlay for visual polish.
+ *
+ * No slide is `priority`. The first one used to be, which preloaded a photo in
+ * `<head>` on every device — including phones, where this carousel is hidden
+ * altogether — competing with the hero the Largest Contentful Paint is measured
+ * on. The section is below the fold, so lazy loading is correct.
  */
-function ImageSlideTiles() {
+function ImageSlideTiles(slides: Slide[]) {
   return slides.map((slide) => (
     <div
       key={slide.id}
@@ -21,7 +25,6 @@ function ImageSlideTiles() {
         fill
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 540px, 540px"
         className="object-cover"
-        priority={slide.id === 1}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
     </div>
@@ -33,8 +36,11 @@ function ImageSlideTiles() {
  *
  * Two-column layout on large screens: descriptive copy on the left,
  * `DynamicCarousel` of community event photos on the right (hidden on mobile).
+ *
+ * `slides` come from the portal's `who-we-are-carousel` slot (CMS-04), falling
+ * back to the built-in photos when the slot is empty.
  */
-export default function About() {
+export default function About({ slides = bundledSlides }: { slides?: Slide[] }) {
   return (
     <section id="about" className="max-w-7xl mx-auto py-12 lg:py-20 px-6 lg:px-12">
       <div className="w-full bg-background flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
@@ -52,7 +58,7 @@ export default function About() {
         <DynamicCarousel
           label="Photos of the DevCon Laguna community"
           className="w-full max-w-xl lg:max-w-[480px] xl:max-w-[540px] min-w-0 hidden lg:block rounded-[32px]"
-          tiles={ImageSlideTiles()}
+          tiles={ImageSlideTiles(slides)}
         />
       </div>
     </section>

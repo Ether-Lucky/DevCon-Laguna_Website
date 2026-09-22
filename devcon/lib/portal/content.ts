@@ -5,11 +5,12 @@ import { events as bundledEvents, type EventItem } from '@/lib/content/events';
 import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding } from './client';
 import { formatEventDate } from './format';
+import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
 import type { PortalEvent, PortalOfficer } from './types';
 
 /**
  * Landing page content, sourced from the DevConnect Portal with the bundled
- * files as the fallback (CMS-02, CMS-03).
+ * files as the fallback (CMS-02, CMS-03, CMS-04).
  *
  * Every function here returns renderable content no matter what the portal
  * does. The bundled content in `lib/content/` stops being the source of truth
@@ -94,6 +95,7 @@ function sortOfficers(officers: PortalOfficer[]): TeamMember[] {
 export type LandingContent = {
   officers: TeamMember[];
   events: EventItem[];
+  images: LandingImages;
 };
 
 /**
@@ -114,11 +116,13 @@ export type LandingContent = {
  */
 export async function getLandingContent(): Promise<LandingContent> {
   const result = await fetchPortalLanding();
-  if (result.status !== 'ok') return { officers: team, events: bundledEvents };
+  if (result.status !== 'ok') return { officers: team, events: bundledEvents, images: BUILT_IN_LANDING_IMAGES };
 
-  const { officers, events } = result.data;
+  const { officers, events, images } = result.data;
   return {
     officers: officers.length > 0 ? sortOfficers(officers) : team,
     events: events.length > 0 ? events.map(toEventItem) : bundledEvents,
+    // Resolved slot by slot; see lib/portal/landing-images.ts.
+    images: resolveLandingImages(images),
   };
 }

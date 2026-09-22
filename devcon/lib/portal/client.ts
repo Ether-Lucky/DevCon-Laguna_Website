@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { parseEvents, parseOfficers } from './parse';
+import { parseEvents, parseLandingImages, parseOfficers } from './parse';
 import type { PortalLanding } from './types';
 
 /**
@@ -86,6 +86,7 @@ export async function fetchPortalLanding(): Promise<PortalResult> {
       data: {
         officers: parseOfficers(record.officers),
         events: parseEvents(record.events),
+        images: parseLandingImages(record.images),
         generated_at: typeof record.generated_at === 'string' ? record.generated_at : '',
       },
     };

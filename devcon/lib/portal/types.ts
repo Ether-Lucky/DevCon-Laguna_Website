@@ -44,8 +44,26 @@ export type PortalEvent = {
   cover_image_url: string | null;
 };
 
+/** The five places on the landing page an image can go (CMS-04). */
+export const LANDING_SLOTS = ['hero-desktop', 'hero-mobile', 'who-we-are-carousel', 'what-we-do', 'bottom'] as const;
+export type LandingSlot = (typeof LANDING_SLOTS)[number];
+
+export type PortalLandingImage = {
+  id: string;
+  slot: LandingSlot;
+  /** Always the portal's own Supabase storage; the portal omits anything else. */
+  image_url: string;
+  /** Never empty: the portal's database rejects an image without it. */
+  alt: string;
+  /** Caption; only the `what-we-do` cards show one. */
+  label: string | null;
+  display_order: number;
+};
+
 export type PortalLanding = {
   officers: PortalOfficer[];
   events: PortalEvent[];
+  /** `[]` when the portal could not load its images; the rest of the payload still arrives. */
+  images: PortalLandingImage[];
   generated_at: string;
 };

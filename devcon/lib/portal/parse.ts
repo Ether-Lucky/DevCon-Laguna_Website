@@ -1,4 +1,12 @@
-import { EVENT_CATEGORIES, type PortalEvent, type PortalEventCategory, type PortalOfficer } from './types';
+import {
+  EVENT_CATEGORIES,
+  LANDING_SLOTS,
+  type LandingSlot,
+  type PortalEvent,
+  type PortalEventCategory,
+  type PortalLandingImage,
+  type PortalOfficer,
+} from './types';
 
 /**
  * Narrowing for the portal's responses.
@@ -87,4 +95,46 @@ export function parseEvents(value: unknown): PortalEvent[] {
     });
   }
   return events;
+}
+
+function isSlot(value: unknown): value is LandingSlot {
+  return typeof value === 'string' && (LANDING_SLOTS as readonly string[]).includes(value);
+}
+
+/**
+ * Landing page images the page can place (CMS-04).
+ *
+ * Dropped, and logged: an unknown slot (nowhere to put it), a missing URL, or
+ * **empty alt text**. The portal's database already rejects an image without
+ * alt text; this holds the same line on our side, because an image with no
+ * description is an accessibility failure (NFR-05) on a page that has been
+ * audited clean.
+ */
+export function parseLandingImages(value: unknown): PortalLandingImage[] {
+  if (!Array.isArray(value)) return [];
+
+  const images: PortalLandingImage[] = [];
+  for (const entry of value) {
+    if (!isRecord(entry) || typeof entry.id !== 'string') continue;
+
+    if (!isSlot(entry.slot)) {
+      console.warn(`[portal] landing image ${entry.id} has an unknown slot and was skipped: ${String(entry.slot)}`);
+      continue;
+    }
+    if (typeof entry.image_url !== 'string' || entry.image_url.length === 0) continue;
+    if (typeof entry.alt !== 'string' || entry.alt.trim().length === 0) {
+      console.warn(`[portal] landing image ${entry.id} (${entry.slot}) has no alt text and was skipped.`);
+      continue;
+    }
+
+    images.push({
+      id: entry.id,
+      slot: entry.slot,
+      image_url: entry.image_url,
+      alt: entry.alt.trim(),
+      label: typeof entry.label === 'string' && entry.label.trim() ? entry.label.trim() : null,
+      display_order: typeof entry.display_order === 'number' ? entry.display_order : 0,
+    });
+  }
+  return images;
 }
