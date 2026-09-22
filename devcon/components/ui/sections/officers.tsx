@@ -66,21 +66,25 @@ function TeamCard({ member }: { member: TeamMember }) {
 /**
  * TeamSection — the "Meet Our Officers" homepage section.
  *
- * Officer data from `lib/content/officers.ts` is grouped into pairs, where each pair
- * becomes a two-row grid tile in the carousel. This produces a 2×N grid of officer
- * cards that scrolls horizontally.
+ * Officers are grouped into pairs, where each pair becomes a two-row grid tile in
+ * the carousel. This produces a 2×N grid of officer cards that scrolls
+ * horizontally.
  *
  * Accent colors are resolved inside `TeamCard` via the `toAccentColor` map.
- * Adding a new officer only requires updating `lib/content/officers.ts`.
+ *
+ * `members` comes from the DevConnect Portal, fetched on the server by
+ * `lib/portal/content.ts` (CMS-03). It defaults to the bundled list so this
+ * component still renders on its own — in a test, or anywhere the data has not
+ * been fetched — rather than throwing on an undefined prop.
  */
-export default function TeamSection() {
+export default function TeamSection({ members = team }: { members?: TeamMember[] }) {
   // Group members into columns of 2 for a two-row carousel
   const carouselTiles = [];
-  for (let i = 0; i < team.length; i += 2) {
+  for (let i = 0; i < members.length; i += 2) {
     carouselTiles.push(
       <div key={i} className="grid grid-rows-2 gap-6 md:gap-10 h-full w-full">
-        <TeamCard member={team[i]} />
-        {team[i + 1] ? <TeamCard member={team[i + 1]} /> : <div />}
+        <TeamCard member={members[i]} />
+        {members[i + 1] ? <TeamCard member={members[i + 1]} /> : <div />}
       </div>
     );
   }

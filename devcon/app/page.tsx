@@ -6,6 +6,7 @@ import Stats from '@/components/ui/sections/stats';
 import Events from '@/components/ui/sections/events';
 import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
+import { getOfficers } from '@/lib/portal/content';
 import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
 import Contact from '@/components/ui/sections/contact';
 import Footer from '@/components/ui/sections/footer';
@@ -23,8 +24,15 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  * that triggers once when it enters the viewport.
  *
  * `ProgramsAndActivities` is currently commented out pending content readiness.
+ *
+ * Officer data is fetched here rather than inside the section, because the
+ * section is a client component and the portal API key must never reach the
+ * browser (CMS-03). The page stays static: the fetch is cached and revalidated
+ * on a timer, not per request.
  */
-export default function Home() {
+export default async function Home() {
+  const officers = await getOfficers();
+
   return (
     <>
       <NavBar />
@@ -57,7 +65,7 @@ export default function Home() {
           <Events />
         </ScrollReveal>
         <ScrollReveal className="w-full">
-          <Officers />
+          <Officers members={officers} />
         </ScrollReveal>
         <ScrollReveal className="w-full">
           <Contact />
