@@ -223,6 +223,13 @@ test.describe('LOGO-BT-01 declared image proportions', () => {
    * Written for every image, not just the logo, so the next one is caught too.
    * Images that crop with `object-fit` are skipped, as Lighthouse skips them:
    * their declared size describes a frame, not a file.
+   *
+   * Compared in pixels, as Lighthouse does (a 2 px threshold on height), not as
+   * a percentage of the ratio. A first version used a 2% ratio tolerance and
+   * failed on WebKit only: Playwright's Desktop Safari runs at 2x density, where
+   * WebKit reports a density-corrected natural size, so the 50x31 "Look Here"
+   * doodle read as 25 x 15.5, rounded to 25x15, a 3% error from rounding
+   * alone. In pixels that is 1 px, while the logo's real mismatch was about 36.
    */
   test('every image declares the proportions of the file it loads', async ({ page }) => {
     await page.goto('/');
@@ -240,10 +247,11 @@ test.describe('LOGO-BT-01 declared image proportions', () => {
           const img = node as HTMLImageElement;
           const fit = getComputedStyle(img).objectFit;
           if (fit === 'cover' || fit === 'contain' || !img.naturalWidth || !img.naturalHeight) return null;
-          const declared = Number(img.getAttribute('width')) / Number(img.getAttribute('height'));
-          const actual = img.naturalWidth / img.naturalHeight;
-          const off = Math.abs(declared - actual) / actual;
-          return off > 0.02
+          const declaredWidth = Number(img.getAttribute('width'));
+          const declaredHeight = Number(img.getAttribute('height'));
+          // The height the declared width would need, at the file's real ratio.
+          const expectedHeight = (declaredWidth * img.naturalHeight) / img.naturalWidth;
+          return Math.abs(declaredHeight - expectedHeight) > 2
             ? `${img.getAttribute('alt')} (${img.currentSrc.split('url=')[1]?.split('&')[0] ?? img.src}): declared ${img.getAttribute('width')}x${img.getAttribute('height')}, file ${img.naturalWidth}x${img.naturalHeight}`
             : null;
         })
