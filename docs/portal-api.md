@@ -110,7 +110,7 @@ The portal's shapes and ours do not match one-to-one:
 | Portal | Ours | Note |
 |---|---|---|
 | `title` | `role` | The portal's "title" is the position |
-| `photo_url` | `img` | Nullable; the card shows initials when absent |
+| `photo_url` | `img` | Nullable; the card shows initials when absent **or unrenderable** — see *Photo guard* |
 | `display_order` | sort order | Not an id — ours is positional |
 | — | `accent` | **No source.** Assigned by position, cycling the four brand colours. Deterministic so it is stable across renders and does not break visual regression |
 | — | `width` / `height` | **Not reported.** Fixed at 960×960, which describes the square frame the avatar renders in rather than the file. The container is fixed and the image is `object-cover`, so this prevents layout shift regardless of what was uploaded |
@@ -118,6 +118,22 @@ The portal's shapes and ours do not match one-to-one:
 Images arrive as absolute Supabase Storage URLs. The host is allowlisted in `next.config.ts` as a
 concrete hostname rather than `**.supabase.co` — a wildcard would survive a project migration, but
 it would also trust every Supabase project in existence.
+
+### Photo guard
+
+The allowlist lives in `lib/remote-images.ts` and is used twice: `next.config.ts` hands it to
+`next/image`, and `lib/portal/content.ts` checks every officer photo against it before rendering.
+A photo on any other host is treated as **no photo**, so the card shows initials and a warning is
+logged.
+
+This exists because of a production incident. The first time live portal data reached the site,
+the officers' photos were **Tenor GIF links rather than uploads**. `next/image` correctly refused
+them with a `400`, and visitors saw broken images. The allowlist was right; the missing piece was
+checking against it before rendering.
+
+**Officer photos must be uploaded into the portal's Supabase storage.** A pasted link from anywhere
+else will show as initials. The `[portal]` warning in the server logs names the offending URL.
+
 
 ---
 

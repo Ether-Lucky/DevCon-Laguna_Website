@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { team, type TeamMember } from '@/lib/content/officers';
+import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding } from './client';
 import type { PortalOfficer } from './types';
 
@@ -32,14 +33,31 @@ const ACCENTS = ['yellow', 'orange', 'purple', 'lime'] as const;
 /** Officer photos are square avatars in a fixed-size circular frame. */
 const AVATAR_SIZE = 960;
 
+/**
+ * The officer's photo, or undefined when it cannot be rendered.
+ *
+ * The card shows initials for a missing photo — a supported state. A photo on
+ * a host `next/image` will not optimise is not: the optimiser answers 400 and
+ * the visitor sees a broken image. That happened in production, when the
+ * portal held officers whose photos were linked from Tenor rather than
+ * uploaded. Treating an unrenderable URL as no photo turns that into initials.
+ *
+ * Logged, because the fix belongs in the portal's data and someone needs to
+ * know to make it.
+ */
+function renderablePhoto(url: string | null): string | undefined {
+  if (!url) return undefined;
+  if (isAllowedRemoteImage(url)) return url;
+  console.warn(`[portal] officer photo on a host we cannot render, showing initials: ${url}`);
+  return undefined;
+}
+
 function toTeamMember(officer: PortalOfficer, index: number): TeamMember {
   return {
     id: index + 1,
     name: officer.name,
     role: officer.title,
-    // `photo_url` is nullable, and the card already handles a missing photo by
-    // showing initials — a supported state, not a broken one.
-    img: officer.photo_url ?? undefined,
+    img: renderablePhoto(officer.photo_url),
     // The portal does not report image dimensions. These describe the frame the
     // avatar is rendered in rather than the file: the container is a fixed
     // square and the image is `object-cover`, so this fixes the aspect ratio the
