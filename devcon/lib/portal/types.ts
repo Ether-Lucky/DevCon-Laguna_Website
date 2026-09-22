@@ -20,14 +20,27 @@ export type PortalOfficer = {
   bio: string | null;
 };
 
+/** The five categories the events UI has badge colours for. */
+export const EVENT_CATEGORIES = ['hackaton', 'workshop', 'seminar', 'community', 'career'] as const;
+export type PortalEventCategory = (typeof EVENT_CATEGORIES)[number];
+
 export type PortalEvent = {
   id: string;
   title: string;
   description: string | null;
   location: string;
-  /** ISO 8601. Required, so the portal cannot currently express an undated "TBA" event. */
-  start_date: string;
-  end_date: string;
+  /**
+   * Sets the badge colour. `hackaton` is misspelled on purpose, on both sides:
+   * the badge colours key on that exact string.
+   */
+  category: PortalEventCategory;
+  /**
+   * ISO 8601 in UTC, or `null` for an event whose date is still to be
+   * announced ("TBA"). The portal guarantees start and end are both set or both
+   * null.
+   */
+  start_date: string | null;
+  end_date: string | null;
   cover_image_url: string | null;
 };
 

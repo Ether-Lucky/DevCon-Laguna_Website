@@ -6,7 +6,7 @@ import Stats from '@/components/ui/sections/stats';
 import Events from '@/components/ui/sections/events';
 import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
-import { getOfficers } from '@/lib/portal/content';
+import { getLandingContent } from '@/lib/portal/content';
 import ProgramsAndActivities from '@/components/ui/sections/program-and-activities';
 import Contact from '@/components/ui/sections/contact';
 import Footer from '@/components/ui/sections/footer';
@@ -24,13 +24,13 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  * that triggers once when it enters the viewport.
  *
  *
- * Officer data is fetched here rather than inside the section, because the
- * section is a client component and the portal API key must never reach the
- * browser (CMS-03). The page stays static: the fetch is cached and revalidated
+ * Officer and event data is fetched here rather than inside the sections,
+ * because both are client components and the portal API key must never reach
+ * the browser (CMS-02, CMS-03). The page stays static: the fetch is cached and revalidated
  * on a timer, not per request.
  */
 export default async function Home() {
-  const officers = await getOfficers();
+  const { officers, events } = await getLandingContent();
 
   return (
     <>
@@ -61,7 +61,7 @@ export default async function Home() {
           <WhatWeDo />
         </ScrollReveal>
         <ScrollReveal className="w-full">
-          <Events />
+          <Events items={events} />
         </ScrollReveal>
         <ScrollReveal className="w-full">
           <Officers members={officers} />

@@ -135,7 +135,9 @@ by anyone who does not hold the key.
 
 ## Field mapping
 
-The portal's shapes and ours do not match one-to-one:
+The portal's shapes and ours do not match one-to-one.
+
+**Officers**
 
 | Portal | Ours | Note |
 |---|---|---|
@@ -144,6 +146,26 @@ The portal's shapes and ours do not match one-to-one:
 | `display_order` | sort order | Not an id — ours is positional |
 | — | `accent` | **No source.** Assigned by position, cycling the four brand colours. Deterministic so it is stable across renders and does not break visual regression |
 | — | `width` / `height` | **Not reported.** Fixed at 960×960, which describes the square frame the avatar renders in rather than the file. The container is fixed and the image is `object-cover`, so this prevents layout shift regardless of what was uploaded |
+
+**Events** (CMS-02)
+
+| Portal | Ours | Note |
+|---|---|---|
+| `category` | `category` | One of five. `hackaton` misspelled on purpose, on both sides. Anything else → event skipped and logged |
+| `start_date` / `end_date` | `date` label | `null` → **"TBA"**. Otherwise "May 10–12, 2026" style, see below |
+| `cover_image_url` | `img` | Nullable, and checked against the image allowlist; a placeholder shows otherwise |
+| `description`, `location` | — | Received, not rendered. The card shows title, date and category |
+
+**Dates are formatted in Philippine time.** The portal sends UTC timestamps, and Vercel's servers
+run in UTC. Formatting without an explicit time zone would put an evening event in Laguna on the
+next day's date — `2026-10-01T20:00:00Z` is 04:00 on **Oct 2** in Manila. `lib/portal/format.ts`
+formats in `Asia/Manila`, and a test proves it: with the zone changed to UTC, that test fails.
+
+Labels are built from date parts rather than `Intl.DateTimeFormat#formatRange`, whose spacing and
+dash characters vary between ICU versions.
+
+**Event order is the portal's**: undated first, then newest start date first. The portal owns
+that editorial choice, the same way it owns officers' `display_order`.
 
 Images arrive as absolute Supabase Storage URLs. The host is allowlisted in `next.config.ts` as a
 concrete hostname rather than `**.supabase.co` — a wildcard would survive a project migration, but
@@ -169,9 +191,14 @@ else will show as initials. The `[portal]` warning in the server logs names the 
 
 ## Change requests for the portal team
 
-Two gaps block work on this side. Both need changes in the portal's repository.
+All three were delivered on 2026-09-22. The portal's own reference is `docs/public-api.md` in the portal repository.
 
-### 1. `category` on events — blocks the Events section
+### 1. `category` on events — ✅ delivered 2026-09-22
+
+> Delivered with nullable dates for TBA events. The Events section reads from the portal as of CMS-02.
+
+<details><summary>Original request</summary>
+
 
 The events section colours each event's badge by category. The API returns no such field, and
 none of `title`, `description` or `location` can stand in for it.
@@ -191,7 +218,14 @@ hackaton | workshop | seminar | community | career
 unscheduled event. Six of the nine events currently on the landing page are "TBA". Either a
 nullable `start_date` or an explicit `is_tba` flag would let those exist in the portal at all.
 
-### 2. A landing-images endpoint — blocks CMS-04
+</details>
+
+### 2. A landing-images endpoint — ✅ delivered 2026-09-22
+
+> `GET /api/public/landing-images`, and `images` on `/landing`. Wiring it in is CMS-04.
+
+<details><summary>Original request</summary>
+
 
 There is no endpoint for the landing page's imagery, so the hero, the Who We Are carousel, the
 What We Do cards and the bottom section cannot be edited without a developer. That was the whole
@@ -224,7 +258,14 @@ of CMS-04.
 Some slots hold one image (the hero), others hold several (the carousel, the What We Do grid).
 Both are the same shape — a set of rows sharing a slot, ordered by `display_order`.
 
-### 3. Call our revalidation endpoint on save — makes publishing instant
+</details>
+
+### 3. Call our revalidation endpoint on save — ✅ delivered 2026-09-22
+
+> The portal calls it after every officer, event or landing-image change. End-to-end confirmation on the live site is pending a real edit.
+
+<details><summary>Original request</summary>
+
 
 **Our side is built (CMS-06).** Content already refreshes within 30 minutes on its own. To make a
 change appear **immediately**, the portal's admin needs to make one request after an officer or
@@ -249,3 +290,5 @@ content still updates within 30 minutes, so the worst case is the behaviour that
 **The secret is shared** between the two projects: ours as `PORTAL_REVALIDATE_SECRET`, theirs in
 whatever server-side variable they choose. It must never be sent from a browser, which means the
 call has to come from the portal's server code (an API route or database hook), not its admin UI.
+
+</details>
