@@ -192,3 +192,29 @@ test.describe('SEO-01 page metadata', () => {
     expect(ogHost).toBe(JSON.parse(raw).url.match(/^(https?:\/\/[^/]+)/)![1]);
   });
 });
+
+test.describe('SEO-04 descriptive link text', () => {
+  /**
+   * A link's text must say where it goes. Generic text ("Learn More") tells a
+   * search engine nothing about the destination, and a screen-reader user
+   * tabbing through a list of links hears it out of context.
+   *
+   * The list is the English entries of Lighthouse's link-text audit, the audit
+   * that held SEO at 0.92 over the hero's "Learn More" (SEO-04, #133).
+   * Checked against every link's accessible name, the same thing Lighthouse
+   * and screen readers read.
+   */
+  const GENERIC = [
+    'click here', 'click this', 'go', 'here', 'information', 'learn more', 'more',
+    'more info', 'more information', 'right here', 'read more', 'see more', 'start', 'this',
+  ];
+
+  test('no link on the page has generic text', async ({ page }) => {
+    await page.goto('/');
+    const names = await page.$$eval('a[href]', (links) =>
+      links.map((a) => (a.getAttribute('aria-label') ?? a.textContent ?? '').replace(/\s+/g, ' ').trim().toLowerCase()),
+    );
+    const generic = names.filter((name) => GENERIC.includes(name));
+    expect(generic).toEqual([]);
+  });
+});
