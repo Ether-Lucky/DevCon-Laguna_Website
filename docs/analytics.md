@@ -93,11 +93,32 @@ Two things will stop data appearing even when the code is correct:
 the Lighthouse performance median, currently around 0.90, starts slipping — see
 [quality-gates.md](./quality-gates.md).
 
+## Only loaded on Vercel
+
+`<Analytics />` is rendered only when `VERCEL` is set (`lib/analytics-config.ts`). Vercel sets
+it on every production and preview deployment it hosts, and nowhere else sets it.
+
+It used to render everywhere. Its script path, `/_vercel/insights/script.js`, exists only on
+Vercel, so **every load in CI and local builds answered 404 and logged a console error**. That
+failed Lighthouse's *errors-in-console* audit, costing Best Practices points. It also meant a
+genuine console error always arrived next to one everybody had learned to ignore
+(ANL-01-BT-01, #135).
+
+CTA and contact tracking are unaffected. `track()` queues into `window.va` whether or not the
+script loaded; the events simply aren't delivered outside Vercel, which was already the case.
+
 ## Testing
 
 `tests/analytics.spec.ts` installs a `window.va` stub before page scripts run and captures
 exactly what would be reported, so the suite asserts real behaviour without sending live data.
 The collection endpoint only exists on Vercel deployments.
+
+**Pageviews are not tested in CI.** The test that checked `<Analytics />` reported one was
+replaced when the component stopped rendering outside Vercel. It was testing Vercel's library
+rather than this project, and it was one of the two flaky WebKit tests in #130. The suite now
+tests the rule this project owns: load on Vercel, and nowhere else. Pageviews themselves are
+verified on the production deployment. `tests/regression.spec.ts` asserts that a full page load
+logs no console errors and no failed same-origin requests.
 
 One note for anyone extending these tests: an ad blocker does **not** make `window.va` throw —
 the package installs its own queue stub, so `va` always exists. A blocker simply prevents the

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { shouldLoadAnalytics } from '../lib/analytics-config';
 
 /**
  * ANL-01 (#65) — Vercel Web Analytics.
@@ -24,16 +25,37 @@ async function captureAnalytics(page: Page) {
 const events = (page: Page) =>
   page.evaluate(() => (window as unknown as Record<string, unknown>).__events as Captured);
 
-test.describe('ANL-01 pageviews', () => {
-  test('reports a pageview for the landing page', async ({ page }) => {
-    await captureAnalytics(page);
+test.describe('ANL-01-BT-01 where analytics loads', () => {
+  /**
+   * `<Analytics />` is only rendered on Vercel deployments, the only place its
+   * script path exists. This replaced a CI test that the component reports a
+   * pageview. That test checked Vercel's library rather than this project's
+   * code, could not run once the component stopped rendering outside Vercel,
+   * and was one of the two flaky WebKit tests in #130.
+   *
+   * What this project owns is the rule below. That pageviews are actually
+   * recorded is verified on the production deployment, where they happen.
+   */
+  test('loads on Vercel deployments, production and preview alike', () => {
+    expect(shouldLoadAnalytics({ VERCEL: '1' })).toBe(true);
+    expect(shouldLoadAnalytics({ VERCEL: '1', VERCEL_ENV: 'preview' })).toBe(true);
+  });
+
+  test('does not load anywhere else', () => {
+    expect(shouldLoadAnalytics({})).toBe(false);
+    expect(shouldLoadAnalytics({ VERCEL: '' })).toBe(false);
+    expect(shouldLoadAnalytics({ CI: 'true', NODE_ENV: 'production' })).toBe(false);
+  });
+
+  test('a non-Vercel build never requests the analytics script', async ({ page }) => {
+    test.skip(Boolean(process.env.VERCEL), 'only meaningful outside Vercel');
+    const requested: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_vercel/insights')) requested.push(request.url());
+    });
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-
-    const captured = await events(page);
-    const pageview = captured.find(([type]) => type === 'pageview');
-    expect(pageview, 'a pageview should be reported').toBeTruthy();
-    expect(pageview![1].path).toBe('/');
+    expect(requested).toEqual([]);
   });
 });
 

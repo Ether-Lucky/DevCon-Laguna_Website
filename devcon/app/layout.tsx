@@ -3,6 +3,7 @@ import ThemeProvider from "@/components/theme-provider";
 import StructuredData from "@/components/ui/structured-data";
 import { Analytics } from "@vercel/analytics/next";
 import AnalyticsEvents from "@/components/ui/analytics-events";
+import { shouldLoadAnalytics } from "@/lib/analytics-config";
 import { siteConfig } from "@/lib/site-config";
 import { dmSans, jetBrainsMono } from "@/components/ui/fonts";
 import "./globals.css";
@@ -76,10 +77,13 @@ export default function RootLayout({
         <ThemeProvider>{children}</ThemeProvider>
         {/*
           Vercel Web Analytics (ANL-01). Cookieless and privacy-friendly: it stores
-          no personal data and needs no consent banner. Collection only happens on
-          Vercel deployments, so local development is unaffected.
+          no personal data and needs no consent banner.
+
+          Only rendered on Vercel deployments (ANL-01-BT-01). Its script path
+          exists nowhere else, so rendering it in CI or locally only produced a
+          404 and a console error on every page load.
         */}
-        <Analytics />
+        {shouldLoadAnalytics() && <Analytics />}
         <AnalyticsEvents />
       </body>
     </html>

@@ -212,3 +212,39 @@ test.describe('#112 primary CTAs', () => {
     await expect(dead).toHaveCount(0);
   });
 });
+
+test.describe('ANL-01-BT-01 a clean console', () => {
+  /**
+   * The page must load without console errors, uncaught exceptions or failed
+   * requests to its own origin. Before ANL-01-BT-01, every load outside Vercel
+   * logged a 404 for the analytics script. That failed Lighthouse's
+   * errors-in-console audit, and it meant a real error always arrived next to
+   * one everybody had learned to ignore.
+   *
+   * The whole page is scrolled, so lazy-loaded images and below-the-fold
+   * sections are included.
+   */
+  test('loading the whole page logs no errors', async ({ page, baseURL }) => {
+    const problems: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') problems.push(`console: ${message.text()}`);
+    });
+    page.on('pageerror', (error) => problems.push(`exception: ${error.message}`));
+    page.on('response', (response) => {
+      if (response.status() >= 400 && baseURL && response.url().startsWith(baseURL)) {
+        problems.push(`${response.status()}: ${response.url()}`);
+      }
+    });
+
+    await page.goto('/');
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 500) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 60));
+      }
+    });
+    await page.waitForLoadState('networkidle');
+
+    expect(problems).toEqual([]);
+  });
+});
