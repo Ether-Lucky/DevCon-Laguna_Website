@@ -1,6 +1,7 @@
 import 'server-only';
 
-import type { PortalLanding, PortalOfficer, PortalEvent } from './types';
+import { parseEvents, parseOfficers } from './parse';
+import type { PortalLanding } from './types';
 
 /**
  * Client for the DevConnect Portal's public API (CMS-02, CMS-03).
@@ -43,42 +44,6 @@ function baseUrl(): string {
   return (process.env.PORTAL_API_BASE_URL ?? DEFAULT_BASE_URL).replace(/\/+$/, '');
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-/**
- * Narrows an unknown payload to the officers we can actually render.
- *
- * The portal is a separate codebase on a separate deployment schedule, so its
- * response is untrusted input rather than a guarantee. An entry missing the
- * fields the card needs is dropped rather than rendered as a blank card.
- */
-function parseOfficers(value: unknown): PortalOfficer[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((entry): entry is PortalOfficer => {
-    if (!isRecord(entry)) return false;
-    return (
-      typeof entry.id === 'string' &&
-      typeof entry.name === 'string' &&
-      typeof entry.title === 'string' &&
-      typeof entry.display_order === 'number'
-    );
-  });
-}
-
-function parseEvents(value: unknown): PortalEvent[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((entry): entry is PortalEvent => {
-    if (!isRecord(entry)) return false;
-    return (
-      typeof entry.id === 'string' &&
-      typeof entry.title === 'string' &&
-      typeof entry.start_date === 'string'
-    );
-  });
-}
-
 /**
  * Fetches the combined landing payload.
  *
@@ -113,14 +78,15 @@ export async function fetchPortalLanding(): Promise<PortalResult> {
     }
 
     const body: unknown = await response.json();
-    if (!isRecord(body)) return { status: 'failed', reason: 'malformed-body' };
+    if (typeof body !== 'object' || body === null) return { status: 'failed', reason: 'malformed-body' };
+    const record = body as Record<string, unknown>;
 
     return {
       status: 'ok',
       data: {
-        officers: parseOfficers(body.officers),
-        events: parseEvents(body.events),
-        generated_at: typeof body.generated_at === 'string' ? body.generated_at : '',
+        officers: parseOfficers(record.officers),
+        events: parseEvents(record.events),
+        generated_at: typeof record.generated_at === 'string' ? record.generated_at : '',
       },
     };
   } catch (error) {

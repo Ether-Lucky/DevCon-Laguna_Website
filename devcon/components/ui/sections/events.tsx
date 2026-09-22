@@ -78,10 +78,14 @@ function EventCard({ event }: { event: EventItem }) {
  * Events — the "Featured Events" homepage section.
  *
  * Renders a horizontally scrollable `DynamicCarousel` of `EventCard` tiles.
- * Event data is sourced from `lib/content/events.ts`.
  * Badge colors are determined by `categoryColors` above — not by the event objects.
+ *
+ * `items` comes from the DevConnect Portal, fetched on the server by
+ * `lib/portal/content.ts` (CMS-02). It defaults to the bundled list in
+ * `lib/content/events.ts`, so the component still renders on its own rather
+ * than throwing on an undefined prop.
  */
-export default function Events() {
+export default function Events({ items = events }: { items?: EventItem[] }) {
   return (
     <section id="events" className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
       <div className="w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 px-4">
@@ -95,7 +99,7 @@ export default function Events() {
         </div>      </div>
 
       <DynamicCarousel label="Featured events" className="w-full py-12 px-4"
-        tiles={events.map((event) => (
+        tiles={items.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       />
