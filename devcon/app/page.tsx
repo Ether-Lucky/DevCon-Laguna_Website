@@ -18,12 +18,11 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  *
  * Composes all homepage sections in order:
  *   NavBar → Hero → Stats → About → MissionVision → WhatWeDo
- *   → Events → Officers → Footer
+ *   → Events → Officers → Contact → ProgramsAndActivities → Footer
  *
  * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
  * that triggers once when it enters the viewport.
  *
- * `ProgramsAndActivities` is currently commented out pending content readiness.
  *
  * Officer data is fetched here rather than inside the section, because the
  * section is a client component and the portal API key must never reach the
@@ -70,9 +69,9 @@ export default async function Home() {
         <ScrollReveal className="w-full">
           <Contact />
         </ScrollReveal>
-        {/* <ScrollReveal className="w-full">
+        <ScrollReveal className="w-full">
           <ProgramsAndActivities />
-        </ScrollReveal> */}
+        </ScrollReveal>
       </main> 
       <ScrollReveal className="w-full" variant="fade">
           <Footer/>
