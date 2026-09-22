@@ -15,6 +15,9 @@ Replaces the headless-CMS approach originally planned for Sprint 3.
 | [`lib/portal/client.ts`](../devcon/lib/portal/client.ts) | Server-only fetch, caching, and failure handling |
 | [`lib/portal/content.ts`](../devcon/lib/portal/content.ts) | Maps portal data to what the sections render, with fallbacks |
 | [`tests/portal.spec.ts`](../devcon/tests/portal.spec.ts) | Degradation and credential-leak tests |
+| [`app/api/revalidate/route.ts`](../devcon/app/api/revalidate/route.ts) | Instant publish endpoint (CMS-06) |
+| [`lib/revalidate-auth.ts`](../devcon/lib/revalidate-auth.ts) | Its shared-secret check |
+| [`tests/revalidate.spec.ts`](../devcon/tests/revalidate.spec.ts) | Auth branches and endpoint behaviour |
 
 ## The API
 
@@ -61,8 +64,34 @@ ours to make:
 next: { revalidate: 1800, tags: ['portal-content'] }
 ```
 
-Thirty minutes, matching the requirement. The `portal-content` tag is what will make publishing
-instant once the revalidation endpoint exists — see the change requests below.
+Thirty minutes, matching the requirement.
+
+### Instant publish (CMS-06)
+
+`POST /api/revalidate`, authenticated with `Authorization: Bearer <PORTAL_REVALIDATE_SECRET>`,
+expires the `portal-content` tag so the next visitor gets fresh content without a redeploy.
+
+It uses `revalidateTag(tag, { expire: 0 })`, **not** the `'max'` profile the Next.js docs recommend
+for most cases. The difference was measured against a mock portal:
+
+| Profile | First request after publish | Second request |
+|---|---|---|
+| `'max'` | **Old content** | New content |
+| `{ expire: 0 }` | New content | New content |
+
+`'max'` only marks content stale and refreshes it in the background, so the first visitor after a
+publish still sees the old version. That is not instant. Next's own guidance for webhooks from
+external systems is immediate expiry.
+
+Design decisions:
+
+- **The caller cannot choose what is revalidated.** Always the portal tag. A leaked secret can at
+  most make the site refetch from the portal sooner.
+- **An unset or short secret refuses every request (`503`)**, rather than falling open. Secrets
+  under 32 characters are treated as unset.
+- **Rejections do not say why.** Missing, malformed and wrong headers all return a plain `401`;
+  the reason is logged server-side only, so the endpoint gives nothing away to someone probing it.
+- **Constant-time comparison**, hashing both sides first so not even the length leaks.
 
 ## Graceful degradation
 
@@ -96,6 +125,7 @@ serving the last known good content rather than reverting to bundled defaults.
 |---|---|---|
 | `PORTAL_API_KEY` | to use live content | The `x-api-key` credential. **Server-side secret** |
 | `PORTAL_API_BASE_URL` | no | Defaults to the portal's production URL. Used to point at a mock |
+| `PORTAL_REVALIDATE_SECRET` | for instant publish | Shared with the portal. **Server-side secret**, 32+ characters |
 
 Set `PORTAL_API_KEY` in Vercel and **redeploy**. For local development put it in
 `devcon/.env.local`, which is gitignored.
@@ -194,10 +224,28 @@ of CMS-04.
 Some slots hold one image (the hero), others hold several (the carousel, the What We Do grid).
 Both are the same shape — a set of rows sharing a slot, ordered by `display_order`.
 
-### 3. Optional: a publish webhook
+### 3. Call our revalidation endpoint on save — makes publishing instant
 
-Thirty-minute caching is already implemented. To make publishing **instant**, the portal's admin
-would need to call a revalidation endpoint on this site when content is saved. That endpoint does
-not exist yet; when it does, it will take a shared secret and invalidate the `portal-content` tag.
+**Our side is built (CMS-06).** Content already refreshes within 30 minutes on its own. To make a
+change appear **immediately**, the portal's admin needs to make one request after an officer or
+event is saved, updated or deleted:
 
-Not a blocker — content still updates within half an hour without it.
+```http
+POST https://dev-con-laguna-website-nine.vercel.app/api/revalidate
+Authorization: Bearer <PORTAL_REVALIDATE_SECRET>
+```
+
+No body is needed. Responses:
+
+| Status | Meaning |
+|---|---|
+| `200` `{"revalidated": true}` | Done. The next visitor gets fresh content |
+| `401` | Wrong or missing secret |
+| `503` | We have not configured the secret on our side |
+
+**Fire-and-forget.** The portal should not block or fail a save on this call. If it fails, the
+content still updates within 30 minutes, so the worst case is the behaviour that exists today.
+
+**The secret is shared** between the two projects: ours as `PORTAL_REVALIDATE_SECRET`, theirs in
+whatever server-side variable they choose. It must never be sent from a browser, which means the
+call has to come from the portal's server code (an API route or database hook), not its admin UI.
