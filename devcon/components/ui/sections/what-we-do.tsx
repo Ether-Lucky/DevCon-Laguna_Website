@@ -20,7 +20,7 @@ export default function WhatWeDo() {
       {/* Heading */}
       <div className="mb-12 text-center">
         <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
-          What <span className="text-devcon-purple-500">We Do</span>
+          What <span className="text-accent-purple">We Do</span>
         </h2>
 
         <p className="mx-auto mt-6 max-w-xl text-center text-base text-muted">

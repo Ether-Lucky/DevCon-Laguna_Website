@@ -119,11 +119,11 @@ export default function Contact() {
       id="contact"
       className="w-full max-w-7xl mx-auto scroll-mt-28 px-4 md:px-8 py-16 md:py-24"
     >
-      <p className="font-mono text-xs uppercase tracking-[0.22em] text-devcon-lime-500">
+      <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent-lime">
         {'// Get in touch with the community'}
       </p>
       <h2 className="mt-3 text-4xl md:text-6xl font-extrabold tracking-tight text-foreground">
-        Get in <span className="text-devcon-purple-500">Touch.</span>
+        Get in <span className="text-accent-purple">Touch.</span>
       </h2>
       <p className="mt-6 max-w-2xl text-base text-muted">
         Have questions about the upcoming DevCon? Want to speak, sponsor, or volunteer? Drop us a
@@ -193,7 +193,7 @@ export default function Contact() {
               <p
                 id="name-error"
                 role="alert"
-                className="mt-2 font-mono text-xs text-devcon-orange-500"
+                className="mt-2 font-mono text-xs text-accent-error"
               >
                 {errors.name}
               </p>
@@ -218,7 +218,7 @@ export default function Contact() {
               <p
                 id="email-error"
                 role="alert"
-                className="mt-2 font-mono text-xs text-devcon-orange-500"
+                className="mt-2 font-mono text-xs text-accent-error"
               >
                 {errors.email}
               </p>
@@ -242,7 +242,7 @@ export default function Contact() {
               <p
                 id="subject-error"
                 role="alert"
-                className="mt-2 font-mono text-xs text-devcon-orange-500"
+                className="mt-2 font-mono text-xs text-accent-error"
               >
                 {errors.subject}
               </p>
@@ -266,7 +266,7 @@ export default function Contact() {
               <p
                 id="message-error"
                 role="alert"
-                className="mt-2 font-mono text-xs text-devcon-orange-500"
+                className="mt-2 font-mono text-xs text-accent-error"
               >
                 {errors.message}
               </p>
