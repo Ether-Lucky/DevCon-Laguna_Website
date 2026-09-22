@@ -23,7 +23,6 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
  * that triggers once when it enters the viewport.
  *
- *
  * Officer and event data is fetched here rather than inside the sections,
  * because both are client components and the portal API key must never reach
  * the browser (CMS-02, CMS-03). The page stays static: the fetch is cached and revalidated
