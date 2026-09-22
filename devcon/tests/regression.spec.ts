@@ -212,3 +212,44 @@ test.describe('#112 primary CTAs', () => {
     await expect(dead).toHaveCount(0);
   });
 });
+
+test.describe('LOGO-BT-01 declared image proportions', () => {
+  /**
+   * Mirrors Lighthouse's image-aspect-ratio audit: an image's width/height
+   * attributes must describe the file it loads. The browser uses them to
+   * reserve space before the image arrives, so a mismatch means a wrong-sized
+   * box until then. The logo declared 240x76 (3.16) for a 384x65 file (5.91).
+   *
+   * Written for every image, not just the logo, so the next one is caught too.
+   * Images that crop with `object-fit` are skipped, as Lighthouse skips them:
+   * their declared size describes a frame, not a file.
+   */
+  test('every image declares the proportions of the file it loads', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 500) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    });
+    await page.waitForLoadState('networkidle');
+
+    const mismatches = await page.$$eval('img[width][height]', (imgs) =>
+      imgs
+        .map((node) => {
+          const img = node as HTMLImageElement;
+          const fit = getComputedStyle(img).objectFit;
+          if (fit === 'cover' || fit === 'contain' || !img.naturalWidth || !img.naturalHeight) return null;
+          const declared = Number(img.getAttribute('width')) / Number(img.getAttribute('height'));
+          const actual = img.naturalWidth / img.naturalHeight;
+          const off = Math.abs(declared - actual) / actual;
+          return off > 0.02
+            ? `${img.getAttribute('alt')} (${img.currentSrc.split('url=')[1]?.split('&')[0] ?? img.src}): declared ${img.getAttribute('width')}x${img.getAttribute('height')}, file ${img.naturalWidth}x${img.naturalHeight}`
+            : null;
+        })
+        .filter(Boolean),
+    );
+
+    expect(mismatches).toEqual([]);
+  });
+});
