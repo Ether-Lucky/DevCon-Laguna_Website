@@ -139,6 +139,7 @@ Each slide entry follows this structure:
   title: string,
   description?: string,
   bannerImg?: string,
+  bannerAlt?: string,
   primaryBtnLabel: string,
   primaryBtnLink: string,
   secondaryBtnLabel?: string,
@@ -174,6 +175,18 @@ Example:
 1. Find the entry by `id`.
 2. Update content text, banner, or button fields.
 3. If a secondary button is not needed, remove both secondary fields.
+
+### Banners carry their own text
+
+A banner's headline and copy are baked into the artwork, so a slide **with** a
+`bannerImg` shows only the image and its buttons. A slide **without** one shows
+its `title` and `description` as text over a gradient.
+
+- When you add a banner, set `bannerAlt` to the words in the artwork. Otherwise
+  screen readers never hear them.
+- Every button needs a real destination: the portal URL (`siteConfig.portalUrl`)
+  or an in-page anchor such as `#events`. An empty link is what took this
+  section off the page for three sprints (PROGRAM-01-BT-01, #87).
 
 ---
 

@@ -91,7 +91,10 @@ test.describe('A11Y-01 keyboard access', () => {
     // could only move them with the arrow buttons, so any tile scrolled out of
     // view was unreachable — axe reports it as a serious violation, and it was
     // one of the two found on the landing page.
-    const tracks = page.locator('[role="group"][aria-label]');
+    // Scrollable tracks only. The Programs & Activities slide is also a labelled
+    // group (the WAI-ARIA carousel pattern), but it does not scroll, so it is
+    // correctly not focusable and is excluded by its roledescription.
+    const tracks = page.locator('[role="group"][aria-label]:not([aria-roledescription])');
     const count = await tracks.count();
     expect(count).toBeGreaterThanOrEqual(3);
 
@@ -112,7 +115,7 @@ test.describe('A11Y-01 keyboard access', () => {
     await page.goto('/');
     await revealWholePage(page);
 
-    const track = page.locator('[role="group"][aria-label]').first();
+    const track = page.locator('[role="group"][aria-label]:not([aria-roledescription])').first();
     await track.scrollIntoViewIfNeeded();
     await track.focus();
     await expect(track).toBeFocused();

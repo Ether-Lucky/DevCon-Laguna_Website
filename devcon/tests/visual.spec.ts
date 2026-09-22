@@ -74,10 +74,29 @@ test('events section snapshot', async ({ page }) => {
 });
 
 // Restored coverage: the Officers section renders from the content data layer
-// and had its snapshot removed in 94e664c. The Programs & Activities section is
-// deliberately still uncovered because it is not rendered on the page (see #87).
+// and had its snapshot removed in 94e664c.
 test('officers section snapshot', async ({ page }) => {
   await expect(page.locator('#officers')).toHaveScreenshot('officers-section.png', {
+    maxDiffPixelRatio: 0.01,
+    timeout: 60000,
+  });
+});
+
+// Programs & Activities is back on the page (PROGRAM-01-BT-01, #87). The
+// slideshow does not auto-advance here: every test runs with reduced motion,
+// which the carousel honours, so the capture is always slide 1.
+test('programs and activities section snapshot', async ({ page }) => {
+  // The banner is lazy-loaded (it sits at the bottom of the page and must not
+  // compete with the hero), so it only starts loading once scrolled to. The
+  // first version of this snapshot captured the section before it arrived and
+  // recorded an empty gradient as the baseline — wait for the real image.
+  const section = page.locator('#activities');
+  await section.scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => {
+    const img = document.querySelector('#activities img') as HTMLImageElement | null;
+    return !!img && img.complete && img.naturalWidth > 0;
+  });
+  await expect(section).toHaveScreenshot('programs-section.png', {
     maxDiffPixelRatio: 0.01,
     timeout: 60000,
   });
