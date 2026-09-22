@@ -1,0 +1,90 @@
+import { EVENT_CATEGORIES, type PortalEvent, type PortalEventCategory, type PortalOfficer } from './types';
+
+/**
+ * Narrowing for the portal's responses.
+ *
+ * The portal is a separate codebase on a separate deployment schedule, so what
+ * it sends is untrusted input rather than a guarantee. Each parser keeps the
+ * entries this site can render and drops the rest, rather than rendering a
+ * blank or broken card.
+ *
+ * Deliberately free of `server-only` so the test suite can exercise it
+ * directly, without a portal or an API key.
+ */
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string';
+}
+
+export function parseOfficers(value: unknown): PortalOfficer[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is PortalOfficer => {
+    if (!isRecord(entry)) return false;
+    return (
+      typeof entry.id === 'string' &&
+      typeof entry.name === 'string' &&
+      typeof entry.title === 'string' &&
+      typeof entry.display_order === 'number'
+    );
+  });
+}
+
+function isCategory(value: unknown): value is PortalEventCategory {
+  return typeof value === 'string' && (EVENT_CATEGORIES as readonly string[]).includes(value);
+}
+
+/** True for a string `Date` can read. An unparseable date is as unrenderable as a missing title. */
+function isDateString(value: unknown): value is string {
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value));
+}
+
+/**
+ * Events the section can render.
+ *
+ * Dropped, and logged so the data can be fixed at source:
+ * - a missing id or title
+ * - a `category` outside the five the badge colours exist for. The portal's
+ *   database constrains this today; a sixth category added there without the
+ *   landing page knowing would otherwise render as an uncoloured badge.
+ * - a date that is present but unparseable
+ *
+ * **Null dates are kept** — they mean "TBA". The portal promises start and end
+ * are both set or both null; if only one arrives, the event is still shown,
+ * treated as a single-day event on the date that is present.
+ */
+export function parseEvents(value: unknown): PortalEvent[] {
+  if (!Array.isArray(value)) return [];
+
+  const events: PortalEvent[] = [];
+  for (const entry of value) {
+    if (!isRecord(entry) || typeof entry.id !== 'string' || typeof entry.title !== 'string') continue;
+
+    if (!isCategory(entry.category)) {
+      console.warn(`[portal] event "${entry.title}" has an unknown category and was skipped: ${String(entry.category)}`);
+      continue;
+    }
+
+    const start = entry.start_date;
+    const end = entry.end_date;
+    if (!isNullableString(start) || !isNullableString(end) || (start !== null && !isDateString(start)) || (end !== null && !isDateString(end))) {
+      console.warn(`[portal] event "${entry.title}" has an unreadable date and was skipped.`);
+      continue;
+    }
+
+    events.push({
+      id: entry.id,
+      title: entry.title,
+      description: typeof entry.description === 'string' ? entry.description : null,
+      location: typeof entry.location === 'string' ? entry.location : '',
+      category: entry.category,
+      start_date: start ?? end,
+      end_date: end ?? start,
+      cover_image_url: typeof entry.cover_image_url === 'string' ? entry.cover_image_url : null,
+    });
+  }
+  return events;
+}

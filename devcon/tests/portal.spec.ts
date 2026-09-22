@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { team } from '../lib/content/officers';
 import { isAllowedRemoteImage, remoteImagePatterns } from '../lib/remote-images';
+import { formatEventDate } from '../lib/portal/format';
+import { parseEvents } from '../lib/portal/parse';
 
 /**
  * Regression suite for the DevConnect Portal integration (CMS-03).
@@ -136,5 +138,76 @@ test.describe('CMS-03 photo guard', () => {
     // its own module instance. What matters is that both allow exactly the
     // same hosts.
     expect(config.images?.remotePatterns).toEqual(remoteImagePatterns);
+  });
+});
+
+test.describe('CMS-02 event date labels', () => {
+  test('an undated event reads TBA', () => {
+    expect(formatEventDate(null, null)).toBe('TBA');
+  });
+
+  test('matches the style the section shipped with', () => {
+    expect(formatEventDate('2026-12-17T01:00:00Z', '2026-12-17T09:00:00Z')).toBe('Dec 17, 2026');
+    expect(formatEventDate('2026-05-10T01:00:00Z', '2026-05-12T09:00:00Z')).toBe('May 10–12, 2026');
+    expect(formatEventDate('2026-05-30T01:00:00Z', '2026-06-02T09:00:00Z')).toBe('May 30 – Jun 2, 2026');
+    expect(formatEventDate('2026-12-30T01:00:00Z', '2027-01-02T09:00:00Z')).toBe('Dec 30, 2026 – Jan 2, 2027');
+  });
+
+  test('uses the Philippine calendar, not the server\'s UTC one', () => {
+    // 20:00 UTC is 04:00 the next morning in Laguna. Vercel runs in UTC, so a
+    // formatter without an explicit time zone would label this May 10.
+    expect(formatEventDate('2026-05-10T20:00:00Z', '2026-05-10T22:00:00Z')).toBe('May 11, 2026');
+    // 15:59 UTC is 23:59 the same day in Laguna.
+    expect(formatEventDate('2026-05-10T15:59:00Z', '2026-05-10T15:59:00Z')).toBe('May 10, 2026');
+  });
+});
+
+test.describe('CMS-02 event parsing', () => {
+  const base = {
+    id: 'e1',
+    title: 'Hack Night',
+    description: null,
+    location: 'Laguna',
+    category: 'hackaton',
+    start_date: '2026-05-10T01:00:00Z',
+    end_date: '2026-05-10T09:00:00Z',
+    cover_image_url: null,
+  };
+
+  test('keeps TBA events — the old parser dropped them', () => {
+    const [event] = parseEvents([{ ...base, start_date: null, end_date: null }]);
+    expect(event).toBeDefined();
+    expect(event.start_date).toBeNull();
+  });
+
+  test('keeps the deliberately misspelled hackaton category', () => {
+    expect(parseEvents([base])[0].category).toBe('hackaton');
+  });
+
+  test('drops events the section cannot render', () => {
+    const cases = [
+      { ...base, category: 'hackathon' }, // the correct spelling is not a known key
+      { ...base, category: 'meetup' },
+      { ...base, category: undefined },
+      { ...base, title: undefined },
+      { ...base, id: 42 },
+      { ...base, start_date: 'next tuesday' },
+      { ...base, start_date: 12345 },
+      null,
+      'event',
+    ];
+    for (const entry of cases) {
+      expect(parseEvents([entry]), JSON.stringify(entry)).toEqual([]);
+    }
+  });
+
+  test('treats a one-sided date as a single-day event instead of dropping it', () => {
+    const [event] = parseEvents([{ ...base, end_date: null }]);
+    expect(event.end_date).toBe(base.start_date);
+  });
+
+  test('tolerates a malformed payload', () => {
+    expect(parseEvents(undefined)).toEqual([]);
+    expect(parseEvents({ events: [] })).toEqual([]);
   });
 });
