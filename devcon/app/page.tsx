@@ -23,13 +23,13 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
  * that triggers once when it enters the viewport.
  *
- * Officer and event data is fetched here rather than inside the sections,
- * because both are client components and the portal API key must never reach
- * the browser (CMS-02, CMS-03). The page stays static: the fetch is cached and revalidated
+ * Officers, events and landing images are fetched here rather than inside the
+ * sections, because several are client components and the portal API key must
+ * never reach the browser (CMS-02, CMS-03, CMS-04). The page stays static: the fetch is cached and revalidated
  * on a timer, not per request.
  */
 export default async function Home() {
-  const { officers, events } = await getLandingContent();
+  const { officers, events, images } = await getLandingContent();
 
   return (
     <>
@@ -45,19 +45,19 @@ export default async function Home() {
           and keeps the same `w-full` box ScrollReveal would have rendered.
         */}
         <div className="w-full">
-          <Hero />
+          <Hero desktop={images.hero.desktop} mobile={images.hero.mobile} />
         </div>
         <ScrollReveal className="w-full" variant="scale">
           <Stats />
         </ScrollReveal>
         <ScrollReveal className="w-full">
-          <About />
+          <About slides={images.carousel} />
         </ScrollReveal>
         <ScrollReveal className="w-full">
           <MissionVision />
         </ScrollReveal>
         <ScrollReveal className="w-full">
-          <WhatWeDo />
+          <WhatWeDo items={images.whatWeDo} />
         </ScrollReveal>
         <ScrollReveal className="w-full">
           <Events items={events} />
@@ -69,7 +69,7 @@ export default async function Home() {
           <Contact />
         </ScrollReveal>
         <ScrollReveal className="w-full">
-          <ProgramsAndActivities />
+          <ProgramsAndActivities slides={images.programs} />
         </ScrollReveal>
       </main> 
       <ScrollReveal className="w-full" variant="fade">

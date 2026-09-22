@@ -55,4 +55,5 @@ const slides: Slide[] = [
   },
 ];
 
+export type { Slide };
 export { slides };

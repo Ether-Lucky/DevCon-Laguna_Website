@@ -171,6 +171,46 @@ Images arrive as absolute Supabase Storage URLs. The host is allowlisted in `nex
 concrete hostname rather than `**.supabase.co` — a wildcard would survive a project migration, but
 it would also trust every Supabase project in existence.
 
+**Landing images** (CMS-04)
+
+Each slot falls back to its built-in picture **independently**, so the page can be updated one
+slot at a time and an empty slot never leaves a gap. Resolved in `lib/portal/landing-images.ts`.
+
+| Slot | Shows on the page | Rule |
+|---|---|---|
+| `hero-desktop` / `hero-mobile` | The hero, from 768 px wide / below it | First image by `display_order`. **Fixed frame**, see below |
+| `who-we-are-carousel` | The About carousel | Any number, in `display_order` |
+| `what-we-do` | The five-card grid | **Needs all five.** Fewer keeps the whole built-in grid, never a mix. More: the first five. The second is the tall centre card |
+| `bottom` | The first Programs & Activities banner | Replaces only that slide's banner; its `alt` also names the slide in the carousel controls |
+
+An image without alt text, in an unknown slot, or on another host is skipped and logged.
+
+#### The hero is a fixed frame
+
+The hero keeps the built-in artwork's proportions, **2048 × 2036** on desktop and **786 × 1194**
+on phones, and crops anything else to fit (`object-cover`). Before CMS-04 its height followed the
+loaded file, so an upload of any other shape would have reflowed the top of the page.
+
+The built-in hero renders as before, apart from **0.14 px**. Previously its height came from the
+resized file the optimiser served (768 × **763**, rounded), and now it comes from the artwork's true
+ratio (768 × 763.5). That is invisible, but enough to move the visual-regression baselines, which
+were refreshed.
+
+#### ⚠️ Upload guidance for hero images
+
+The frame protects the **layout**, not the **composition**. The built-in hero is a cut-out collage in
+the middle of **transparent space**, with a soft glow fading to nothing at the edges. The design
+depends on it: the hero overlaps the headline and buttons above it and the section below.
+
+An opaque photo keeps the page's layout but puts the buttons over the photo on phones. Hero
+uploads should therefore be:
+
+- **Transparent PNG or WebP**, with the subject in the **middle third** and the edges empty
+- At least **2048 × 2036** for desktop and **786 × 1194** for mobile
+- The same scene in both: the page has one `alt` for the pair, and the desktop one is used
+
+Other slots have no such constraint. Their frames crop a normal photo cleanly.
+
 ### Photo guard
 
 The allowlist lives in `lib/remote-images.ts` and is used twice: `next.config.ts` hands it to

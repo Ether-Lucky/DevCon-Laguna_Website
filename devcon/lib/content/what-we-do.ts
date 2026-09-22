@@ -15,10 +15,13 @@
  * @property width  - Original image width for layout and optimization.
  * @property height - Original image height for layout and optimization.
  * @property isTall - Optional flag for larger cards that span a bigger layout area.
+ * @property alt    - Optional alt text. Defaults to `title`; portal images
+ *                    (CMS-04) always carry their own.
  */
 interface WhatWeDoItem {
   id: number;
   title: string;
+  alt?: string;
   img: string;
   width: number;
   height: number;
@@ -64,4 +67,5 @@ const whatWeDo: WhatWeDoItem[] = [
   },
 ];
 
+export type { WhatWeDoItem };
 export { whatWeDo };

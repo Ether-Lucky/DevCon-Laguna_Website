@@ -2,6 +2,14 @@ import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
 import { siteConfig } from '@/lib/site-config';
+import type { HeroImage } from '@/lib/portal/landing-images';
+
+/** The built-in artwork, and the frame every hero image is shown in. */
+const BUILT_IN = {
+  alt: 'DevCon Laguna community collage',
+  desktop: { src: '/hero/web.webp', width: 2048, height: 2036 },
+  mobile: { src: '/hero/mobile.webp', width: 786, height: 1194 },
+} as const;
 
 /**
  * Hero — the full-width landing section at the top of the homepage.
@@ -13,8 +21,11 @@ import { siteConfig } from '@/lib/site-config';
  * - `mobile.png`: full-bleed version optimised for small screens.
  * - `look-here.png`: a small decorative doodle above the CTA buttons.
  * - `SocialMedia` renders the row of social platform icon links.
+ *
+ * `desktop` and `mobile` come from the portal's `hero-desktop` / `hero-mobile`
+ * slots (CMS-04). Each falls back to the built-in artwork independently.
  */
-export default function Hero() {
+export default function Hero({ desktop, mobile }: { desktop?: HeroImage; mobile?: HeroImage } = {}) {
   return (
     <section id="hero" className="max-w-7xl mx-auto">
       <div className="relative w-full flex flex-col md:flex-row items-center xl:justify-between gap-6 xl:gap-4">
@@ -70,12 +81,21 @@ export default function Hero() {
             removes the dilemma, so it can be eager and high priority.
           */}
           {(() => {
-            // Each variant declares its own true intrinsic size. They were previously
-            // both given 2286x2286, which matched neither file and left the browser
-            // reserving the wrong aspect ratio before the image loaded.
-            const alt = "DevCon Laguna community collage";
-            const { props: { srcSet: desktop } } = getImageProps({ alt, src: "/hero/web.webp", width: 2048, height: 2036, sizes: "60vw" });
-            const { props: { srcSet: mobile, ...rest } } = getImageProps({ alt, src: "/hero/mobile.webp", width: 786, height: 1194, sizes: "140vw" });
+            // Each variant declares the size of its frame. For the built-in artwork
+            // that is also the file's true size. An earlier version gave both
+            // 2286x2286, which matched neither and reserved the wrong aspect ratio.
+            //
+            // One alt for both: <picture> puts alt on the single <img>, so a
+            // desktop/mobile pair must describe the same scene. Desktop's wins.
+            const alt = desktop?.alt ?? mobile?.alt ?? BUILT_IN.alt;
+            const { props: { srcSet: desktopSrcSet } } = getImageProps({
+              alt, src: desktop?.src ?? BUILT_IN.desktop.src,
+              width: BUILT_IN.desktop.width, height: BUILT_IN.desktop.height, sizes: "60vw",
+            });
+            const { props: { srcSet: mobileSrcSet, ...rest } } = getImageProps({
+              alt, src: mobile?.src ?? BUILT_IN.mobile.src,
+              width: BUILT_IN.mobile.width, height: BUILT_IN.mobile.height, sizes: "140vw",
+            });
 
             // The <picture> carries the layout classes so it is the flex item with the
             // exact box the <img> used to have. Do NOT use `display: contents` here:
@@ -83,14 +103,21 @@ export default function Hero() {
             // (16px) which narrows the text column and rewraps the heading.
             return (
               <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
-                <source media="(min-width: 768px)" srcSet={desktop} sizes="60vw" />
+                <source media="(min-width: 768px)" srcSet={desktopSrcSet} sizes="60vw" />
+                {/*
+                  A fixed frame, not `h-auto` (CMS-04, PM decision 2026-09-22). With
+                  `h-auto` the hero's height followed the loaded file, so an
+                  uploaded image of any other shape would reflow the top of the
+                  page. The aspect ratios are the built-in artwork's own, so it
+                  renders exactly as before; anything else is cropped to fit.
+                */}
                 <img
                   {...rest}
                   alt={alt}
-                  srcSet={mobile}
+                  srcSet={mobileSrcSet}
                   fetchPriority="high"
                   loading="eager"
-                  className="block w-full h-auto"
+                  className="block w-full aspect-[786/1194] md:aspect-[2048/2036] object-cover"
                 />
               </picture>
             );
