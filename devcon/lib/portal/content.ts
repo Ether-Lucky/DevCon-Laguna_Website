@@ -6,8 +6,9 @@ import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding } from './client';
 import { upcomingEvents } from './format';
 import { findEvent, toEventItem } from './events';
+import { toTeamMembers } from './officers';
 import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
-import type { PortalEvent, PortalOfficer } from './types';
+import type { PortalEvent } from './types';
 
 /**
  * Landing page content, sourced from the DevConnect Portal with the bundled
@@ -26,25 +27,14 @@ import type { PortalEvent, PortalOfficer } from './types';
  */
 
 /**
- * The portal has no accent colour, so one is assigned by position.
+ * A remote image, or undefined when it cannot be rendered.
  *
- * Deterministic on purpose: the same officer keeps the same colour across
- * renders and across deployments. Anything random would make the visual
- * regression suite fail on every run for no real reason.
- */
-const ACCENTS = ['yellow', 'orange', 'purple', 'lime'] as const;
-
-/** Officer photos are square avatars in a fixed-size circular frame. */
-const AVATAR_SIZE = 960;
-
-/**
- * The officer's photo, or undefined when it cannot be rendered.
- *
- * The card shows initials for a missing photo — a supported state. A photo on
- * a host `next/image` will not optimise is not: the optimiser answers 400 and
- * the visitor sees a broken image. That happened in production, when the
- * portal held officers whose photos were linked from Tenor rather than
- * uploaded. Treating an unrenderable URL as no photo turns that into initials.
+ * A missing photo is a supported state — the officer card shows initials, an
+ * event card shows a branded placeholder. A photo on a host `next/image` will
+ * not optimise is not: the optimiser answers 400 and the visitor sees a broken
+ * image. That happened in production, when the portal held officers whose
+ * photos were linked from Tenor rather than uploaded. Treating an unrenderable
+ * URL as no photo turns that into initials.
  *
  * Logged, because the fix belongs in the portal's data and someone needs to
  * know to make it.
@@ -54,27 +44,6 @@ function renderablePhoto(url: string | null, what: string): string | undefined {
   if (isAllowedRemoteImage(url)) return url;
   console.warn(`[portal] ${what} on a host we cannot render, using the placeholder: ${url}`);
   return undefined;
-}
-
-function toTeamMember(officer: PortalOfficer, index: number): TeamMember {
-  return {
-    id: index + 1,
-    name: officer.name,
-    role: officer.title,
-    img: renderablePhoto(officer.photo_url, 'officer photo'),
-    // The portal does not report image dimensions. These describe the frame the
-    // avatar is rendered in rather than the file: the container is a fixed
-    // square and the image is `object-cover`, so this fixes the aspect ratio the
-    // optimizer works with and prevents layout shift regardless of what was
-    // uploaded.
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    accent: ACCENTS[index % ACCENTS.length],
-  };
-}
-
-function sortOfficers(officers: PortalOfficer[]): TeamMember[] {
-  return [...officers].sort((a, b) => a.display_order - b.display_order).map(toTeamMember);
 }
 
 export type LandingContent = {
@@ -116,7 +85,10 @@ export async function getLandingContent(): Promise<LandingContent> {
 
   const { officers, events, images } = result.data;
   return {
-    officers: officers.length > 0 ? sortOfficers(officers) : team,
+    officers:
+      officers.length > 0
+        ? toTeamMembers(officers, (officer) => renderablePhoto(officer.photo_url, 'officer photo'))
+        : team,
     events:
       events.length > 0
         ? upcomingEvents(events).map((event, index) =>
