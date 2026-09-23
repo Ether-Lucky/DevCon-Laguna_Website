@@ -63,8 +63,11 @@ test('renders the featured events carousel', async ({ page }) => {
 test('renders officers section', async ({ page }) => {
   const officers = page.locator('#officers');
   await expect(page.getByRole('heading', { name: 'Meet Our Officers' })).toBeVisible();
-  await expect(officers.getByRole('button', { name: 'Scroll right' })).toBeVisible();
-  await expect(officers.getByRole('button', { name: 'Scroll left' })).toBeVisible();
+  // The Officers section moved off the shared DynamicCarousel to the batch
+  // carousel in OFFICER-02, which names its controls after what they step
+  // through. Its behaviour is covered in officers.spec.ts.
+  await expect(officers.getByRole('button', { name: 'Next officers' })).toBeVisible();
+  await expect(officers.getByRole('button', { name: 'Previous officers' })).toBeVisible();
 });
 
 // Test cases for Stats Section

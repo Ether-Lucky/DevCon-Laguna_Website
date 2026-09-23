@@ -119,8 +119,24 @@ for (const path of ['/privacy', '/terms']) {
   }
 }
 
+/**
+ * Whether the user can scroll this element, as the browser and axe both judge it.
+ *
+ * Runs in the page: it is passed to `evaluate` rather than called from Node, so
+ * it must not close over anything in this file.
+ *
+ * `scrollWidth > clientWidth` is the wrong question on its own. An
+ * `overflow: hidden` element still reports overflowing content and is still
+ * scrollable from script, but no user can scroll it and axe does not flag it.
+ * Only `auto` and `scroll` put a region in front of a keyboard user.
+ */
+const isUserScrollable = (el: Element): boolean => {
+  const overflowX = getComputedStyle(el).overflowX;
+  return (overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth - el.clientWidth > 1;
+};
+
 test.describe('A11Y-01 keyboard access', () => {
-  test('every carousel track is focusable and named', async ({ page }) => {
+  test('every scrollable carousel track is focusable, and every one is named', async ({ page }) => {
     await page.goto('/');
     await revealWholePage(page);
 
@@ -128,17 +144,27 @@ test.describe('A11Y-01 keyboard access', () => {
     // could only move them with the arrow buttons, so any tile scrolled out of
     // view was unreachable — axe reports it as a serious violation, and it was
     // one of the two found on the landing page.
-    // Scrollable tracks only. The Programs & Activities slide is also a labelled
-    // group (the WAI-ARIA carousel pattern), but it does not scroll, so it is
-    // correctly not focusable and is excluded by its roledescription.
-    const tracks = page.locator('[role="group"][aria-label]:not([aria-roledescription])');
+    //
+    // The requirement applies to a region that *scrolls*. Carousels that move
+    // their content another way — Programs & Activities, which swaps slides, and
+    // the Officers batch carousel (OFFICER-02), which translates a clipped track
+    // — have nothing for the arrow keys to move and are correctly not focusable.
+    // This asks each region whether it scrolls rather than trusting a list of
+    // exceptions, so a new carousel cannot quietly opt itself out.
+    const tracks = page.locator('[role="group"][aria-label], [role="region"][aria-label]');
     const count = await tracks.count();
     expect(count).toBeGreaterThanOrEqual(3);
 
     const names = new Set<string>();
+    let scrollableTracks = 0;
     for (let i = 0; i < count; i += 1) {
       const track = tracks.nth(i);
-      await expect(track).toHaveAttribute('tabindex', '0');
+      const scrolls = await track.evaluate(isUserScrollable);
+      if (scrolls) {
+        scrollableTracks += 1;
+        await expect(track).toHaveAttribute('tabindex', '0');
+      }
+
       const name = await track.getAttribute('aria-label');
       // Distinct names matter: three regions all called "Carousel" tell a
       // screen reader user nothing about which one they are in.
@@ -146,21 +172,36 @@ test.describe('A11Y-01 keyboard access', () => {
       expect(names.has(name!), `duplicate carousel name: ${name}`).toBe(false);
       names.add(name!);
     }
+
+    // Guards the loop above: if nothing on the page scrolled any more, every
+    // `toHaveAttribute` would be skipped and the test would pass vacuously.
+    expect(scrollableTracks, 'no scrollable carousel was exercised').toBeGreaterThan(0);
   });
 
   test('a carousel scrolls with the arrow keys once focused', async ({ page }) => {
     await page.goto('/');
     await revealWholePage(page);
 
-    const track = page.locator('[role="group"][aria-label]:not([aria-roledescription])').first();
-    await track.scrollIntoViewIfNeeded();
-    await track.focus();
-    await expect(track).toBeFocused();
+    const tracks = page.locator('[role="group"][aria-label][tabindex="0"]');
+    const count = await tracks.count();
+    let track = null;
+    for (let i = 0; i < count; i += 1) {
+      const candidate = tracks.nth(i);
+      if (await candidate.evaluate(isUserScrollable)) {
+        track = candidate;
+        break;
+      }
+    }
+    expect(track, 'expected at least one scrollable carousel track').not.toBe(null);
 
-    const before = await track.evaluate((el) => el.scrollLeft);
+    await track!.scrollIntoViewIfNeeded();
+    await track!.focus();
+    await expect(track!).toBeFocused();
+
+    const before = await track!.evaluate((el) => el.scrollLeft);
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(600);
-    const after = await track.evaluate((el) => el.scrollLeft);
+    const after = await track!.evaluate((el) => el.scrollLeft);
 
     expect(after, 'focused carousel should scroll with ArrowRight').toBeGreaterThan(before);
   });
