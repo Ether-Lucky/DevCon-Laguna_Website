@@ -80,16 +80,45 @@ async function overflowingContent(page: Page): Promise<string[]> {
  * The track animates for 500ms, so every assertion about what is on screen has
  * to be retried rather than read once. `toPass` also means a failure here is a
  * real one and not a race with the transition.
+ *
+ * The budget is deliberately far longer than the transition (OFFICER-02-BT-01):
+ * on a loaded CI runner a 500ms transition can take a good deal longer to
+ * finish, and 5s turned out to be close enough to the edge to report a working
+ * carousel as broken.
  */
 async function expectVisibleTiles(page: Page, expected: number[]) {
   await expect(async () => {
     expect(await visibleTiles(page)).toEqual(expected);
-  }).toPass({ timeout: 5000 });
+  }).toPass({ timeout: 15_000 });
+}
+
+/**
+ * Presses a control and waits for the carousel to settle on `expected`.
+ *
+ * The live region is rendered from the same state as the transform, so a change
+ * in its text proves the press actually reached React. Without that step, a
+ * press lost on a button that was not wired up yet and a transform that never
+ * animated look identical — both simply report "the carousel did not move"
+ * (OFFICER-02-BT-01).
+ */
+async function step(page: Page, control: 'Next officers' | 'Previous officers', expected: number[]) {
+  const section = page.locator('#officers');
+  const status = section.locator('[aria-live="polite"]');
+  const before = (await status.textContent()) ?? '';
+
+  await section.getByRole('button', { name: control }).click();
+  await expect(status, `pressing "${control}" did not reach the carousel`).not.toHaveText(before);
+
+  await expectVisibleTiles(page, expected);
 }
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await waitForHydration(page, '#officers');
+  // The control, not the section around it. React attaches its fiber to a host
+  // node as it walks the tree, so `#officers` can carry the marker while the
+  // button inside it is still unwired — and a press on an unwired button is
+  // silently lost (OFFICER-02-BT-01).
+  await waitForHydration(page, '#officers button[aria-label="Next officers"]');
   await page.locator('#officers').scrollIntoViewIfNeeded();
 });
 
@@ -107,8 +136,7 @@ test.describe('OFFICER-02 batch carousel', () => {
   test('stepping forward drops the first column and reveals one new one', async ({ page }) => {
     const before = await visibleOfficers(page);
 
-    await page.locator('#officers').getByRole('button', { name: 'Next officers' }).click();
-    await expectVisibleTiles(page, [1, 2, 3, 4]);
+    await step(page, 'Next officers', [1, 2, 3, 4]);
 
     const after = await visibleOfficers(page);
     // The two officers of the leading column are gone, the rest shifted up by a
@@ -120,13 +148,9 @@ test.describe('OFFICER-02 batch carousel', () => {
 
   test('stepping back restores the previous batch', async ({ page }) => {
     const first = await visibleOfficers(page);
-    const section = page.locator('#officers');
 
-    await section.getByRole('button', { name: 'Next officers' }).click();
-    await expectVisibleTiles(page, [1, 2, 3, 4]);
-
-    await section.getByRole('button', { name: 'Previous officers' }).click();
-    await expectVisibleTiles(page, [0, 1, 2, 3]);
+    await step(page, 'Next officers', [1, 2, 3, 4]);
+    await step(page, 'Previous officers', [0, 1, 2, 3]);
     expect(await visibleOfficers(page)).toEqual(first);
   });
 
@@ -140,9 +164,8 @@ test.describe('OFFICER-02 batch carousel', () => {
 
     // Twelve bundled officers make six columns; four are shown, so the track
     // runs out after two steps.
-    await next.click();
-    await next.click();
-    await expectVisibleTiles(page, [2, 3, 4, 5]);
+    await step(page, 'Next officers', [1, 2, 3, 4]);
+    await step(page, 'Next officers', [2, 3, 4, 5]);
     await expect(next).toBeDisabled();
     await expect(previous).toBeEnabled();
   });
@@ -154,8 +177,7 @@ test.describe('OFFICER-02 batch carousel', () => {
     const total = await headings.count();
     expect(total).toBeGreaterThan(8);
 
-    await page.locator('#officers').getByRole('button', { name: 'Next officers' }).click();
-    await expectVisibleTiles(page, [1, 2, 3, 4]);
+    await step(page, 'Next officers', [1, 2, 3, 4]);
     expect(await headings.count()).toBe(total);
   });
 
@@ -178,6 +200,28 @@ test.describe('OFFICER-02 batch carousel', () => {
 
     await expectVisibleTiles(page, [0, 1, 2, 3]);
     expect(await overflowingContent(page)).toEqual([]);
+  });
+
+  test.describe('with reduced motion', () => {
+    // The component drops the transition under prefers-reduced-motion, so the
+    // step is instant. That branch had no coverage, and it is also the one
+    // reading of these tests that cannot be affected by an animation clock
+    // (OFFICER-02-BT-01).
+    // Playwright 1.61 moved `reducedMotion` under `contextOptions`; at the top
+    // level it is not a known option and does not type-check.
+    test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
+    test('steps without animating, landing in the same place', async ({ page }) => {
+      const track = page.locator('#officers [data-carousel-tile]').first().locator('..');
+      // `transition-none` removes the transition *property*, not the duration:
+      // the duration stays 0.5s and means nothing once nothing transitions.
+      // Asserting on the duration would fail on a component that is behaving
+      // correctly, which is how this assertion was first written.
+      expect(await track.evaluate((el) => getComputedStyle(el).transitionProperty)).toBe('none');
+
+      await step(page, 'Next officers', [1, 2, 3, 4]);
+      await step(page, 'Previous officers', [0, 1, 2, 3]);
+    });
   });
 
   test('narrows to a single column on a phone viewport', async ({ page }) => {
