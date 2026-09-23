@@ -178,13 +178,25 @@ test.describe('#90 orphan asset', () => {
 test.describe('#112 primary CTAs', () => {
   const PORTAL = 'devconnect-portal-seven.vercel.app';
 
-  test('every Join Us, Volunteer and Learn More links to the portal', async ({ page }) => {
-    const ctas = page.locator('a', { hasText: /^(Join Us|Volunteer|Learn More)$/ });
+  // Matched on text, so it follows the labels. The hero's secondary CTA was
+  // "Learn More" until SEO-04. Without updating this list, the rename would have
+  // left this test passing while no longer checking that button. The explicit
+  // analytics-id check below keeps it covered whatever it is called.
+  const CTA_TEXT = /^(Join Us|Volunteer|Visit DevConnect Portal)$/;
+
+  test('every Join Us, Volunteer and Visit DevConnect Portal links to the portal', async ({ page }) => {
+    const ctas = page.locator('a', { hasText: CTA_TEXT });
     const count = await ctas.count();
     expect(count, 'the CTAs should be present').toBeGreaterThan(0);
 
     for (let i = 0; i < count; i++) {
       await expect(ctas.nth(i)).toHaveAttribute('href', new RegExp(PORTAL));
+    }
+  });
+
+  test('the hero CTAs are identified by analytics id, not only by label', async ({ page }) => {
+    for (const id of ['hero-volunteer', 'hero-learn-more']) {
+      await expect(page.locator(`[data-analytics-id="${id}"]`).first()).toHaveAttribute('href', new RegExp(PORTAL));
     }
   });
 
@@ -208,7 +220,7 @@ test.describe('#112 primary CTAs', () => {
   });
 
   test('no primary CTA is left pointing at "#"', async ({ page }) => {
-    const dead = page.locator('a[href="#"]', { hasText: /^(Join Us|Volunteer|Learn More)$/ });
+    const dead = page.locator('a[href="#"]', { hasText: CTA_TEXT });
     await expect(dead).toHaveCount(0);
   });
 });
