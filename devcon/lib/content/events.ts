@@ -20,6 +20,10 @@ type Category = "hackaton" | "workshop" | "seminar" | "community" | "career"
  * @property date     - Human-readable date string (e.g. "May 10–12, 2026" or "TBA").
  * @property category - Determines the badge color via `categoryColors` in `events.tsx`.
  * @property img      - Optional path to an event image in `public/`. Omit for placeholder.
+ * @property portalId - The portal's own id for this event, when it came from
+ *                      the portal (EVENTS-03). A card with one links to its
+ *                      detail page; the bundled placeholders below have none,
+ *                      because they have no description or location to show.
  */
 interface EventItem {
   id: number;
@@ -27,6 +31,7 @@ interface EventItem {
   date: string;
   category: Category;
   img?: string;
+  portalId?: string;
 }
 
 const events: EventItem[] = [

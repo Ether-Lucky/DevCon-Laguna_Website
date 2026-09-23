@@ -4,7 +4,8 @@ import { team, type TeamMember } from '@/lib/content/officers';
 import { events as bundledEvents, type EventItem } from '@/lib/content/events';
 import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding } from './client';
-import { formatEventDate, upcomingEvents } from './format';
+import { upcomingEvents } from './format';
+import { findEvent, toEventItem } from './events';
 import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
 import type { PortalEvent, PortalOfficer } from './types';
 
@@ -72,22 +73,6 @@ function toTeamMember(officer: PortalOfficer, index: number): TeamMember {
   };
 }
 
-/**
- * The portal already guarantees images come only from its own storage, and
- * nulls anything else. This check stays anyway: the guarantee lives in another
- * codebase, and a regression there would otherwise reach visitors as broken
- * images before anyone on this side noticed.
- */
-function toEventItem(event: PortalEvent, index: number): EventItem {
-  return {
-    id: index + 1,
-    title: event.title,
-    date: formatEventDate(event.start_date, event.end_date),
-    category: event.category,
-    img: renderablePhoto(event.cover_image_url, 'event cover'),
-  };
-}
-
 function sortOfficers(officers: PortalOfficer[]): TeamMember[] {
   return [...officers].sort((a, b) => a.display_order - b.display_order).map(toTeamMember);
 }
@@ -132,8 +117,34 @@ export async function getLandingContent(): Promise<LandingContent> {
   const { officers, events, images } = result.data;
   return {
     officers: officers.length > 0 ? sortOfficers(officers) : team,
-    events: events.length > 0 ? upcomingEvents(events).map(toEventItem) : bundledEvents,
+    events:
+      events.length > 0
+        ? upcomingEvents(events).map((event, index) =>
+            toEventItem(event, index, renderablePhoto(event.cover_image_url, 'event cover')),
+          )
+        : bundledEvents,
     // Resolved slot by slot; see lib/portal/landing-images.ts.
     images: resolveLandingImages(images),
   };
+}
+
+/**
+ * One event, for its own page (EVENTS-03).
+ *
+ * Reads the same cached landing response the homepage uses, so opening an event
+ * costs no extra portal request, and an event shown on a card and the page it
+ * links to can never disagree.
+ *
+ * Undefined means "no page to show", whether the id is unknown, the portal is
+ * unreachable, or the portal is not configured at all. The caller turns that
+ * into a 404 — the alternative is a page promising an event it cannot display.
+ *
+ * Past events are **not** filtered here, unlike the section. A link to an event
+ * that has just finished should still open, or every shared link dies at
+ * midnight; it is the carousel's job to be about what is coming up.
+ */
+export async function getPortalEvent(id: string): Promise<PortalEvent | undefined> {
+  const result = await fetchPortalLanding();
+  if (result.status !== 'ok') return undefined;
+  return findEvent(result.data.events, id);
 }
