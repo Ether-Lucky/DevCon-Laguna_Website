@@ -366,3 +366,32 @@ test.describe('FOOTER-02 every link goes somewhere', () => {
     }
   });
 });
+
+// DATA-BT-01 (#91) — the content layer holds data, and the UI holds the icons.
+test.describe('#91 social links are data, not markup', () => {
+  test('every social link still draws its icon', async ({ page }) => {
+    await page.goto('/');
+
+    // The refactor moved the icon from the content file (a rendered React
+    // element) to a name the UI maps to a component. If that mapping breaks,
+    // the links survive and the icons quietly vanish — which no existing test
+    // would have noticed, because they all assert on the link's name.
+    const links = page.locator('footer a[aria-label]');
+    const count = await links.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i += 1) {
+      const link = links.nth(i);
+      const name = await link.getAttribute('aria-label');
+      await expect(link.locator('svg'), `${name} should draw an icon`).toHaveCount(1);
+    }
+  });
+
+  test('the icon is hidden from assistive technology', async ({ page }) => {
+    await page.goto('/');
+    // The link already announces the platform. An icon announced as well says
+    // everything twice.
+    const icon = page.locator('footer a[aria-label="Facebook"] svg').first();
+    await expect(icon).toHaveAttribute('aria-hidden', 'true');
+  });
+});
