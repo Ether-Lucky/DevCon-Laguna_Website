@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { siteConfig } from '@/lib/site-config';
+import { footerColumns, footerLegalLinks } from '@/lib/content/footer';
 import Logo from '../logo';
 import SocialMedia from './social-media';
 
@@ -10,14 +10,18 @@ import SocialMedia from './social-media';
  * "Contact" link should land on the form, not below it.
  *
  * Structure:
- * - Main content: four link groups and the social media links.
+ * - Main content: the link columns from `lib/content/footer.ts` and the social
+ *   media links.
  * - Bottom bar: copyright, legal links, and the chapter logo.
  * - Footer logos pass `onDark` so they remain readable in light mode.
  *
  * The purple gradient background (`from-background via-devcon-purple-500/50 to-devcon-purple-500`)
  * creates a gradual color transition from the page background into the brand purple footer.
  *
- * Link `href` values are currently `"#"` placeholders — update them as pages are built.
+ * Every link goes somewhere that exists (FOOTER-02). The footer shipped with 17
+ * links pointing at `"#"`, including "Privacy Policy" and "Terms and
+ * Conditions". Links with no destination were removed rather than left
+ * dangling, and a test fails the build if any `href="#"` returns.
  */
 export default function Footer() {
   return (
@@ -40,43 +44,22 @@ export default function Footer() {
             <SocialMedia color="text-foreground" compact />
           </div>
 
-          <div className="grid grid-cols-2 gap-x-7 gap-y-9 md:mt-0 md:w-2/3 md:grid-cols-4 md:gap-8">
-            {/* Column 1 */}
-            <div className="flex flex-col gap-3">
-              <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">Explore</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">About Us</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Our Chapters</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">What We Do</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Events</Link>
-              <Link href={siteConfig.portalUrl} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Join Us</Link>
-            </div>
-
-            {/* Column 2 */}
-            <div className="flex flex-col gap-3">
-              <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">Resources</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Blog</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">FAQ</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Handbook</Link>
-            </div>
-
-            {/* Column 3 */}
-            <div className="flex flex-col gap-3">
-              <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">Support</h3>
-              <Link href={siteConfig.portalUrl} target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Volunteer</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Donate</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Partners</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Sponsors</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Chat support</Link>
-            </div>
-
-            {/* Column 4 */}
-            <div className="flex flex-col gap-3">
-              <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">Connect</h3>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Discord</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Twitter</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Instagram</Link>
-              <Link href="#" className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors">Youtube</Link>
-            </div>
+          <div className="grid grid-cols-2 gap-x-7 gap-y-9 md:mt-0 md:w-2/3 md:grid-cols-3 md:gap-8">
+            {footerColumns.map((column) => (
+              <div key={column.heading} className="flex flex-col gap-3">
+                <h3 className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground">{column.heading}</h3>
+                {column.links.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className="text-sm sm:text-base font-light text-foreground/70 hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -87,8 +70,11 @@ export default function Footer() {
           <div className="flex flex-col gap-3 text-xs font-normal text-white/65 sm:text-sm md:flex-row md:items-center md:justify-between">
             <p className="leading-5">© 2026 DEVCON Laguna <span className="mx-1 text-white/35">|</span> All Rights Reserved</p>
             <p className="flex flex-wrap gap-x-4 gap-y-1">
-              <Link href="#" className="underline transition-colors hover:text-white">Terms and Conditions</Link>
-              <Link href="#" className="underline transition-colors hover:text-white">Privacy Policy</Link>
+              {footerLegalLinks.map((link) => (
+                <Link key={link.label} href={link.href} className="underline transition-colors hover:text-white">
+                  {link.label}
+                </Link>
+              ))}
             </p>
             <div className="self-end md:hidden">
               <Logo onDark />

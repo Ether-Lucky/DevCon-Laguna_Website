@@ -309,3 +309,60 @@ test.describe('ANL-01-BT-01 a clean console', () => {
     expect(problems).toEqual([]);
   });
 });
+
+test.describe('FOOTER-02 every link goes somewhere', () => {
+  /**
+   * The footer shipped with 17 links pointing at `"#"`, including "Privacy
+   * Policy" and "Terms and Conditions". They looked clickable, went nowhere,
+   * and jumped the visitor back to the top of the page.
+   *
+   * Checked on every page, not just the home page, and for in-page anchors
+   * the target section must actually exist. A link to `/#what-we-do` is only
+   * useful if that section is there.
+   */
+  for (const path of ['/', '/privacy', '/terms']) {
+    test(`${path} has no dead links`, async ({ page }) => {
+      await page.goto(path);
+      const dead = await page.locator('a').evaluateAll((links) =>
+        links
+          .filter((a) => {
+            const href = a.getAttribute('href');
+            return href === null || href.trim() === '' || href.trim() === '#';
+          })
+          .map((a) => (a.textContent ?? '').trim() || '(no text)'),
+      );
+      expect(dead, `dead links on ${path}`).toEqual([]);
+    });
+  }
+
+  test('every in-page anchor in the footer points at a real section', async ({ page }) => {
+    await page.goto('/');
+    const anchors = await page.locator('footer a[href^="/#"]').evaluateAll((links) =>
+      links.map((a) => a.getAttribute('href')!),
+    );
+    expect(anchors.length, 'the footer should link into the page').toBeGreaterThan(0);
+
+    for (const href of anchors) {
+      await expect(page.locator(href.replace('/', '')), `${href} must exist on the page`).toHaveCount(1);
+    }
+  });
+
+  test('the footer legal links reach the real pages', async ({ page, request }) => {
+    await page.goto('/');
+    for (const [label, path] of [['Privacy Policy', '/privacy'], ['Terms and Conditions', '/terms']] as const) {
+      await expect(page.locator('footer').getByRole('link', { name: label })).toHaveAttribute('href', path);
+      expect((await request.get(path)).status(), `${path} should be served`).toBe(200);
+    }
+  });
+
+  test('footer links off the site open safely in a new tab', async ({ page }) => {
+    await page.goto('/');
+    const external = page.locator('footer a[href^="http"]');
+    const count = await external.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i += 1) {
+      await expect(external.nth(i)).toHaveAttribute('target', '_blank');
+      await expect(external.nth(i)).toHaveAttribute('rel', /noopener/);
+    }
+  });
+});
