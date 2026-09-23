@@ -14,7 +14,11 @@ const companyValues: InfoCardProps[] = [
       "To empower developers and aspiring technology professionals by providing opportunities for learning, collaboration, mentorship, and community engagement while promoting innovation and excellence in the field of technology.",
     themeClass:
       "bg-gradient-to-b from-background to-devcon-purple-700",
-    icon: "/mission-vision/bullet.svg",
+    // A 95KB "SVG" that was really a 410x410 PNG in base64 (PERF-02). The icon
+    // is used as a CSS mask, so only its alpha matters: cropped to the area the
+    // SVG actually showed, sized for the box it renders in, and stored as an
+    // alpha-only WebP. 95KB -> 19KB, with no visible change.
+    icon: "/mission-vision/bullet.webp",
     iconPosition: "bottom-left",
     iconWidth: 280,
     iconHeight: 243,
