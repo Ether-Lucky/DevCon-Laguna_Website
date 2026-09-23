@@ -19,6 +19,11 @@
  * @property accent - Controls the gradient accent on the avatar circle.
  *                    Maps to a Tailwind `to-devcon-*` color in `TeamCard`.
  *                    Allowed values: 'yellow' | 'orange' | 'purple' | 'lime'
+ * @property bio    - Optional short description, written in the portal
+ *                    (OFFICER-03). Omitted here on purpose: the bundled list is
+ *                    the fallback shown when the portal is unreachable, and
+ *                    inventing bios for it would put words in real people's
+ *                    mouths. A card without one looks exactly as it did before.
  */
 interface TeamMember {
   id: number;
@@ -28,6 +33,7 @@ interface TeamMember {
   width: number,
   height: number,
   accent: 'yellow' | 'orange' | 'purple' | 'lime';
+  bio?: string;
 }
 
 const team: TeamMember[] = [

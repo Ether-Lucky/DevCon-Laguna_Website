@@ -27,6 +27,8 @@ function initials(name: string) {
  * back to `devcon-purple-700`.
  *
  * When no `img` is provided, initials are shown inside the gradient circle.
+ * When the portal provides a `bio`, it is shown under the role, clamped to
+ * three lines (OFFICER-03).
  */
 function TeamCard({ member }: { member: TeamMember }) {
   const toAccentColor: Record<string, string> = {
@@ -59,6 +61,24 @@ function TeamCard({ member }: { member: TeamMember }) {
       <p className="mt-2 text-sm md:text-base font-normal uppercase tracking-widest leading-tight text-muted">
         {member.role}
       </p>
+
+      {/*
+        The bio is rendered only when the portal has one (OFFICER-03). No
+        placeholder, no reserved space: an officer who has not written one gets
+        exactly the card this section had before the feature existed.
+
+        `line-clamp-3` is load-bearing rather than cosmetic. The carousel shows a
+        batch of fixed-width columns, two officers to a column, and one long bio
+        would otherwise make its column taller than the rest.
+      */}
+      {member.bio ? (
+        <p
+          data-officer-bio
+          className="mt-3 text-sm leading-snug text-muted line-clamp-3"
+        >
+          {member.bio}
+        </p>
+      ) : null}
     </div>
   );
 }
