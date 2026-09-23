@@ -116,7 +116,22 @@ export async function getLandingContent(): Promise<LandingContent> {
  * midnight; it is the carousel's job to be about what is coming up.
  */
 export async function getPortalEvent(id: string): Promise<PortalEvent | undefined> {
+  return findEvent(await getPortalEvents(), id);
+}
+
+/**
+ * Every event the portal has published, unfiltered (EVENTS-03, SEO-05).
+ *
+ * An empty list when the portal is unreachable or unconfigured, so a caller
+ * never has to handle an error: the sitemap lists no events, and the detail
+ * page 404s. Both are correct for "we cannot reach the portal right now" and
+ * neither breaks a build.
+ *
+ * Unfiltered on purpose. `getLandingContent` shows only upcoming events because
+ * the carousel is about what is next; a page, and the sitemap entry for it,
+ * outlive the event itself.
+ */
+export async function getPortalEvents(): Promise<PortalEvent[]> {
   const result = await fetchPortalLanding();
-  if (result.status !== 'ok') return undefined;
-  return findEvent(result.data.events, id);
+  return result.status === 'ok' ? result.data.events : [];
 }

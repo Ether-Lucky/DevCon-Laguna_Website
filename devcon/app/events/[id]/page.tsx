@@ -1,10 +1,14 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CalendarIcon, MapPinIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { getPortalEvent } from '@/lib/portal/content';
+import { eventPath } from '@/lib/portal/events';
 import { formatEventDate } from '@/lib/portal/format';
 import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
+import { eventDescription, eventJsonLd, eventTitle, eventUrl } from '@/lib/portal/event-seo';
+import { siteConfig } from '@/lib/site-config';
 import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Footer from '@/components/ui/sections/footer';
 
@@ -28,17 +32,69 @@ import Footer from '@/components/ui/sections/footer';
  * event costs no extra portal request, and a card and the page it links to can
  * never disagree.
  */
+/**
+ * Per-event metadata (SEO-05, #157).
+ *
+ * Without this every event page would carry the site's own title and
+ * description, so a search result for an event would look exactly like a search
+ * result for the homepage — the same problem SEO-04 was raised about.
+ *
+ * The portal fetch is shared with the page below: Next memoizes `fetch` across
+ * `generateMetadata` and the render, so an event page still makes one request.
+ *
+ * An unknown event returns the defaults rather than throwing; the page renders
+ * a 404 a moment later.
+ */
+export async function generateMetadata({ params }: PageProps<'/events/[id]'>): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getPortalEvent(id);
+  if (!event) return {};
+
+  const url = eventUrl(siteConfig.url, event);
+  const description = eventDescription(event);
+
+  return {
+    title: eventTitle(event),
+    description,
+    alternates: { canonical: eventPath(event.id) },
+    openGraph: {
+      type: 'article',
+      title: eventTitle(event),
+      description,
+      url,
+      // The event's own cover where it has one; the site's default share image
+      // is inherited from the root layout otherwise.
+      ...(event.cover_image_url ? { images: [{ url: event.cover_image_url, alt: event.title }] } : {}),
+    },
+  };
+}
+
 export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
   const { id } = await params;
   const event = await getPortalEvent(id);
   if (!event) notFound();
 
   const date = formatEventDate(event.start_date, event.end_date);
+  const jsonLd = eventJsonLd(event, siteConfig.url, siteConfig.name);
 
   return (
     <>
       {/* The site's own navbar and footer, as the legal pages have, so an event
           page is part of the site rather than a detour out of it. */}
+      {/*
+        schema.org Event data, omitted entirely for an event with no date
+        (SEO-05). `startDate` is required for search engines to use an Event,
+        and inventing one would tell them a date the organisers have not set.
+      */}
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          // Escaping `<` stops a description from closing the script tag early,
+          // which would otherwise be an injection vector for text an officer
+          // typed into the portal.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '<') }}
+        />
+      ) : null}
       <NavBar />
       <main className="max-w-4xl mx-auto px-4 md:px-8 py-16 md:py-24">
         <Link
