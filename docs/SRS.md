@@ -1,8 +1,14 @@
 # Software Requirements Specification (SRS) — Phase 2
 
-**Version:** 2.0
-**Status:** Draft for approval
-**Supersedes:** SRS v1.0 (Sprint 1 — Landing Page)
+**Version:** 2.1
+**Status:** Current — Phase 2 complete
+**Supersedes:** SRS v2.0 (Phase 2, planned) · v1.0 (Sprint 1 — Landing Page)
+**Last updated:** 2026-09-23 (DOCS-01, #137)
+
+> **What changed in v2.1.** Sprint 3 replaced the planned **hosted headless CMS** with the
+> **DevConnect Portal's existing API** (decision recorded on #74). FR-18 to FR-23 described a
+> system that was never built; they now describe what exists. Sprint 4 added FR-24 and FR-25.
+> Every changed requirement cites the ticket or pull request that changed it.
 
 ## 1. Introduction
 
@@ -19,11 +25,12 @@ acceptance criteria).
 
 Phase 2 extends the existing landing page rather than replacing it. The immediate scope
 (Sprint 2) covers a working contact form, a content data layer, SEO and metadata,
-accessibility and performance improvements, and web analytics. Sprint 3 makes the page
-dynamic: events, officers, and key section images move to a hosted headless CMS, with cached
-revalidation and instant on-demand publishing; those requirements are listed in Section 5 as
-planned/future requirements and will be detailed at the Sprint 3 planning session. Member application and account management are handled by a
-separate DevCon website and are out of scope.
+accessibility and performance improvements, and web analytics. Sprint 3 made the page
+dynamic: events, officers, and the key section images are read from the **DevConnect
+Portal's public API**, with cached revalidation and instant on-demand publishing. Sprint 4
+closed Phase 2 out: the quality targets, the dead links, and the legal pages. Section 5
+records those requirements as delivered. Member application and account management are
+handled by the DevConnect Portal and are out of scope.
 
 ## 2. Overall Description
 
@@ -238,35 +245,47 @@ Firefox, and Safari.
 - Content shall be decoupled from presentation via the content data layer (FR-12).
 - New functionality shall be covered by automated tests in the CI pipeline.
 
-## 5. Planned / Future Requirements (Sprint 3)
+## 5. Delivered in Sprints 3 and 4
 
-These are captured for roadmap visibility and will be detailed at the Sprint 3 planning
-session. They complete Phase 2.
+Sprint 3's theme was **dynamic content**: the landing page stopped being static, with content
+managed by officers rather than by developers in code.
 
-Sprint 3's theme is **Dynamic Content via Headless CMS**: the landing page stops being static,
-with content managed by editors in a hosted CMS rather than by developers in code.
+> ⚠️ **The source changed mid-sprint.** v2.0 specified a **hosted headless CMS**. The original
+> requirement, given before Sprint 3 was planned, was for the landing page to read content from
+> the organisation's other website, which already had an admin. That site — the **DevConnect
+> Portal** — turned out to already expose the API, so a second CMS would have meant a second
+> admin, a second set of logins and two sources of truth for the same officers and events. The
+> reversal and its reasoning are recorded on #74.
 
-| ID | Requirement | Target Sprint |
+| ID | Requirement | Status |
 |---|---|---|
-| FR-18 | Headless CMS adoption and content modeling (Events, Officers, Landing Page Images) | Sprint 3 |
-| FR-19 | Events section rendered from CMS data | Sprint 3 |
-| FR-20 | Officers section rendered from CMS data | Sprint 3 |
-| FR-21 | CMS-managed landing page images (hero, Who We Are carousel, What We Do, bottom section) | Sprint 3 |
-| FR-22 | Content caching with scheduled revalidation (~30 minute interval) | Sprint 3 |
-| FR-23 | Authenticated on-demand revalidation for instant publishing | Sprint 3 |
+| FR-18 | The site shall read its content from the DevConnect Portal's public API, server-side, with the API key never reaching the browser | ✅ Sprint 3 (#74, PR #117) |
+| FR-19 | The Events section shall render portal events, showing **only upcoming and undated ("TBA") events** | ✅ Sprint 3 (#75, PR #128); filtering added Sprint 4 (#136, PR #145) |
+| FR-20 | The Officers section shall render portal officers, in the portal's display order | ✅ Sprint 3 (#76, PR #117) |
+| FR-21 | The landing page images — hero (desktop and mobile), Who We Are carousel, What We Do, and the bottom banner — shall be replaceable from the portal, each slot falling back independently to a built-in image | ✅ Sprint 3 (#77, PR #131) |
+| FR-22 | Portal content shall be cached and revalidated on a ~30-minute interval, and the last known good content shall continue to be served if a fetch fails | ✅ Sprint 3 (#78, PR #117) |
+| FR-23 | An authenticated endpoint shall allow the portal to publish a change instantly, without a redeploy | ✅ Sprint 3 (#79, PR #127) |
+| FR-24 | The site shall publish a **Privacy Policy** and **Terms and Conditions**, describing what the site actually collects, under the Data Privacy Act of 2012 | ✅ Sprint 4 (#73, PR #142) |
+| FR-25 | Every link on the site shall have a real destination; no link shall point at `#` or an empty target | ✅ Sprint 4 (#72, PR #147) |
 
-**Content freshness model (FR-22, FR-23).** The public site shall serve cached CMS content
-rather than calling the CMS on every request; the cache shall revalidate on an approximately
-30-minute interval, so edits appear without a redeploy. Administrators shall additionally be
-able to trigger an immediate, authenticated revalidation so urgent changes publish instantly.
-If a revalidation fetch fails, the last known good content shall continue to be served.
+**Content freshness model (FR-22, FR-23).** The site serves cached portal content rather than
+calling the portal on every request; the cache revalidates on a ~30-minute interval, so edits
+appear without a redeploy. The portal additionally calls an authenticated endpoint on our side
+after every save, which expires the cache immediately, so an urgent change publishes at once. If
+a fetch fails, the last known good content continues to be served, and if the portal has never
+been reachable, the built-in content is shown.
 
-> **Out of scope:** Member application, user authentication, member dashboards, and
-> database-backed accounts are handled by a **separate DevCon website** and are not
-> requirements of this project; the public "Join Us" call-to-action links out to that site.
-> Content administration for this site is provided by the **hosted headless CMS**, not by a
-> bespoke admin application built in this project. Event detail pages, a blog/news section,
-> and event registration are deferred beyond Phase 2.
+**Graceful degradation (FR-18 to FR-21).** The portal is a separate deployment owned by a separate
+account, so each section falls back to built-in content independently: no key, an error, a
+timeout, malformed data, an empty list, or an entry missing required fields. A portal outage
+cannot empty a section of the landing page.
+
+> **Out of scope:** Member application, user authentication, member dashboards and
+> database-backed accounts are handled by the **DevConnect Portal** and are not requirements of
+> this project; the public "Join Us" call-to-action links out to it. Content administration is
+> provided by the portal's own admin, not by an application built in this project. Event detail
+> pages, a blog/news section and event registration remain deferred beyond Phase 2 (see the
+> roadmap's Phase 3 draft).
 
 ## 6. Acceptance Criteria (Sprint 2)
 
