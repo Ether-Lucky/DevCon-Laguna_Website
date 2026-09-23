@@ -2,7 +2,7 @@
 import React from 'react';
 import { TeamMember, team } from '@/lib/content/officers'
 import Image from 'next/image'
-import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
+import { BatchCarousel } from '@/components/ui/batch-carousel';
 
 /**
  * initials — derives up to 2 uppercase initials from a full name.
@@ -36,9 +36,9 @@ function TeamCard({ member }: { member: TeamMember }) {
     'lime': 'to-devcon-lime-500',
   } 
   return (
-    <div className="flex flex-col items-center justify-start text-center font-sans w-40 sm:w-48 md:w-56 px-2 h-full">
+    <div className="flex flex-col items-center justify-start text-center font-sans w-full max-w-56 mx-auto px-2 h-full">
       {/* 1. AVATAR */}
-      <div className={`relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent] || 'to-devcon-purple-700'} flex items-center justify-center`}>
+      <div className={`relative w-full max-w-36 sm:max-w-44 md:max-w-52 aspect-square rounded-full overflow-hidden bg-gradient-to-b from-transparent from-15% ${toAccentColor[member.accent] || 'to-devcon-purple-700'} flex items-center justify-center`}>
         {member.img ? (
           <Image
             src={member.img}
@@ -66,9 +66,14 @@ function TeamCard({ member }: { member: TeamMember }) {
 /**
  * TeamSection — the "Meet Our Officers" homepage section.
  *
- * Officers are grouped into pairs, where each pair becomes a two-row grid tile in
- * the carousel. This produces a 2×N grid of officer cards that scrolls
- * horizontally.
+ * Officers are grouped into pairs, and each pair becomes one two-row column of
+ * the carousel. The carousel shows a whole batch of those columns — four on a
+ * desktop, fewer as the screen narrows — and each press moves it by exactly one
+ * column: the column at the front leaves, one new column arrives at the end.
+ *
+ * It uses `BatchCarousel` rather than the shared `DynamicCarousel` for that
+ * reason. A free-scrolling carousel leaves a half-cut officer at the edge, which
+ * reads as an accident on a section whose whole job is introducing people.
  *
  * Accent colors are resolved inside `TeamCard` via the `toAccentColor` map.
  *
@@ -79,8 +84,9 @@ function TeamCard({ member }: { member: TeamMember }) {
  */
 export default function TeamSection({ members = team }: { members?: TeamMember[] }) {
   // Group members into columns of 2 for a two-row carousel
+  const MEMBERS_PER_TILE = 2;
   const carouselTiles = [];
-  for (let i = 0; i < members.length; i += 2) {
+  for (let i = 0; i < members.length; i += MEMBERS_PER_TILE) {
     carouselTiles.push(
       <div key={i} className="grid grid-rows-2 gap-6 md:gap-10 h-full w-full">
         <TeamCard member={members[i]} />
@@ -104,10 +110,16 @@ export default function TeamSection({ members = team }: { members?: TeamMember[]
           </p>
         </div>
         
-        <DynamicCarousel 
+        <BatchCarousel
           label="DevCon Laguna officers"
+          previousLabel="Previous officers"
+          nextLabel="Next officers"
           className="w-full py-8 px-4"
           tiles={carouselTiles}
+          describeRange={(firstTile, lastTile) =>
+            `Showing officers ${firstTile * MEMBERS_PER_TILE + 1} to ` +
+            `${Math.min(members.length, (lastTile + 1) * MEMBERS_PER_TILE)} of ${members.length}`
+          }
         />
        </div>
     </section>
