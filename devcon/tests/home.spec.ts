@@ -129,29 +129,39 @@ test('renders footer with logo and copyright', async ({ page }) => {
   await expect(footer.getByText('© 2026 DEVCON Laguna')).toBeVisible();
 });
 
+// The columns and their links come from lib/content/footer.ts (FOOTER-02).
+// "Resources" (Blog, FAQ, Handbook) and the links with no destination —
+// Our Chapters, Donate, Sponsors, Chat support, Discord — were removed rather
+// than left pointing at "#". Each returns the day it has a real URL.
 test('renders footer link columns', async ({ page }) => {
   const footer = page.locator('footer');
   await expect(footer.getByRole('heading', { name: 'Explore' })).toBeVisible();
-  await expect(footer.getByRole('heading', { name: 'Resources' })).toBeVisible();
   await expect(footer.getByRole('heading', { name: 'Support' })).toBeVisible();
   await expect(footer.getByRole('heading', { name: 'Connect' })).toBeVisible();
+  await expect(footer.getByRole('heading', { name: 'Resources' })).toHaveCount(0);
 });
 
 test('renders footer explore links', async ({ page }) => {
   const footer = page.locator('footer');
   await expect(footer.getByRole('link', { name: 'About Us' })).toBeVisible();
-  await expect(footer.getByRole('link', { name: 'Our Chapters' })).toBeVisible();
   await expect(footer.getByRole('link', { name: 'What We Do' })).toBeVisible();
   await expect(footer.getByRole('link', { name: 'Events', exact: true })).toBeVisible();
+  await expect(footer.getByRole('link', { name: 'Officers' })).toBeVisible();
   await expect(footer.getByRole('link', { name: 'Join Us' })).toBeVisible();
 });
 
 test('renders footer support links', async ({ page }) => {
   const footer = page.locator('footer');
   await expect(footer.getByRole('link', { name: 'Volunteer' })).toBeVisible();
-  await expect(footer.getByRole('link', { name: 'Donate' })).toBeVisible();
-  await expect(footer.getByRole('link', { name: 'Sponsors' })).toBeVisible();
-  await expect(footer.getByRole('link', { name: 'Chat support' })).toBeVisible();
+  await expect(footer.getByRole('link', { name: 'Partners' })).toBeVisible();
+  await expect(footer.getByRole('link', { name: 'Contact' })).toBeVisible();
+});
+
+test('the removed links are gone, not left pointing nowhere', async ({ page }) => {
+  const footer = page.locator('footer');
+  for (const label of ['Our Chapters', 'Blog', 'FAQ', 'Handbook', 'Donate', 'Sponsors', 'Chat support', 'Discord']) {
+    await expect(footer.getByRole('link', { name: label }), `${label} should be removed`).toHaveCount(0);
+  }
 });
 
 test('renders footer social media links', async ({ page }) => {
