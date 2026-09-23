@@ -52,8 +52,10 @@ session.
 > **Scope boundary:** Member application, authentication, and member dashboards are handled
 > by a **separate DevCon website** and are out of scope for this project. The public "Join Us"
 > call-to-action links out to that external site. Content administration for *this* site's
-> own content (events, officers, section images) is provided by a **hosted headless CMS**
-> adopted in Sprint 3 — not by a bespoke admin application built here.
+> own content (events, officers, section images) is provided by the **DevConnect Portal's own
+> admin** — the plan to adopt a hosted headless CMS was reversed mid-Sprint 3 (#74), because the
+> portal already exposed the API and a second CMS would have meant a second admin, a second set of
+> logins, and two sources of truth for the same officers and events.
 
 ### In Scope — Sprint 2 (current)
 
@@ -78,8 +80,13 @@ session.
 - **Sprint 4 — Phase 2 close-out:** the quality targets the charter set, the 17 footer links
   that pointed nowhere, and the Privacy Policy and Terms pages.
 
-*Event detail pages, a blog/news section, and event registration are deferred beyond Phase 2;
-see the roadmap's Phase 3 draft.*
+- **Sprint 5 — Phase 3, part one:** a page per event, its search metadata, officer bios, and the
+  one Phase 2 target that was missed.
+
+*Of the three features deferred beyond Phase 2, **event detail pages were delivered in Sprint 5**
+(EVENTS-03 #156, SEO-05 #157). A blog/news section and event registration remain deferred: the
+first needs a new portal endpoint, and the second is probably the portal's own job, since members
+already have accounts there. See the roadmap's Phase 3 section.*
 
 ### Out of Scope (Phase 2)
 

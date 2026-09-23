@@ -269,6 +269,23 @@ managed by officers rather than by developers in code.
 | FR-25 | Every link on the site shall have a real destination; no link shall point at `#` or an empty target | ✅ Sprint 4 (#72, PR #147) |
 | FR-26 | The Officers section shall present officers a whole batch at a time, advancing by one column so that no officer card is ever partly cut off at the edge of the view | ✅ Sprint 4 (#149, PR #150) |
 
+### Phase 3 (Sprint 5)
+
+| ID | Requirement | Status |
+|---|---|---|
+| FR-27 | Each portal event shall have its own page showing its title, date, category, cover image, description and location, linked from the Featured Events cards; an unknown event shall return a 404 | ✅ Sprint 5 (#156, PR #164) |
+| FR-28 | Each event page shall carry its own title, description and canonical URL, valid `Event` structured data where the event has a date, and an entry in the sitemap | ✅ Sprint 5 (#157, PR #165) |
+| FR-29 | An officer's biography shall be shown when the portal provides one, and shall leave the card unchanged when it does not | ✅ Sprint 5 (#155, PR #162) |
+
+**On FR-27 and FR-28.** Only portal events have pages. The bundled events are design placeholders
+with no description or location, so a page for one would show exactly what its card already shows.
+**Live verification is pending** on the portal team entering real events — as it was for FR-19 and
+FR-21.
+
+**On FR-28's structured data.** An event whose date is still to be announced emits **no** `Event`
+data at all. `startDate` is required for search engines to use it, so the choice is between invalid
+markup and an invented date; saying nothing is the only honest option. The page still shows "TBA".
+
 **Content freshness model (FR-22, FR-23).** The site serves cached portal content rather than
 calling the portal on every request; the cache revalidates on a ~30-minute interval, so edits
 appear without a redeploy. The portal additionally calls an authenticated endpoint on our side
