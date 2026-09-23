@@ -4,7 +4,7 @@ import { team, type TeamMember } from '@/lib/content/officers';
 import { events as bundledEvents, type EventItem } from '@/lib/content/events';
 import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding } from './client';
-import { formatEventDate } from './format';
+import { formatEventDate, upcomingEvents } from './format';
 import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
 import type { PortalEvent, PortalOfficer } from './types';
 
@@ -113,6 +113,17 @@ export type LandingContent = {
  * Events keep the portal's order: undated ("TBA") first, then newest start
  * date first. The portal owns that editorial choice, as it owns officers'
  * `display_order`.
+ *
+ * **Past events are filtered out** (EVENTS-02): the section is about what is
+ * coming up. The filter is `upcomingEvents` in `lib/portal/format.ts` and is
+ * applied to the portal's events only. The bundled list is design placeholder
+ * content shown while the portal has no events at all — filtering it would
+ * leave six placeholder "TBA" cards, which is worse than the placeholder set it
+ * was drawn with. Once the portal has events, the bundled list is never shown
+ * again.
+ *
+ * If the portal has events but none of them are upcoming, the section shows an
+ * empty state rather than reviving the placeholders or listing past events.
  */
 export async function getLandingContent(): Promise<LandingContent> {
   const result = await fetchPortalLanding();
@@ -121,7 +132,7 @@ export async function getLandingContent(): Promise<LandingContent> {
   const { officers, events, images } = result.data;
   return {
     officers: officers.length > 0 ? sortOfficers(officers) : team,
-    events: events.length > 0 ? events.map(toEventItem) : bundledEvents,
+    events: events.length > 0 ? upcomingEvents(events).map(toEventItem) : bundledEvents,
     // Resolved slot by slot; see lib/portal/landing-images.ts.
     images: resolveLandingImages(images),
   };

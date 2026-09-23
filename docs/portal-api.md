@@ -167,6 +167,22 @@ dash characters vary between ICU versions.
 **Event order is the portal's**: undated first, then newest start date first. The portal owns
 that editorial choice, the same way it owns officers' `display_order`.
 
+**Past events are hidden** (EVENTS-02). The section is about what is coming up.
+
+- An event drops off once its day is over. **TBA events always stay**: they have not happened yet.
+- The cut-off is **midnight Manila at the end of the event's last day**, not the timestamp. The
+  portal stores whole-day events at midnight UTC, which is 08:00 in Manila, so comparing instants
+  would drop a one-day event from the page at breakfast time on the day it runs.
+- The filter applies to the **portal's** events only. The bundled list in `lib/content/events.ts`
+  is placeholder content, shown only while the portal has no events at all; filtering it would
+  leave six placeholder "TBA" cards. Once the portal has events, the bundled list never appears
+  again.
+- If the portal has events but **none are upcoming**, the section shows an empty state — "No
+  upcoming events right now", with a link to the chapter's Facebook page — rather than reviving
+  the placeholders or listing events that already happened.
+- Because the page is cached for 30 minutes, an event can linger up to half an hour after its day
+  ends. Accepted.
+
 Images arrive as absolute Supabase Storage URLs. The host is allowlisted in `next.config.ts` as a
 concrete hostname rather than `**.supabase.co` — a wildcard would survive a project migration, but
 it would also trust every Supabase project in existence.

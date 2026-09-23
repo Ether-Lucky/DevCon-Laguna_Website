@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { team } from '../lib/content/officers';
 import { isAllowedRemoteImage, remoteImagePatterns } from '../lib/remote-images';
-import { formatEventDate } from '../lib/portal/format';
+import { formatEventDate, isUpcoming, upcomingEvents } from '../lib/portal/format';
 import { parseEvents } from '../lib/portal/parse';
+import type { PortalEvent } from '../lib/portal/types';
 
 /**
  * Regression suite for the DevConnect Portal integration (CMS-03).
@@ -209,5 +210,99 @@ test.describe('CMS-02 event parsing', () => {
   test('tolerates a malformed payload', () => {
     expect(parseEvents(undefined)).toEqual([]);
     expect(parseEvents({ events: [] })).toEqual([]);
+  });
+});
+
+test.describe('EVENTS-02 upcoming events only', () => {
+  /**
+   * "Featured Events" is about what is coming up, so an event drops off the
+   * page once it is over. TBA events always stay: they have not happened yet.
+   *
+   * The cut-off is the end of the event's day in Philippine time, not the
+   * timestamp. The portal stores whole-day events at midnight UTC, which is
+   * 08:00 in Manila, so comparing instants would drop a one-day event at
+   * breakfast time on the day it runs.
+   */
+  const now = new Date('2026-09-23T04:00:00Z'); // 12:00 noon in Manila
+
+  test('keeps TBA events, which have not happened yet', () => {
+    expect(isUpcoming({ start_date: null, end_date: null }, now)).toBe(true);
+  });
+
+  test('keeps an event running today, all the way to midnight in Manila', () => {
+    // Stored at midnight UTC = 08:00 Manila. Comparing instants would have
+    // dropped this four hours ago.
+    expect(isUpcoming({ start_date: '2026-09-23T00:00:00Z', end_date: '2026-09-23T00:00:00Z' }, now)).toBe(true);
+    // 23:30 Manila on the same day.
+    expect(isUpcoming({ start_date: '2026-09-23T15:30:00Z', end_date: '2026-09-23T15:30:00Z' }, now)).toBe(true);
+  });
+
+  test('keeps a multi-day event that started before today', () => {
+    expect(isUpcoming({ start_date: '2026-09-20T00:00:00Z', end_date: '2026-09-25T00:00:00Z' }, now)).toBe(true);
+  });
+
+  test('drops an event that ended yesterday', () => {
+    expect(isUpcoming({ start_date: '2026-09-22T00:00:00Z', end_date: '2026-09-22T00:00:00Z' }, now)).toBe(false);
+    // 22:00 Manila yesterday: over in Manila, even though it is still the 22nd in UTC.
+    expect(isUpcoming({ start_date: '2026-09-22T14:00:00Z', end_date: '2026-09-22T14:00:00Z' }, now)).toBe(false);
+  });
+
+  test('falls back to the start date when the end date is missing', () => {
+    expect(isUpcoming({ start_date: '2026-09-25T00:00:00Z', end_date: null }, now)).toBe(true);
+    expect(isUpcoming({ start_date: '2026-09-01T00:00:00Z', end_date: null }, now)).toBe(false);
+  });
+});
+
+test.describe('EVENTS-02 upcomingEvents, the list filter', () => {
+  /**
+   * The unit tests above prove `isUpcoming` one date at a time; this proves the
+   * composite filter that `content.ts` feeds — `upcomingEvents`, kept free of
+   * `server-only` precisely so the suite can check it directly. Dates are
+   * relative to the machine's real clock so they cannot age stale.
+   *
+   * The empty state itself — the markup the section renders for an empty list —
+   * is verified by hand against a mock portal, the same way the other
+   * conditional portal paths are (see the revalidate and landing-image suites).
+   * What is automatable here without an API key is the data side that triggers
+   * it, an empty list, which is what the second test pins down.
+   */
+  const day = (offsetDays: number) => new Date(Date.now() + offsetDays * 86_400_000).toISOString();
+
+  const event = (title: string, start: string | null, end: string | null): PortalEvent => ({
+    id: title,
+    title,
+    description: null,
+    location: 'Laguna',
+    category: 'hackaton',
+    start_date: start,
+    end_date: end,
+    cover_image_url: null,
+  });
+
+  test('hides past events, keeps TBA and an event ending today, and does not re-order', () => {
+    const now = new Date().toISOString();
+    const kept = upcomingEvents([
+      event('A hack night last week', day(-7), day(-7)),
+      event('A date to be announced', null, null),
+      // Ends this instant, so its day is today in Manila by construction —
+      // exactly the case isUpcoming must keep until Manila midnight.
+      event('An event ending today', now, now),
+      event('A future summit', day(7), day(9)),
+    ]);
+
+    // Filtering must not re-order: the portal returns "undated first, then
+    // newest start date first", and — like the officers' display_order — that
+    // editorial choice is the portal's, not ours.
+    expect(kept.map((entry) => entry.title)).toEqual([
+      'A date to be announced',
+      'An event ending today',
+      'A future summit',
+    ]);
+  });
+
+  test('an all-past set filters down to nothing, which is what shows the empty state', () => {
+    expect(
+      upcomingEvents([event('A hack night last week', day(-14), day(-12)), event('Workshop last month', day(-35), day(-35))]),
+    ).toEqual([]);
   });
 });
