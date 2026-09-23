@@ -59,8 +59,16 @@ export default function Hero({ desktop, mobile }: { desktop?: HeroImage; mobile?
               variant="primary"
               analyticsId="hero-volunteer"
             />
+            {/*
+              Was "Learn More" (SEO-04). Generic link text says nothing about the
+              destination to a search engine, or to a screen-reader user hearing
+              links out of context. It held Lighthouse SEO at 0.92.
+
+              The analytics id keeps its old name on purpose: renaming it would
+              split the click history for this button in the dashboard.
+            */}
             <Button
-              label="Learn More"
+              label="Visit DevConnect Portal"
               href={siteConfig.portalUrl}
               variant="outline"
               analyticsId="hero-learn-more"

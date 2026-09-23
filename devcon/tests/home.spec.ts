@@ -27,7 +27,7 @@ test('renders hero section with heading and buttons', async ({ page }) => {
   await expect(page.getByText('Together.')).toBeVisible();
   await expect(page.getByText('DevCon Laguna is a community of developers')).toBeVisible();
   await expect(page.locator('#hero').getByRole('link', { name: 'Volunteer', exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Learn More', exact: true })).toBeVisible();
+  await expect(page.locator('#hero').getByRole('link', { name: 'Visit DevConnect Portal', exact: true })).toBeVisible();
   await expect(page.locator('#hero').getByAltText('DevCon Laguna community collage').first()).toBeVisible();
 });
 
