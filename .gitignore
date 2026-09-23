@@ -30,6 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# local dev-server output (CLEANUP-02): devcon/server.log was committed once,
+# because the patterns above only cover the package managers' own debug logs.
+*.log
+
 # env files (can opt-in for committing if needed)
 /devcon/.env*
 
