@@ -66,21 +66,27 @@ session.
 - Automated test coverage for all new functionality
 - Continued deployment to Vercel
 
-### In Scope — Phase 2 roadmap (Sprint 3)
+### In Scope — Phase 2 roadmap (Sprints 3 and 4) — **delivered**
 
-- **Sprint 3 — Dynamic Content via Headless CMS:** adopt a hosted headless CMS; drive the
-  Events and Officers sections and the key landing page images (hero, Who We Are carousel,
-  What We Do, bottom section) from it; cache content with ~30-minute revalidation plus an
-  authenticated on-demand publish for instant updates.
+- **Sprint 3 — Dynamic Content from the DevConnect Portal:** the Events and Officers sections
+  and the key landing page images (hero, Who We Are carousel, What We Do, bottom banner) are
+  read from the **DevConnect Portal's public API**; content is cached with ~30-minute
+  revalidation, plus an authenticated on-demand publish for instant updates.
+  - ⚠️ **Changed during the sprint.** This was planned as a *hosted headless CMS*. The portal
+    already exposed the API and already had an admin the officers use, so a second CMS would
+    have meant a second admin and two sources of truth (#74).
+- **Sprint 4 — Phase 2 close-out:** the quality targets the charter set, the 17 footer links
+  that pointed nowhere, and the Privacy Policy and Terms pages.
 
-*Event detail pages, a blog/news section, and event registration are deferred beyond Phase 2.*
+*Event detail pages, a blog/news section, and event registration are deferred beyond Phase 2;
+see the roadmap's Phase 3 draft.*
 
 ### Out of Scope (Phase 2)
 
 - **Member application, authentication, and member dashboards — handled by a separate DevCon
   website**
 - **A bespoke, self-built admin application** — content administration is provided by the
-  hosted headless CMS adopted in Sprint 3, not by an admin app built in this project
+  **DevConnect Portal's own admin** (Sprint 3), not by an admin app built in this project
 - E-commerce or paid ticketing/payments
 - Native mobile applications
 - Third-party integrations beyond those required by the sprint stories (email, analytics)
