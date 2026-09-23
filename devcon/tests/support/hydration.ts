@@ -27,3 +27,42 @@ export async function waitForHydration(page: Page, selector: string): Promise<vo
     { timeout: 20_000 },
   );
 }
+
+/**
+ * Waits until a section's entrance animation has finished.
+ *
+ * `ScrollReveal` wraps every section in a div that starts at `opacity: 0` with a
+ * translate, and transitions both over 0.85s when the section scrolls into view.
+ * A test that scrolls to a section and immediately presses a button inside it is
+ * pressing a moving target: Playwright checks that the element is stable, the
+ * check passes near the end of the transition, and the click still lands a few
+ * pixels off. That is the OFFICER-02-BT-01 flake — firefox reported "pressing
+ * Next officers did not reach the carousel", which is exactly a click that hit
+ * nothing.
+ *
+ * Waiting for the wrapper to reach its settled values is deterministic, unlike a
+ * fixed delay, and it does not disable the animation — the animated path is what
+ * a visitor gets, so it is the path worth testing.
+ */
+export async function waitForReveal(page: Page, selector: string): Promise<void> {
+  await page.waitForFunction(
+    (sel) => {
+      const el = document.querySelector(sel);
+      if (!el) return false;
+      // Walk up to the wrapper: it is the ancestor transitioning opacity.
+      let node = el.parentElement;
+      while (node) {
+        const style = getComputedStyle(node);
+        if (style.transitionProperty.includes('opacity')) {
+          const settled = style.transform === 'none' || style.transform === 'matrix(1, 0, 0, 1, 0, 0)';
+          return style.opacity === '1' && settled;
+        }
+        node = node.parentElement;
+      }
+      // No wrapper found: nothing is animating, so nothing to wait for.
+      return true;
+    },
+    selector,
+    { timeout: 20_000 },
+  );
+}
