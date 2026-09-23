@@ -147,7 +147,12 @@ test.describe('OFFICER-02 batch carousel', () => {
       }
       return null;
     });
-    expect(revealed).toEqual({ opacity: '1', transform: 'none' });
+    expect(revealed?.opacity).toBe('1');
+    // WebKit reports a settled transform as the identity matrix where Chromium
+    // and Firefox say `none`. Both mean "not transformed", and asserting only
+    // the Chromium spelling failed this test on a page that had revealed
+    // perfectly well — the wait helper always accepted both.
+    expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(revealed?.transform);
   });
 
   test('shows a batch of four whole columns on a desktop viewport', async ({ page }) => {
