@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { fillContactForm, fillWhenReady } from './support/form';
+import { fillContactForm, fillWhenReady, clickUntilEffect } from './support/form';
 
 /**
  * CON-01 (#59) — contact form, closing FR-07.
@@ -21,6 +21,20 @@ async function fillForm(page: import('@playwright/test').Page, values = VALID) {
   // loses the first field, which is what made these tests flaky on WebKit.
   await fillContactForm(page, values);
 }
+
+/**
+ * The submit button, plus a click that retries until the given effect shows.
+ *
+ * The Contact section is mid-reveal (ScrollReveal's 0.85s translate/fade) when
+ * a test jumps to `/#contact` and clicks, so a single click can land on the
+ * wrong target and the form is left untouched. See tests/support/form.ts.
+ */
+const send = (page: import('@playwright/test').Page) =>
+  page.getByRole('button', { name: /send message/i });
+const sendUntil = (
+  page: import('@playwright/test').Page,
+  effect: () => Promise<void>,
+) => clickUntilEffect(() => send(page).click(), effect);
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/#contact');
@@ -58,9 +72,8 @@ test.describe('CON-01 validation', () => {
     });
 
     await fillForm(page, { name: 'A', email: 'not-an-email', subject: 'hi', message: 'short' });
-    await page.getByRole('button', { name: /send message/i }).click();
+    await sendUntil(page, () => expect(page.locator('#email-error')).toContainText(/valid email/i));
 
-    await expect(page.locator('#email-error')).toContainText(/valid email/i);
     await expect(page.locator('#name-error')).toBeVisible();
     await expect(page.locator('#subject-error')).toBeVisible();
     await expect(page.locator('#message-error')).toBeVisible();
@@ -69,18 +82,16 @@ test.describe('CON-01 validation', () => {
 
   test('marks invalid fields for assistive technology', async ({ page }) => {
     await fillForm(page, { ...VALID, email: 'not-an-email' });
-    await page.getByRole('button', { name: /send message/i }).click();
-
     const email = page.locator('#email');
-    await expect(email).toHaveAttribute('aria-invalid', 'true');
+    await sendUntil(page, () => expect(email).toHaveAttribute('aria-invalid', 'true'));
+
     await expect(email).toHaveAttribute('aria-describedby', 'email-error');
     await expect(page.locator('#email-error')).toHaveAttribute('role', 'alert');
   });
 
   test('clears a field error once the user starts correcting it', async ({ page }) => {
     await fillForm(page, { ...VALID, email: 'not-an-email' });
-    await page.getByRole('button', { name: /send message/i }).click();
-    await expect(page.locator('#email-error')).toBeVisible();
+    await sendUntil(page, () => expect(page.locator('#email-error')).toBeVisible());
 
     await fillWhenReady(page, '#email', 'juan@example.com');
     await expect(page.locator('#email-error')).toHaveCount(0);
@@ -94,9 +105,8 @@ test.describe('CON-01 submission', () => {
     );
 
     await fillForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
+    await sendUntil(page, () => expect(page.getByTestId('contact-success')).toBeVisible());
 
-    await expect(page.getByTestId('contact-success')).toBeVisible();
     await expect(page.locator('#message')).toHaveValue('');
   });
 
@@ -108,8 +118,7 @@ test.describe('CON-01 submission', () => {
     });
 
     await fillForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
-    await expect(page.getByTestId('contact-success')).toBeVisible();
+    await sendUntil(page, () => expect(page.getByTestId('contact-success')).toBeVisible());
 
     expect(body.name).toBe(VALID.name);
     expect(body.email).toBe(VALID.email);
@@ -127,9 +136,8 @@ test.describe('CON-01 submission', () => {
     );
 
     await fillForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
+    await sendUntil(page, () => expect(page.getByTestId('contact-error')).toContainText(/not configured/i));
 
-    await expect(page.getByTestId('contact-error')).toContainText(/not configured/i);
     // Losing a long message to a failed send is the worst outcome; it must survive.
     await expect(page.locator('#message')).toHaveValue(VALID.message);
     await expect(page.locator('#name')).toHaveValue(VALID.name);
@@ -139,9 +147,8 @@ test.describe('CON-01 submission', () => {
     await page.route('**/api/contact', (route) => route.abort());
 
     await fillForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
+    await sendUntil(page, () => expect(page.getByTestId('contact-error')).toBeVisible());
 
-    await expect(page.getByTestId('contact-error')).toBeVisible();
     await expect(page.locator('#message')).toHaveValue(VALID.message);
   });
 });
@@ -280,8 +287,7 @@ test.describe('CON-02 bot protection', () => {
 
     await page.goto('/#contact');
     await fillContactForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
-    await expect(page.getByTestId('contact-success')).toBeVisible();
+    await sendUntil(page, () => expect(page.getByTestId('contact-success')).toBeVisible());
 
     expect(Object.keys(body)).toContain('cf-turnstile-response');
   });

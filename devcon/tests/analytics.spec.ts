@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { shouldLoadAnalytics } from '../lib/analytics-config';
-import { fillContactForm } from './support/form';
+import { fillContactForm, clickUntilEffect } from './support/form';
 
 /**
  * ANL-01 (#65) — Vercel Web Analytics.
@@ -73,13 +73,25 @@ test.describe('ANL-01 CTA tracking', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    await page.locator('[data-analytics-id="hero-volunteer"]').first().click();
+    // The tracked clicks come from a delegated `document` listener that
+    // `AnalyticsEvents` registers in a `useEffect`, so a single click can land
+    // before the listener exists or while the hero is still revealing (see
+    // tests/support/form.ts). Retry until the event is actually captured.
+    await clickUntilEffect(
+      () => page.locator('[data-analytics-id="hero-volunteer"]').first().click(),
+      async () => {
+        const captured = await events(page);
+        expect(
+          captured.some(([type, payload]) => type === 'event' && payload.name === 'cta_click'),
+          'a cta_click event should be reported',
+        ).toBe(true);
+      },
+    );
 
     const captured = await events(page);
-    const cta = captured.find(([type, payload]) => type === 'event' && payload.name === 'cta_click');
-    expect(cta, 'a cta_click event should be reported').toBeTruthy();
-    expect((cta![1].data as Record<string, string>).id).toBe('hero-volunteer');
-    expect((cta![1].data as Record<string, string>).label).toBe('Volunteer');
+    const tracked = captured.find(([type, payload]) => type === 'event' && payload.name === 'cta_click');
+    expect((tracked![1].data as Record<string, string>).id).toBe('hero-volunteer');
+    expect((tracked![1].data as Record<string, string>).label).toBe('Volunteer');
   });
 
   test('clicking an untracked element reports nothing', async ({ page }) => {
@@ -104,8 +116,11 @@ test.describe('ANL-01 contact conversion', () => {
     await page.goto('/#contact');
     await page.waitForLoadState('networkidle');
     await fillContactForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
-    await expect(page.getByTestId('contact-success')).toBeVisible();
+    // Click until the banner actually shows — see tests/support/form.ts.
+    await clickUntilEffect(
+      () => page.getByRole('button', { name: /send message/i }).click(),
+      () => expect(page.getByTestId('contact-success')).toBeVisible(),
+    );
 
     const captured = await events(page);
     const submitted = captured.find(
@@ -124,8 +139,11 @@ test.describe('ANL-01 contact conversion', () => {
     await page.goto('/#contact');
     await page.waitForLoadState('networkidle');
     await fillContactForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
-    await expect(page.getByTestId('contact-error')).toBeVisible();
+    // Click until the banner actually shows — see tests/support/form.ts.
+    await clickUntilEffect(
+      () => page.getByRole('button', { name: /send message/i }).click(),
+      () => expect(page.getByTestId('contact-error')).toBeVisible(),
+    );
 
     const captured = await events(page);
     expect(captured.filter(([, p]) => p.name === 'contact_submitted')).toHaveLength(0);
@@ -150,8 +168,12 @@ test.describe('ANL-01 resilience', () => {
     // and the form carry on regardless.
 
     await fillContactForm(page);
-    await page.getByRole('button', { name: /send message/i }).click();
 
-    await expect(page.getByTestId('contact-success')).toBeVisible();
+    // See tests/support/form.ts: the section is mid-reveal when this runs, so a
+    // single click can land on the wrong target. Click until the banner shows.
+    await clickUntilEffect(
+      () => page.getByRole('button', { name: /send message/i }).click(),
+      () => expect(page.getByTestId('contact-success')).toBeVisible(),
+    );
   });
 });

@@ -67,3 +67,31 @@ export async function fillContactForm(
     await fillWhenReady(page, `#${field}`, value);
   }
 }
+
+/**
+ * Clicks a control repeatedly until its effect happens (CICD-BT-06).
+ *
+ * `ScrollReveal` slides each section in with a 0.85s translate/fade transition
+ * when it enters the viewport. A test that clicks straight after jumping to
+ * `/#contact` can send its click while the section is still moving: Playwright
+ * checks the target is stable once, then fires mousedown+mouseup — if a layout
+ * shift moves the element in between, the click lands on the wrong target and
+ * the form is left untouched (fields filled, button still "Send message", no
+ * banner). Under WebKit with `--repeat-each=20` this surfaced in the conversion
+ * tests: `contact-success` never appeared but nothing had actually failed.
+ *
+ * Retrying the click until the expected effect is visible makes the
+ * interaction deterministic without disabling the animation the test runs
+ * against, and re-clicking a spent control is safe because the effect
+ * assertion exits the loop the instant it passes.
+ */
+export async function clickUntilEffect(
+  click: () => Promise<void>,
+  effect: () => Promise<void>,
+  timeout = 20_000,
+): Promise<void> {
+  await expect(async () => {
+    await click();
+    await effect();
+  }).toPass({ timeout });
+}

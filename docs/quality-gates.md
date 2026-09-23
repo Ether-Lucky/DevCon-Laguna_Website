@@ -135,8 +135,11 @@ run, so a genuine blip is visible in the report, but the job fails.
 
 ### The three, and what they actually were
 
-Two were **test bugs**, not product bugs. Both were invisible locally, because a single test
-running alone always passed; they only failed under parallel load, which is how CI runs.
+All three were **test bugs**, not product bugs. They were invisible locally, because a single test
+running alone always passed; they surfaced under load. Note CI clusters these tests into a single
+worker (`workers: 1`), so it does *not* run them in parallel — "under load" means several repeat
+runs sharing the machine ([`--repeat-each`](#diagnosing-the-next-one)) or the whole suite grinding
+through a busy browser. The local reproduction that pinned each race used parallel workers.
 
 **1. The contact form tests raced React hydration.**
 The form is a client component. Typing into it before React hydrates works on the DOM, and
@@ -149,9 +152,30 @@ attaches to a DOM node when it hydrates) before typing.
 
 > ⚠️ Checking that a typed value "stuck" is **not** enough. With React not yet hydrated nothing
 > resets the field, so the check passes and hydration wipes it immediately afterwards. That
-> version still failed 1 run in 20. The fixed version passes 20 of 20 on WebKit.
+> version still failed 1 run in 20.
 
-**2. The accessibility audit measured text mid-fade.**
+That fixed the typing, but the Click capture showed the suite still failed **20 of 20 runs on
+WebKit** — and the failure proved the fill was no longer the problem. At failure the accessibility
+snapshot showed all four fields filled correctly, the button still reading *"Send message"*
+(`status === 'idle'`), no error banner, and no URL change: the `onSubmit` handler had never run,
+so **the click itself was never delivered**.
+
+**2. The clicks were lost mid-reveal (the same WebKit failures, second race).**
+`ScrollReveal` slides the Contact section in with a 0.85s translate/fade transition. A test that
+answers the `/#contact` hash then clicks straight away sends the click while the section is still
+moving: Playwright checks the target is stable once, then fires `mousedown`+`mouseup`, and if a
+layout shift moves the element in between, the click lands on the wrong target. Nothing breaks
+visibly — the form is simply left untouched. Under `--repeat-each=20` on WebKit this surfaced in
+all three form-submit tests, and in the CTA-tracking test too (whose tracked events come from a
+delegated `document` listener that `AnalyticsEvents` only registers in a `useEffect`, so it also
+needed the listener to exist before the click).
+
+The fix is effect-driven retry rather than a fixed wait: `clickUntilEffect` in
+`tests/support/form.ts` repeats the click until the expected outcome is visible, and exits the
+moment it passes. It does not disable the animation the test runs against, and re-clicking a spent
+control is safe because the effect assertion stops the loop as soon as it holds.
+
+**3. The accessibility audit measured text mid-fade.**
 `ScrollReveal` animates sections in by fading opacity, and axe computes contrast from the colours
 as rendered, so text caught mid-fade measures as low contrast. It failed once in CI with 8
 contrast violations in the Contact section, then passed on retry. The audits now run with
@@ -161,8 +185,12 @@ A test asserts that the setting is actually applied. Playwright moved this optio
 (`reducedMotion` → `contextOptions.reducedMotion` in 1.61); if it moves again, the setting would
 silently stop working and the flake would return with nothing to show why.
 
-**3. The analytics pageview test** was removed in ANL-01-BT-01, because `<Analytics />` no longer
+**4. The analytics pageview test** was removed in ANL-01-BT-01, because `<Analytics />` no longer
 renders outside Vercel. It was testing Vercel's library rather than this project.
+
+A dev server build (`npm run build && npm run start`) exceeds the config's 60s `webServer` wait on
+some machines; start it by hand first and Playwright reuses it (`reuseExistingServer` is set away
+from CI).
 
 ### Diagnosing the next one
 
