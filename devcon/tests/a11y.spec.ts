@@ -106,6 +106,19 @@ for (const theme of ['dark', 'light'] as const) {
   });
 }
 
+// The legal pages (LEGAL-01) get the same audit as the landing page. Until
+// Sprint 4 there was only one route, so this suite had only ever audited `/`.
+for (const path of ['/privacy', '/terms']) {
+  for (const theme of ['dark', 'light'] as const) {
+    test(`${path} has no critical or serious violations — ${theme} theme`, async ({ page }) => {
+      await page.addInitScript((value) => window.localStorage.setItem('theme', value), theme);
+      await page.goto(path, { waitUntil: 'load' });
+      await revealWholePage(page);
+      await expectNoBlockingViolations(page, `${theme} ${path}`);
+    });
+  }
+}
+
 test.describe('A11Y-01 keyboard access', () => {
   test('every carousel track is focusable and named', async ({ page }) => {
     await page.goto('/');
