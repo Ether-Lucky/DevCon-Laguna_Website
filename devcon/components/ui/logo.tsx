@@ -12,6 +12,18 @@ import Image from "next/image";
  *
  * Switching is handled purely with Tailwind's `dark:` variant so there is no JS flash.
  */
+/**
+ * The logo files' true pixel size, measured from `public/logo/*.png` (both are
+ * 384 × 65). `next/image` uses these to reserve space before the file loads.
+ *
+ * They were 240 × 76, a 3.16 ratio for a 5.91 image. `h-auto` hid it once the
+ * image loaded, but until then the browser reserved a box nearly twice the
+ * logo's height, and Lighthouse's image-aspect-ratio audit failed on every
+ * logo (LOGO-BT-01). If the artwork changes, measure the new file.
+ */
+const LOGO_WIDTH = 384;
+const LOGO_HEIGHT = 65;
+
 export default function Logo({ onDark = false }: { onDark?: boolean }) {
   const logoClassName = "h-auto w-[120px] md:w-[200px]"
 
@@ -21,8 +33,8 @@ export default function Logo({ onDark = false }: { onDark?: boolean }) {
       <Image
         src="/logo/dark-logo.png"
         alt="Devcon Logo"
-        width={240}
-        height={76}
+        width={LOGO_WIDTH}
+        height={LOGO_HEIGHT}
         priority
         className={`${onDark ? 'block' : 'hidden dark:block'} ${logoClassName}`}
       />
@@ -30,8 +42,8 @@ export default function Logo({ onDark = false }: { onDark?: boolean }) {
       <Image
         src="/logo/light-logo.png"
         alt="Devcon Logo"
-        width={240}
-        height={76}
+        width={LOGO_WIDTH}
+        height={LOGO_HEIGHT}
         priority
         className={`${onDark ? 'hidden' : 'block dark:hidden'} ${logoClassName}`}
       />
