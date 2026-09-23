@@ -13,6 +13,21 @@ import AxeBuilder from '@axe-core/playwright';
  * actually reaches — because that is where the findings were.
  */
 
+/**
+ * Every audit runs with motion off (CICD-BT-06).
+ *
+ * `ScrollReveal` animates sections in by fading their opacity, and axe computes
+ * contrast from the colours as rendered. Text caught mid-fade measures as
+ * low-contrast, which failed this suite intermittently on WebKit in CI — once,
+ * with 8 contrast violations in the Contact section, then passing on retry.
+ * `ScrollReveal` honours `prefers-reduced-motion`, so nothing is animating
+ * while axe measures, and a contrast failure means a real one.
+ *
+ * Set through `contextOptions`: Playwright 1.61 no longer takes `reducedMotion`
+ * as a top-level test option.
+ */
+test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'];
 const BLOCKING = ['critical', 'serious'];
 
@@ -51,6 +66,15 @@ async function openWithTheme(page: Page, theme: 'dark' | 'light') {
   await page.addInitScript((value) => window.localStorage.setItem('theme', value), theme);
   await page.goto('/', { waitUntil: 'load' });
 }
+
+test('the audits really do run with motion disabled', async ({ page }) => {
+  // Guards the `contextOptions` above. Playwright 1.61 already moved this
+  // option once; if it moves again, `test.use` would silently stop applying it
+  // and the mid-fade contrast flake would come back with nothing to show why.
+  await page.goto('/');
+  const reduced = await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  expect(reduced, 'accessibility audits must run with prefers-reduced-motion').toBe(true);
+});
 
 for (const theme of ['dark', 'light'] as const) {
   test.describe(`A11Y-01 axe audit — ${theme} theme`, () => {

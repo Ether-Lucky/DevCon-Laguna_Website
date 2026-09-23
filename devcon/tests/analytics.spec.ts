@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { shouldLoadAnalytics } from '../lib/analytics-config';
+import { fillContactForm } from './support/form';
 
 /**
  * ANL-01 (#65) — Vercel Web Analytics.
@@ -102,10 +103,7 @@ test.describe('ANL-01 contact conversion', () => {
 
     await page.goto('/#contact');
     await page.waitForLoadState('networkidle');
-    await page.fill('#name', 'Juan Dela Cruz');
-    await page.fill('#email', 'juan@example.com');
-    await page.fill('#subject', 'Speaking proposal');
-    await page.fill('#message', 'I would love to speak at the next DevCon Laguna event.');
+    await fillContactForm(page);
     await page.getByRole('button', { name: /send message/i }).click();
     await expect(page.getByTestId('contact-success')).toBeVisible();
 
@@ -125,10 +123,7 @@ test.describe('ANL-01 contact conversion', () => {
 
     await page.goto('/#contact');
     await page.waitForLoadState('networkidle');
-    await page.fill('#name', 'Juan Dela Cruz');
-    await page.fill('#email', 'juan@example.com');
-    await page.fill('#subject', 'Speaking proposal');
-    await page.fill('#message', 'I would love to speak at the next DevCon Laguna event.');
+    await fillContactForm(page);
     await page.getByRole('button', { name: /send message/i }).click();
     await expect(page.getByTestId('contact-error')).toBeVisible();
 
@@ -154,10 +149,7 @@ test.describe('ANL-01 resilience', () => {
     // the script blocked nothing is ever delivered. What matters is that the page
     // and the form carry on regardless.
 
-    await page.fill('#name', 'Juan Dela Cruz');
-    await page.fill('#email', 'juan@example.com');
-    await page.fill('#subject', 'Speaking proposal');
-    await page.fill('#message', 'I would love to speak at the next DevCon Laguna event.');
+    await fillContactForm(page);
     await page.getByRole('button', { name: /send message/i }).click();
 
     await expect(page.getByTestId('contact-success')).toBeVisible();

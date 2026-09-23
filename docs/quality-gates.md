@@ -123,3 +123,49 @@ A robots file means the new build is live; the 404 page means it is not.
 All checks run on pull requests as well as pushes. They previously carried an
 `if: github.ref == 'refs/heads/prod'` guard that is never true during a pull request, so
 every check silently skipped on every PR; that guard has been removed.
+
+## Flaky tests fail the build (CICD-BT-06)
+
+CI retries a failed test twice. A test that fails and then passes is reported as **flaky**, and
+the job used to pass anyway, so nobody was told. Three tests were being rescued that way, and a
+real regression and a timing glitch look identical once a retry turns them into a pass.
+
+The `test` and `visual-regression` jobs now run with **`--fail-on-flaky-tests`**. Retries still
+run, so a genuine blip is visible in the report, but the job fails.
+
+### The three, and what they actually were
+
+Two were **test bugs**, not product bugs. Both were invisible locally, because a single test
+running alone always passed; they only failed under parallel load, which is how CI runs.
+
+**1. The contact form tests raced React hydration.**
+The form is a client component. Typing into it before React hydrates works on the DOM, and
+hydration then resets the input to its empty state. Only the **first** field is lost. The symptom
+was a missing success banner, and the probe that found it showed the name field empty with the
+other three filled, and *"Please enter your name"* on screen.
+
+`tests/support/form.ts` now waits for React's own hydration marker (`__reactFiber$…`, which React
+attaches to a DOM node when it hydrates) before typing.
+
+> ⚠️ Checking that a typed value "stuck" is **not** enough. With React not yet hydrated nothing
+> resets the field, so the check passes and hydration wipes it immediately afterwards. That
+> version still failed 1 run in 20. The fixed version passes 20 of 20 on WebKit.
+
+**2. The accessibility audit measured text mid-fade.**
+`ScrollReveal` animates sections in by fading opacity, and axe computes contrast from the colours
+as rendered, so text caught mid-fade measures as low contrast. It failed once in CI with 8
+contrast violations in the Contact section, then passed on retry. The audits now run with
+`prefers-reduced-motion`, which `ScrollReveal` honours.
+
+A test asserts that the setting is actually applied. Playwright moved this option once already
+(`reducedMotion` → `contextOptions.reducedMotion` in 1.61); if it moves again, the setting would
+silently stop working and the flake would return with nothing to show why.
+
+**3. The analytics pageview test** was removed in ANL-01-BT-01, because `<Analytics />` no longer
+renders outside Vercel. It was testing Vercel's library rather than this project.
+
+### Diagnosing the next one
+
+Run it under load, not on its own: `--repeat-each` with several projects at once. A test that
+passes 20 times alone and fails 3 times in 8 under load is a race, and the race is usually with
+something the page does after it loads.
