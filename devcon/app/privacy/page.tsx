@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import LegalPage, { LegalSection } from '@/components/ui/legal/legal-page';
-import ToConfirm from '@/components/ui/legal/to-confirm';
 import { siteConfig } from '@/lib/site-config';
 
 /**
  * Privacy Policy (LEGAL-01, #73).
  *
- * DRAFT. Written from what this site actually does, checked against the code,
- * and pending review by DevCon Laguna / DevCon national. Every statement the
- * code can't settle is a `<ToConfirm>` placeholder, and
- * `tests/legal.spec.ts` fails while any remains, so this page can't pass CI
- * until the organisation has filled them in. Not legal advice.
+ * Written from what this site actually does, checked against the code. The
+ * statements the code cannot settle — controller, contact, retention, consent,
+ * response time, minimum age, effective date — were answered and approved by
+ * the PM on 2026-09-23 and recorded on #73.
+ *
+ * Changing any of them changes what the organisation promises its visitors, so
+ * a change needs the same approval. Anything newly uncertain should go back to
+ * a `<ToConfirm>` marker; `tests/legal.spec.ts` then fails until it is settled.
  *
  * Sources for each section:
  *   Contact form     app/api/contact/route.ts, lib/contact-schema.ts
@@ -29,9 +31,18 @@ export const metadata: Metadata = {
 
 const list = 'list-disc space-y-2 pl-6';
 
+/**
+ * Approved by the PM on 2026-09-23 (#73), together with every answer below.
+ * Update this whenever the policy's wording changes.
+ */
+const LAST_UPDATED = '23 September 2026';
+
+/** The chapter's own mailbox; it already receives the contact form's messages. */
+const PRIVACY_CONTACT = 'laguna@devcon.ph';
+
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy" lastUpdated={<ToConfirm>effective date</ToConfirm>}>
+    <LegalPage title="Privacy Policy" lastUpdated={LAST_UPDATED}>
       <p>
         {siteConfig.name} is a chapter of Developers Connect (DevCon) Philippines. This policy
         explains what personal information this website collects, why, who else handles it, and the
@@ -46,10 +57,12 @@ export default function PrivacyPage() {
 
       <LegalSection title="Who is responsible for your information">
         <p>
-          The personal information controller is <ToConfirm>legal name of the controller: DevCon Laguna, or DevCon Philippines on the chapter&apos;s behalf</ToConfirm>.
+          The personal information controller is <strong>DevCon Laguna</strong>, a chapter of
+          Developers Connect (DevCon) Philippines.
         </p>
         <p>
-          For privacy questions or requests, contact <ToConfirm>privacy contact, e.g. an email address the chapter controls, and the Data Protection Officer if one is designated</ToConfirm>.
+          For privacy questions or requests, email{' '}
+          <a href={`mailto:${PRIVACY_CONTACT}`} className="underline underline-offset-4">{PRIVACY_CONTACT}</a>.
         </p>
       </LegalSection>
 
@@ -62,8 +75,8 @@ export default function PrivacyPage() {
           </li>
           <li>
             The website does not store them. They are sent as an email to {siteConfig.name}&apos;s inbox,
-            which is hosted by Google (Gmail). They are kept there for{' '}
-            <ToConfirm>how long enquiries are kept, and when they are deleted</ToConfirm>.
+            which is hosted by Google (Gmail). They are kept there for <strong>12 months</strong>, then
+            deleted.
           </li>
         </ul>
 
@@ -120,7 +133,10 @@ export default function PrivacyPage() {
       <LegalSection title="Information about our officers">
         <p>
           The &ldquo;Meet Our Officers&rdquo; section shows officers&apos; names, positions and photos,
-          managed through the DevConnect Portal. <ToConfirm>how officers consent to their name and photo being published, and how they can ask for either to be removed</ToConfirm>.
+          managed through the DevConnect Portal. Officers are told when they take up a role that these
+          appear on this website, and can ask for their photo or their entry to be removed at any time
+          by emailing{' '}
+          <a href={`mailto:${PRIVACY_CONTACT}`} className="underline underline-offset-4">{PRIVACY_CONTACT}</a>.
         </p>
       </LegalSection>
 
@@ -159,14 +175,16 @@ export default function PrivacyPage() {
         </ul>
         <p>
           To exercise any of these rights, use the privacy contact in &ldquo;Who is responsible for your
-          information&rdquo; above. We will respond within <ToConfirm>response time the chapter commits to</ToConfirm>.
+          information&rdquo; above. We will respond within <strong>15 working days</strong>.
         </p>
       </LegalSection>
 
       <LegalSection title="Children">
         <p>
-          The contact form is meant for adults, including parents and guardians enquiring about
-          programmes such as DevCon Kids. <ToConfirm>minimum age for using the contact form, and how information from a child sent in error is handled</ToConfirm>.
+          The contact form is meant for people aged <strong>18 and over</strong>, including parents and
+          guardians enquiring about programmes such as DevCon Kids. If you are under 18, please ask a
+          parent or guardian to contact us for you. If we receive a message that a child has sent us,
+          we delete it.
         </p>
       </LegalSection>
 

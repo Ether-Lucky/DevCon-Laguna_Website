@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import LegalPage, { LegalSection } from '@/components/ui/legal/legal-page';
-import ToConfirm from '@/components/ui/legal/to-confirm';
 import { siteConfig } from '@/lib/site-config';
 
 /**
  * Terms and Conditions (LEGAL-01, #73).
  *
- * DRAFT, pending review by DevCon Laguna / DevCon national. The same rules as
- * the Privacy Policy apply: `<ToConfirm>` marks anything the organisation must
- * decide, and `tests/legal.spec.ts` fails while any remains. Not legal advice.
+ * Approved by the PM on 2026-09-23 (#73), together with the Privacy Policy.
+ * The same rule applies: anything newly uncertain goes back to a `<ToConfirm>`
+ * marker, and `tests/legal.spec.ts` fails until it is settled.
  */
 
 export const metadata: Metadata = {
@@ -20,9 +19,13 @@ export const metadata: Metadata = {
 
 const list = 'list-disc space-y-2 pl-6';
 
+/** Kept in step with the Privacy Policy: both were approved together. */
+const LAST_UPDATED = '23 September 2026';
+const CONTACT = 'laguna@devcon.ph';
+
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms and Conditions" lastUpdated={<ToConfirm>effective date</ToConfirm>}>
+    <LegalPage title="Terms and Conditions" lastUpdated={LAST_UPDATED}>
       <p>
         These terms cover your use of the {siteConfig.name} website. By using the site, you agree to
         them. If you don&apos;t agree, please don&apos;t use the site.
@@ -67,9 +70,10 @@ export default function TermsPage() {
       <LegalSection title="Content and trademarks">
         <p>
           The DevCon and {siteConfig.name} names and logos, and the site&apos;s design, text and photos,
-          belong to <ToConfirm>owner of the names, logos and content: DevCon Philippines, the chapter, or the individual photographers</ToConfirm>.
-          You may share links to the site. You may not reuse its logos or content in a way that suggests
-          our endorsement without permission.
+          belong to their respective owners: the <strong>DevCon</strong> name and logo to Developers
+          Connect (DevCon) Philippines, and this site&apos;s content and photographs to{' '}
+          {siteConfig.name}. You may share links to the site. You may not reuse its logos or content in
+          a way that suggests our endorsement without permission.
         </p>
       </LegalSection>
 
@@ -90,13 +94,13 @@ export default function TermsPage() {
       <LegalSection title="Limitation of liability">
         <p>
           To the extent the law allows, {siteConfig.name} is not liable for any loss arising from your use
-          of the site or reliance on its content. <ToConfirm>whether the organisation wants this clause, and its exact wording</ToConfirm>.
+          of the site or reliance on its content.
         </p>
       </LegalSection>
 
       <LegalSection title="Governing law">
         <p>
-          These terms are governed by the laws of the Republic of the Philippines. <ToConfirm>venue for disputes, if the organisation wants one named</ToConfirm>.
+          These terms are governed by the laws of the Republic of the Philippines.
         </p>
       </LegalSection>
 
@@ -109,7 +113,8 @@ export default function TermsPage() {
 
       <LegalSection title="Contact">
         <p>
-          Questions about these terms: <ToConfirm>contact for questions about these terms</ToConfirm>.
+          Questions about these terms: email{' '}
+          <a href={`mailto:${CONTACT}`} className="underline underline-offset-4">{CONTACT}</a>.
         </p>
       </LegalSection>
     </LegalPage>
