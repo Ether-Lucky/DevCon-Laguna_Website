@@ -2,8 +2,11 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Category, EventItem, events } from '@/lib/content/events';
+import { EventItem, events } from '@/lib/content/events';
+import Link from 'next/link';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
+import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
+import { eventPath } from '@/lib/portal/events';
 import { socialLinks } from '@/lib/content/social-links';
 
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -29,13 +32,9 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
  */
 const FACEBOOK_URL = socialLinks.find((link) => link.platform === 'Facebook')?.link;
 
-const categoryColors: Record<Category, string> = {
-  hackaton:  'bg-devcon-purple-500 text-white',
-  workshop:  'bg-devcon-yellow-500 text-black',
-  seminar:   'bg-devcon-purple-700 text-white',
-  community: 'bg-devcon-lime-500   text-black',
-  career:    'bg-devcon-orange-500  text-white',
-};
+// Shared with the event's own page (EVENTS-03) so a category cannot be purple
+// in the carousel and grey on the page it links to.
+const categoryColors = EVENT_BADGE_COLORS;
 
 /**
  * EventCard — a tall image card representing a single event in the carousel.
@@ -44,9 +43,37 @@ const categoryColors: Record<Category, string> = {
  * - Otherwise a purple-to-black placeholder gradient is shown with a calendar icon.
  * - The category badge color is derived from `categoryColors` — not from the event data.
  */
+/**
+ * The card's wrapper: a link to the event's own page when there is one to link
+ * to (EVENTS-03), and a plain div otherwise.
+ *
+ * Only portal events have a page. The bundled events are design placeholders
+ * with no description or location, so a page for one would show exactly what
+ * the card already shows — a title and a date. An anchor that adds nothing is
+ * worse than no anchor: it is a promise of more.
+ */
+function CardFrame({ event, children }: { event: EventItem; children: React.ReactNode }) {
+  const className =
+    'relative flex-shrink-0 h-[400px] sm:h-[600px] w-[80vw] sm:w-[45vw] md:w-[30vw] rounded-[28px] overflow-hidden bg-zinc-900 group';
+
+  if (!event.portalId) return <div className={className}>{children}</div>;
+
+  return (
+    <Link
+      href={eventPath(event.portalId)}
+      // The card is one link, so the whole thing is clickable and a screen
+      // reader hears one target rather than a title and an image separately.
+      // Its accessible name comes from the heading inside it.
+      className={`${className} block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-devcon-purple-500`}
+    >
+      {children}
+    </Link>
+  );
+}
+
 function EventCard({ event }: { event: EventItem }) {
   return (
-    <div className="relative flex-shrink-0 h-[400px] sm:h-[600px] w-[80vw] sm:w-[45vw] md:w-[30vw] rounded-[28px] overflow-hidden bg-zinc-900 group">
+    <CardFrame event={event}>
       {event.img ? (
         <>
           <Image
@@ -78,7 +105,7 @@ function EventCard({ event }: { event: EventItem }) {
           <span>{event.date}</span>
         </div>
       </div>
-    </div>
+    </CardFrame>
   );
 }
 
