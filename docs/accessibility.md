@@ -86,6 +86,29 @@ Each carousel is given a **distinct** name — "Featured events", "DevCon Laguna
 of the DevCon Laguna community". Three regions all called "Carousel" would tell a screen reader
 user nothing about which one they were in.
 
+#### The rule, restated in OFFICER-02
+
+The Officers section later moved off `DynamicCarousel` to `batch-carousel.tsx`, which shows a
+whole batch of officers and steps by one column. Its track is **clipped, not scrollable**, so
+there is nothing for the arrow keys to move and `tabIndex` on it would be a focus stop that does
+nothing.
+
+The suite used to assert that *every* labelled carousel region carries `tabIndex={0}`, with named
+exceptions. It now asks each region whether **the user can scroll it** and holds the requirement
+to those, so a new carousel cannot quietly opt itself out by being added to an exception list.
+
+It asks by reading the **computed `overflow-x`**, not `scrollWidth > clientWidth`. An
+`overflow: hidden` element still reports overflowing content and is still scrollable from script,
+so the obvious check would demand a focus stop on a region no user can scroll. axe draws the same
+line and does not flag `hidden`.
+
+Two things keep the batch carousel reachable without a scrollable track:
+
+- **Every tile stays in the document.** They are clipped, not unmounted, so a screen reader reads
+  the whole roster whether or not the buttons are ever pressed.
+- **A polite live region** announces the visible range ("Showing officers 3 to 10 of 12"), so a
+  sighted screen-reader user is told what moved.
+
 ## What was already right
 
 Sprint 2's work held up. Nothing needed changing in: the contact form's `aria-invalid`,
@@ -118,8 +141,8 @@ restoring the fix.
 
 Beyond axe, `tests/a11y.spec.ts` asserts directly that:
 
-- every carousel track is focusable and uniquely named
-- a focused carousel scrolls with `ArrowRight`
+- every carousel region is uniquely named, and every **scrollable** one is focusable
+- a focused scrollable carousel scrolls with `ArrowRight`
 - the theme toggle can be operated with `Enter`
 - focused elements have a visible outline or shadow — a focus state that exists but cannot be
   seen is the same as none for a sighted keyboard user

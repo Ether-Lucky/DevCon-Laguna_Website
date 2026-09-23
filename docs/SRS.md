@@ -267,6 +267,7 @@ managed by officers rather than by developers in code.
 | FR-23 | An authenticated endpoint shall allow the portal to publish a change instantly, without a redeploy | ✅ Sprint 3 (#79, PR #127) |
 | FR-24 | The site shall publish a **Privacy Policy** and **Terms and Conditions**, describing what the site actually collects, under the Data Privacy Act of 2012 | ✅ Sprint 4 (#73, PR #142) |
 | FR-25 | Every link on the site shall have a real destination; no link shall point at `#` or an empty target | ✅ Sprint 4 (#72, PR #147) |
+| FR-26 | The Officers section shall present officers a whole batch at a time, advancing by one column so that no officer card is ever partly cut off at the edge of the view | ✅ Sprint 4 (#149, PR #150) |
 
 **Content freshness model (FR-22, FR-23).** The site serves cached portal content rather than
 calling the portal on every request; the cache revalidates on a ~30-minute interval, so edits
