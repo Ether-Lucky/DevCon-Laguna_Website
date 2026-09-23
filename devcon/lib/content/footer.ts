@@ -24,7 +24,7 @@ import { socialLinks } from '@/lib/content/social-links';
  * - `siteConfig.portalUrl` for membership and volunteering, which live on the
  *   DevConnect Portal.
  * - `/privacy` and `/terms` (LEGAL-01).
- * - Social profiles come from `social-links.tsx`, so the footer and the icon
+ * - Social profiles come from `social-links.ts`, so the footer and the icon
  *   rows can never disagree about a URL.
  */
 
@@ -69,7 +69,7 @@ export const footerColumns: FooterColumn[] = [
   },
   {
     heading: 'Connect',
-    // Filtered rather than listed, so a platform removed from social-links.tsx
+    // Filtered rather than listed, so a platform removed from social-links.ts
     // disappears here too instead of becoming a broken link.
     links: CONNECT_PLATFORMS.map(social).filter((link): link is FooterLink => link !== null),
   },

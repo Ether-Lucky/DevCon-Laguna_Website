@@ -1,9 +1,11 @@
 import { socialLinks } from "@/lib/content/social-links";
+import { SocialIcon } from "@/components/ui/social-icon";
 
 /**
  * SocialMedia — a horizontal row of social platform icon links.
  *
- * Links and icons are sourced from `lib/content/social-links.tsx`.
+ * Links come from `lib/content/social-links.ts`, which names each icon with a
+ * string; `SocialIcon` turns that name into a component (DATA-BT-01).
  * Each link opens in a new tab (`target="_blank"`) with `rel="noopener
  * noreferrer"` and uses an `aria-label` set to the platform name for screen
  * reader accessibility.
@@ -28,7 +30,9 @@ export default function SocialMedia({ color = 'text-foreground', compact = false
       target="_blank"
       rel="noopener noreferrer"
       >
-        <span aria-hidden className="block opacity-80 group-hover:opacity-100 transition-opacity duration-200">{item.icon}</span>
+        <span className="block opacity-80 group-hover:opacity-100 transition-opacity duration-200">
+          <SocialIcon name={item.icon} />
+        </span>
       </a>
     ))}
     </div>

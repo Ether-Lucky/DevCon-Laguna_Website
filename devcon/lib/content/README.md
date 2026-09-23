@@ -10,7 +10,9 @@ The goal is to let non-UI developers update copy, links, and image data without 
 - `events.ts`: events shown in the Featured Events carousel.
 - `officers.ts`: members displayed in the Officers section.
 - `programs-and-activities.ts`: slides shown in the Programs and Activities section.
-- `social-links.tsx`: external platform links used in the footer and social section.
+- `social-links.ts`: external platform links used in the footer and social section. Each entry
+  names its icon with a string (`facebook`, `twitter`, …); the icons themselves live in
+  `components/ui/social-icon.tsx`.
 - `stats.ts`: homepage impact metrics.
 - `what-we-do.ts`: feature cards in the What We Do section.
 
@@ -216,12 +218,16 @@ The slideshow uses `slides` entries with `src`, `alt`, and image dimensions. Rev
 
 ---
 
-## Updating Social Links (`social-links.tsx`)
+## Updating Social Links (`social-links.ts`)
 
-Each item in `socialLinks` contains a platform name, a destination URL, and an icon component.
+Each item in `socialLinks` contains a platform name, a destination URL, and an **icon name** — a
+plain string such as `facebook`, not a component.
 
 - Keep links up to date with the current official channels.
 - Preserve the `platform` naming pattern used by the UI.
+- **Adding a platform takes two steps:** add the entry here, then add its icon to
+  `components/ui/social-icon.tsx`. Naming an icon that does not exist there is a compile error, not
+  a blank space on the page.
 - Use the existing icon library rather than adding custom SVGs unless absolutely necessary.
 
 ---

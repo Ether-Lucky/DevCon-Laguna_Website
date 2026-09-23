@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { waitForHydration } from './support/hydration';
+import { waitForHydration, waitForReveal } from './support/hydration';
 
 /**
  * OFFICER-02 — the Officers carousel shows a whole batch and steps by one column.
@@ -120,9 +120,36 @@ test.beforeEach(async ({ page }) => {
   // silently lost (OFFICER-02-BT-01).
   await waitForHydration(page, '#officers button[aria-label="Next officers"]');
   await page.locator('#officers').scrollIntoViewIfNeeded();
+  // Scrolling to the section starts its 0.85s entrance transition. Pressing a
+  // button while the section is still moving lands the click a few pixels off,
+  // which is what firefox was reporting as "the press did not reach the
+  // carousel" even after the hydration wait above.
+  await waitForReveal(page, '#officers');
 });
 
 test.describe('OFFICER-02 batch carousel', () => {
+  test('the section has finished revealing before anything is pressed', async ({ page }) => {
+    // Guards the wait in beforeEach. Measured without it, the section was at
+    // `opacity: 0` and translated 72px down at the moment the suite pressed its
+    // first button — the press was landing 72 pixels away from the control
+    // (OFFICER-02-BT-01). Every other test in this file depends on that wait, so
+    // if it stops working they all start failing for a reason that has nothing
+    // to do with the carousel.
+    const revealed = await page.evaluate(() => {
+      const section = document.querySelector('#officers');
+      let node = section?.parentElement ?? null;
+      while (node) {
+        const style = getComputedStyle(node);
+        if (style.transitionProperty.includes('opacity')) {
+          return { opacity: style.opacity, transform: style.transform };
+        }
+        node = node.parentElement;
+      }
+      return null;
+    });
+    expect(revealed).toEqual({ opacity: '1', transform: 'none' });
+  });
+
   test('shows a batch of four whole columns on a desktop viewport', async ({ page }) => {
     await expectVisibleTiles(page, [0, 1, 2, 3]);
 
@@ -197,6 +224,7 @@ test.describe('OFFICER-02 batch carousel', () => {
     // enough slack to hide that, so it has to be asserted here.
     await page.setViewportSize({ width: 1024, height: 800 });
     await page.locator('#officers').scrollIntoViewIfNeeded();
+    await waitForReveal(page, '#officers');
 
     await expectVisibleTiles(page, [0, 1, 2, 3]);
     expect(await overflowingContent(page)).toEqual([]);
@@ -227,6 +255,7 @@ test.describe('OFFICER-02 batch carousel', () => {
   test('narrows to a single column on a phone viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.locator('#officers').scrollIntoViewIfNeeded();
+    await waitForReveal(page, '#officers');
 
     await expectVisibleTiles(page, [0]);
     expect(await visibleOfficers(page)).toHaveLength(2);
