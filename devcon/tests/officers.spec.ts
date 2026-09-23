@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { waitForHydration, waitForReveal } from './support/hydration';
+import { isSettledTransform, readRevealState, waitForHydration, waitForReveal } from './support/hydration';
 
 /**
  * OFFICER-02 — the Officers carousel shows a whole batch and steps by one column.
@@ -127,6 +127,36 @@ test.beforeEach(async ({ page }) => {
   await waitForReveal(page, '#officers');
 });
 
+test.describe('OFFICER-02-BT-02 what counts as "not transformed"', () => {
+  // These run in Node, not a browser: they are the rule the reveal wait is built
+  // on, and it broke twice by being written as a string comparison.
+  test('accepts every spelling of a settled transform', () => {
+    for (const value of [
+      'none',
+      '',
+      'matrix(1, 0, 0, 1, 0, 0)',
+      // WebKit's sub-pixel residue of the transition. A millionth of a pixel
+      // cannot move a click off a button.
+      'matrix(1, 0, 0, 1, 0, 0.000001)',
+      'matrix(1, 0, 0, 1, 0.2, -0.3)',
+    ]) {
+      expect(isSettledTransform(value), value).toBe(true);
+    }
+  });
+
+  test('still rejects a section that is genuinely mid-animation', () => {
+    for (const value of [
+      // ScrollReveal's starting state: 72px down and scaled to 0.98.
+      'matrix(0.98, 0, 0, 0.98, 0, 72)',
+      'matrix(1, 0, 0, 1, 0, 3)',
+      'matrix(0.9, 0, 0, 0.9, 0, 0)',
+      'nonsense',
+    ]) {
+      expect(isSettledTransform(value), value).toBe(false);
+    }
+  });
+});
+
 test.describe('OFFICER-02 batch carousel', () => {
   test('the section has finished revealing before anything is pressed', async ({ page }) => {
     // Guards the wait in beforeEach. Measured without it, the section was at
@@ -135,24 +165,12 @@ test.describe('OFFICER-02 batch carousel', () => {
     // (OFFICER-02-BT-01). Every other test in this file depends on that wait, so
     // if it stops working they all start failing for a reason that has nothing
     // to do with the carousel.
-    const revealed = await page.evaluate(() => {
-      const section = document.querySelector('#officers');
-      let node = section?.parentElement ?? null;
-      while (node) {
-        const style = getComputedStyle(node);
-        if (style.transitionProperty.includes('opacity')) {
-          return { opacity: style.opacity, transform: style.transform };
-        }
-        node = node.parentElement;
-      }
-      return null;
-    });
-    expect(revealed?.opacity).toBe('1');
-    // WebKit reports a settled transform as the identity matrix where Chromium
-    // and Firefox say `none`. Both mean "not transformed", and asserting only
-    // the Chromium spelling failed this test on a page that had revealed
-    // perfectly well — the wait helper always accepted both.
-    expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(revealed?.transform);
+    const revealed = await readRevealState(page, '#officers');
+    // The raw values ride along so a failure says what it saw: this test failed
+    // twice on values that meant "settled" spelled differently — `none` versus
+    // the identity matrix, then a 0.000001px residue (OFFICER-02-BT-02).
+    expect(revealed, 'the officers section should be wrapped in a reveal').not.toBeNull();
+    expect(revealed?.settled, `opacity ${revealed?.opacity}, transform ${revealed?.transform}`).toBe(true);
   });
 
   test('shows a batch of four whole columns on a desktop viewport', async ({ page }) => {
