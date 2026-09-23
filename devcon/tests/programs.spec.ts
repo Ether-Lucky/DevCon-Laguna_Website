@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { siteConfig } from '../lib/site-config';
+import { waitForHydration } from './support/hydration';
 
 /**
  * Regression suite for PROGRAM-01-BT-01 (#87) — Programs & Activities restored.
@@ -28,6 +29,11 @@ async function openSection(page: Page) {
   await page.goto('/');
   const section = page.locator('#activities');
   await section.scrollIntoViewIfNeeded();
+  // Wait for hydration before touching the clock. The server-rendered markup
+  // already reports the slideshow as playing, because that is its initial
+  // state, so without this a test can advance the clock past a timer that does
+  // not exist yet and see the slide never move (CICD-BT-06).
+  await waitForHydration(page, '#activities [aria-roledescription="carousel"]');
   // Move the pointer well away so hover-to-pause is not triggered by accident.
   await page.mouse.move(0, 0);
   return section;

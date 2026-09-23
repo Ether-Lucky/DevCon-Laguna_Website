@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { waitForHydration } from './hydration';
 
 /**
  * Fills a field and makes sure the value stuck (CICD-BT-06).
@@ -19,28 +20,6 @@ import { expect, type Page } from '@playwright/test';
  * milliseconds that would be too long on a fast machine and too short on a
  * loaded one.
  */
-/**
- * Waits until React has hydrated the element, so typing into it sticks.
- *
- * React attaches internal properties (`__reactFiber$…`) to a DOM node when it
- * hydrates. Before that the node is server-rendered HTML: typing works, and
- * hydration then resets the input to its empty state.
- *
- * Checking that a typed value "stuck" is **not** enough on its own. With React
- * not yet hydrated, nothing resets the field, so the check passes and hydration
- * wipes it immediately afterwards. That version still failed 1 run in 20.
- */
-export async function waitForHydration(page: Page, selector: string): Promise<void> {
-  await page.waitForFunction(
-    (sel) => {
-      const el = document.querySelector(sel);
-      return !!el && Object.keys(el).some((key) => key.startsWith('__reactFiber$'));
-    },
-    selector,
-    { timeout: 20_000 },
-  );
-}
-
 export async function fillWhenReady(page: Page, selector: string, value: string): Promise<void> {
   await waitForHydration(page, selector);
   // Belt and braces: if hydration lands between the check and the keystroke,

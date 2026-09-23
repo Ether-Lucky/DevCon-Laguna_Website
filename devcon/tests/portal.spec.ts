@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { team } from '../lib/content/officers';
 import { isAllowedRemoteImage, remoteImagePatterns } from '../lib/remote-images';
-import { formatEventDate } from '../lib/portal/format';
+import { formatEventDate, isUpcoming } from '../lib/portal/format';
 import { parseEvents } from '../lib/portal/parse';
 
 /**
@@ -209,5 +209,45 @@ test.describe('CMS-02 event parsing', () => {
   test('tolerates a malformed payload', () => {
     expect(parseEvents(undefined)).toEqual([]);
     expect(parseEvents({ events: [] })).toEqual([]);
+  });
+});
+
+test.describe('EVENTS-02 upcoming events only', () => {
+  /**
+   * "Featured Events" is about what is coming up, so an event drops off the
+   * page once it is over. TBA events always stay: they have not happened yet.
+   *
+   * The cut-off is the end of the event's day in Philippine time, not the
+   * timestamp. The portal stores whole-day events at midnight UTC, which is
+   * 08:00 in Manila, so comparing instants would drop a one-day event at
+   * breakfast time on the day it runs.
+   */
+  const now = new Date('2026-09-23T04:00:00Z'); // 12:00 noon in Manila
+
+  test('keeps TBA events, which have not happened yet', () => {
+    expect(isUpcoming({ start_date: null, end_date: null }, now)).toBe(true);
+  });
+
+  test('keeps an event running today, all the way to midnight in Manila', () => {
+    // Stored at midnight UTC = 08:00 Manila. Comparing instants would have
+    // dropped this four hours ago.
+    expect(isUpcoming({ start_date: '2026-09-23T00:00:00Z', end_date: '2026-09-23T00:00:00Z' }, now)).toBe(true);
+    // 23:30 Manila on the same day.
+    expect(isUpcoming({ start_date: '2026-09-23T15:30:00Z', end_date: '2026-09-23T15:30:00Z' }, now)).toBe(true);
+  });
+
+  test('keeps a multi-day event that started before today', () => {
+    expect(isUpcoming({ start_date: '2026-09-20T00:00:00Z', end_date: '2026-09-25T00:00:00Z' }, now)).toBe(true);
+  });
+
+  test('drops an event that ended yesterday', () => {
+    expect(isUpcoming({ start_date: '2026-09-22T00:00:00Z', end_date: '2026-09-22T00:00:00Z' }, now)).toBe(false);
+    // 22:00 Manila yesterday: over in Manila, even though it is still the 22nd in UTC.
+    expect(isUpcoming({ start_date: '2026-09-22T14:00:00Z', end_date: '2026-09-22T14:00:00Z' }, now)).toBe(false);
+  });
+
+  test('falls back to the start date when the end date is missing', () => {
+    expect(isUpcoming({ start_date: '2026-09-25T00:00:00Z', end_date: null }, now)).toBe(true);
+    expect(isUpcoming({ start_date: '2026-09-01T00:00:00Z', end_date: null }, now)).toBe(false);
   });
 });

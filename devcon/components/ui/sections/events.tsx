@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Category, EventItem, events } from '@/lib/content/events';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
+import { socialLinks } from '@/lib/content/social-links';
 
 import { CalendarIcon } from '@heroicons/react/24/outline';
 
@@ -21,6 +22,13 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
  *   community → devcon-lime-500   (#C0E00B)
  *   career    → devcon-orange-500 (#E06B22)
  */
+/**
+ * The chapter's Facebook page: the staffed channel announcements go out on.
+ * Deliberately not defaulted to "#": a dead link is worse than plain text, and
+ * the empty state renders the word without a link if the entry ever goes.
+ */
+const FACEBOOK_URL = socialLinks.find((link) => link.platform === 'Facebook')?.link;
+
 const categoryColors: Record<Category, string> = {
   hackaton:  'bg-devcon-purple-500 text-white',
   workshop:  'bg-devcon-yellow-500 text-black',
@@ -98,11 +106,42 @@ export default function Events({ items = events }: { items?: EventItem[] }) {
           </p>
         </div>      </div>
 
-      <DynamicCarousel label="Featured events" className="w-full py-12 px-4"
-        tiles={items.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      />
+      {items.length > 0 ? (
+        <DynamicCarousel label="Featured events" className="w-full py-12 px-4"
+          tiles={items.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        />
+      ) : (
+        /*
+          Shown when the portal has events but none are upcoming (EVENTS-02).
+          Saying so is better than listing events that already happened, or
+          reviving the built-in placeholders, which would read as real plans.
+        */
+        <div
+          data-testid="events-empty"
+          className="my-12 mx-4 rounded-[28px] border border-border bg-surface px-6 py-16 text-center"
+        >
+          <CalendarIcon className="mx-auto h-10 w-10 text-muted" aria-hidden="true" />
+          <p className="mt-4 text-lg font-semibold text-foreground">No upcoming events right now.</p>
+          <p className="mt-2 text-base text-muted">
+            We are planning the next one. Follow us on{' '}
+            {FACEBOOK_URL ? (
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-foreground"
+              >
+                Facebook
+              </a>
+            ) : (
+              'Facebook'
+            )}{' '}
+            for announcements.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

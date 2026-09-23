@@ -55,3 +55,35 @@ export function formatEventDate(start: string | null, end: string | null): strin
   if (sameYear) return `${from.month} ${from.day} – ${to.month} ${to.day}, ${from.year}`;
   return `${from.month} ${from.day}, ${from.year} – ${to.month} ${to.day}, ${to.year}`;
 }
+
+/**
+ * Whether an event still belongs on the landing page (EVENTS-02).
+ *
+ * "Featured Events" is about what is coming up, so an event drops off once it
+ * is over. Undated ("TBA") events always stay: they have not happened yet.
+ *
+ * **Judged by the end of the event's day in Philippine time**, not by the
+ * timestamp itself. The portal stores whole-day events at midnight UTC, which
+ * is 08:00 in Manila, so comparing instants would drop a one-day event from the
+ * page at breakfast time on the day it runs. An event stays until midnight
+ * Manila at the end of its last day.
+ */
+export function isUpcoming(
+  event: { start_date: string | null; end_date: string | null },
+  now: Date = new Date(),
+): boolean {
+  const ends = event.end_date ?? event.start_date;
+  if (!ends) return true; // TBA
+
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: EVENT_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ends));
+
+  // en-CA gives YYYY-MM-DD. +08:00 is Philippine Standard Time, which has no
+  // daylight saving, so the offset is constant.
+  const endOfDay = new Date(`${parts}T23:59:59.999+08:00`);
+  return endOfDay.getTime() >= now.getTime();
+}
