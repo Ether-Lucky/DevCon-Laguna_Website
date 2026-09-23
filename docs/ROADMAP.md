@@ -38,7 +38,7 @@ in the sprints below.
 | Content maintainable without code changes | ✅ Officers, events and landing images come from the DevConnect Portal (Sprint 3) |
 | SEO and metadata | ✅ Sitemap, robots, structured data, share image; SEO audits pass after SEO-04 |
 | Accessibility (WCAG 2.1 AA target) | ✅ Lighthouse 1.00; nine axe violations found and fixed; the audit runs in CI (A11Y-01) |
-| **Performance — Lighthouse ≥ 0.90** | ⚠️ **Not met.** ~0.90 across 19 CI runs (0.88–0.92), LCP ~3.6 s against a 2.5 s target. The assertion remains a warning. Carried to Phase 3 as PERF-02 (#94) |
+| **Performance — Lighthouse ≥ 0.90** | ⚠️ **Not met.** ~0.90 across CI runs (0.88–0.92), LCP ~3.5 s against a 2.5 s target. The assertion remains a warning. Measured again in Sprint 5 with real throttling: LCP ~3.0 s, so CI is ~0.9 s pessimistic and the gap is real but smaller — [performance.md](./performance.md) |
 | Analytics and engagement tracking | ✅ Pageviews live; custom events need a Vercel Pro plan (a cost decision, not a code gap) |
 | Automated test coverage for new functionality | ✅ 94 → 348 tests; CI fails on flaky results (CICD-BT-06) |
 | Continued deployment to Vercel | ✅ Every merge deployed via the `laguna-devcon` fork |
@@ -81,34 +81,48 @@ with `throttlingMethod: devtools` before a fourth speculative fix.
 
 Each sprint's plan and review live in `/docs`: [sprint-2-backlog](./sprint-2-backlog.md),
 [sprint-2-review](./sprint-2-review.md), [sprint-3-plan](./sprint-3-plan.md),
-[sprint-3-review](./sprint-3-review.md), [sprint-4-plan](./sprint-4-plan.md).
+[sprint-3-review](./sprint-3-review.md), [sprint-4-plan](./sprint-4-plan.md),
+[sprint-4-review](./sprint-4-review.md), [sprint-5-plan](./sprint-5-plan.md). Performance
+measurements live in [performance.md](./performance.md).
 
 ---
 
-## Phase 3 — draft, for the PM to decide (DOCS-01, #137)
+## Phase 3: started (Sprint 5 — DOCS-02, #158)
 
-**Nothing here is committed.** These are the candidates the Project Charter deferred beyond
-Phase 2, with what each actually depends on. Phase 3 should be planned from this, not from it.
+**Phase 3 began on 2026-09-24**, planned in [sprint-5-plan](./sprint-5-plan.md). Sprint 5 takes only
+the work this team controls, so a phase does not open blocked on another team's queue.
 
-| Candidate | Depends on | Notes |
+### Sprint 5 scope
+
+| Ticket | Delivers | Status |
 |---|---|---|
-| **Event detail pages** | **Nothing new.** The portal already sends each event's `description` and `location`, and the landing page displays neither | The cheapest real feature available. A page per event, linked from the Events cards, with structured data for search |
-| **News / blog section** | **A new portal endpoint.** The portal team would need to add posts to their admin and API | Cross-team, so it runs on their schedule. The handoff pattern from Sprint 3 worked: a written specification, delivered same-day |
-| **Event registration** | **Probably not ours.** Members already have accounts on the portal | Confirm with the portal team before scoping. Building sign-ups here would rebuild what the portal has |
-| **PERF-02** (#94) | Nothing | The one unmet Phase 2 target. Start by confirming whether the ~2.4 s of "render delay" is real or an artifact of Lighthouse's simulated throttling |
+| **EVENTS-03** #156 | A page per event at `/events/[id]`, from data the portal already sends | ✅ Merged |
+| **SEO-05** #157 | Per-event metadata, `Event` structured data, events in the sitemap | ✅ Merged |
+| **OFFICER-03** #155 | Officer bios, shown when the portal provides one | ✅ Merged |
+| **PERF-02** #94 | The one unmet Phase 2 target: measured, decided, recorded | ✅ Measured — target still not met, see [performance.md](./performance.md) |
+| **DATA-BT-01** #91 | `social-links` holds data rather than JSX | ✅ Merged |
+| **CLEANUP-02** #153 | `server.log` out of version control | ✅ Merged |
+| **DOCS-02** #158 | These documents | ✅ This change |
+
+### What is left of Phase 3, and what it waits on
+
+| Candidate | Depends on | Note |
+|---|---|---|
+| **News / blog section** | **A new portal endpoint.** The portal team would add posts to their admin and API | Cross-team, so it runs on their schedule. The Sprint 3 handoff pattern — a written specification — was answered the same day |
+| **Event registration** | **Probably not ours.** Members already have accounts on the portal | Confirm ownership with the portal team before scoping. Building sign-ups here would rebuild what the portal has |
+| **PERF-02** (#94), if pursued further | Nothing | The remaining gap is main-thread work, not bytes. See [performance.md](./performance.md): a fifth attempt needs a hypothesis, not another guess |
 | **NEWS-01** (#66) newsletter | An email provider and a list owner | Backlog since Sprint 2 |
 | **CON-03** (#71) contact map | A venue to show | Backlog since Sprint 2 |
-| **DATA-BT-01** (#91) | Nothing | Small refactor: `social-links.tsx` embeds JSX icons in a content file |
 
-### Two open questions that should be settled at planning
+### Two open questions, still open
 
 1. **Vercel Pro.** Custom analytics events (which buttons get clicked) need it; pageviews work on
-   the free plan. A cost decision, not a technical one.
+   the free plan. A cost decision, not a technical one. Open since Sprint 3.
 2. **Who may assign work to Copilot.** Six draft pull requests appeared on the CMS tickets in
    Sprint 3 (#119–#124), one duplicating work already in review. Nobody has established who
-   triggered it.
+   triggered it. Open since Sprint 3; no new ones have appeared since.
 
-### What Phase 3 should keep from Phase 2
+### What Phase 3 keeps from Phase 2
 
 - **Seven-ticket sprints.** Unplanned work fell from 71% to 22% when scope was held there.
 - **Break a check before trusting it.** Six checks in Sprint 3 and four flaky tests in Sprint 4
