@@ -56,6 +56,23 @@ When a UI change is deliberate, the visual job will fail — that is correct. To
 Never refresh baselines to make a red build green without looking at the diff first —
 that is exactly the failure mode this setup exists to prevent.
 
+### ⚠️ Two branches refreshing at once leaves `prod` red
+
+A baseline refresh captures **that branch's** page. If two branches each refresh the same
+snapshot, merging both produces a page that matches **neither** baseline, and the visual job
+fails on `prod` after the merge, even though both pull requests were green.
+
+It happened on 2026-09-23: LOGO-BT-01 (#139) moved the logo by 0.24 px and SEO-04 (#141)
+changed the hero's button text. Each refreshed `full-page-firefox-linux.png` on its own branch,
+and the merged page carried both changes.
+
+**It is not a broken gate — it is the gate being accurate.** The fix is a refresh taken from the
+merged state: branch off `prod`, run the refresh there, and merge it like any other change. Do
+not refresh directly on `prod`; the images deserve the same review as code.
+
+**To avoid it:** when two open branches both change the same snapshot, refresh the second one
+**after** the first has merged and it has been brought up to date.
+
 ## Running locally
 
 ```bash
