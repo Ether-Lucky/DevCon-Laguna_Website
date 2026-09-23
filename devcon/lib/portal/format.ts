@@ -16,6 +16,8 @@
  * Deliberately free of `server-only` so the test suite can check it directly.
  */
 
+import type { PortalEvent } from './types';
+
 export const EVENT_TIME_ZONE = 'Asia/Manila';
 
 /** Shown for an event the portal has published without a date. */
@@ -86,4 +88,22 @@ export function isUpcoming(
   // daylight saving, so the offset is constant.
   const endOfDay = new Date(`${parts}T23:59:59.999+08:00`);
   return endOfDay.getTime() >= now.getTime();
+}
+
+/**
+ * The events the "Featured Events" section should show, in the order the portal
+ * sent them (EVENTS-02).
+ *
+ * Order is deliberately left alone: the portal returns undated ("TBA") events
+ * first, then newest start date first, and that editorial choice is the
+ * portal's — ours is only to decide what is still coming up.
+ *
+ * `content.ts` applies this to the portal's events only: the bundled list is
+ * placeholder content shown while the portal has no events at all, and
+ * filtering it would leave six placeholder "TBA" cards.
+ */
+export function upcomingEvents(events: PortalEvent[]): PortalEvent[] {
+  // The lambda matters: passed bare, filter() would feed the array index into
+  // isUpcoming's `now` parameter.
+  return events.filter((event) => isUpcoming(event));
 }

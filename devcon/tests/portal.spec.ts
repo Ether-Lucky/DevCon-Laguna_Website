@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { team } from '../lib/content/officers';
 import { isAllowedRemoteImage, remoteImagePatterns } from '../lib/remote-images';
-import { formatEventDate, isUpcoming } from '../lib/portal/format';
+import { formatEventDate, isUpcoming, upcomingEvents } from '../lib/portal/format';
 import { parseEvents } from '../lib/portal/parse';
+import type { PortalEvent } from '../lib/portal/types';
 
 /**
  * Regression suite for the DevConnect Portal integration (CMS-03).
@@ -249,5 +250,59 @@ test.describe('EVENTS-02 upcoming events only', () => {
   test('falls back to the start date when the end date is missing', () => {
     expect(isUpcoming({ start_date: '2026-09-25T00:00:00Z', end_date: null }, now)).toBe(true);
     expect(isUpcoming({ start_date: '2026-09-01T00:00:00Z', end_date: null }, now)).toBe(false);
+  });
+});
+
+test.describe('EVENTS-02 upcomingEvents, the list filter', () => {
+  /**
+   * The unit tests above prove `isUpcoming` one date at a time; this proves the
+   * composite filter that `content.ts` feeds — `upcomingEvents`, kept free of
+   * `server-only` precisely so the suite can check it directly. Dates are
+   * relative to the machine's real clock so they cannot age stale.
+   *
+   * The empty state itself — the markup the section renders for an empty list —
+   * is verified by hand against a mock portal, the same way the other
+   * conditional portal paths are (see the revalidate and landing-image suites).
+   * What is automatable here without an API key is the data side that triggers
+   * it, an empty list, which is what the second test pins down.
+   */
+  const day = (offsetDays: number) => new Date(Date.now() + offsetDays * 86_400_000).toISOString();
+
+  const event = (title: string, start: string | null, end: string | null): PortalEvent => ({
+    id: title,
+    title,
+    description: null,
+    location: 'Laguna',
+    category: 'hackaton',
+    start_date: start,
+    end_date: end,
+    cover_image_url: null,
+  });
+
+  test('hides past events, keeps TBA and an event ending today, and does not re-order', () => {
+    const now = new Date().toISOString();
+    const kept = upcomingEvents([
+      event('A hack night last week', day(-7), day(-7)),
+      event('A date to be announced', null, null),
+      // Ends this instant, so its day is today in Manila by construction —
+      // exactly the case isUpcoming must keep until Manila midnight.
+      event('An event ending today', now, now),
+      event('A future summit', day(7), day(9)),
+    ]);
+
+    // Filtering must not re-order: the portal returns "undated first, then
+    // newest start date first", and — like the officers' display_order — that
+    // editorial choice is the portal's, not ours.
+    expect(kept.map((entry) => entry.title)).toEqual([
+      'A date to be announced',
+      'An event ending today',
+      'A future summit',
+    ]);
+  });
+
+  test('an all-past set filters down to nothing, which is what shows the empty state', () => {
+    expect(
+      upcomingEvents([event('A hack night last week', day(-14), day(-12)), event('Workshop last month', day(-35), day(-35))]),
+    ).toEqual([]);
   });
 });
