@@ -45,7 +45,13 @@ jobs:
     - name: Run functional and regression tests
       # Every spec except the visual suite, which has its own job below.
       # Discovered rather than listed so new spec files are picked up automatically.
-      run: npx playwright test $(ls tests/*.spec.ts | grep -v 'visual.spec.ts')
+      #
+      # --fail-on-flaky-tests: a test that fails and then passes on retry FAILS
+      # the job (CICD-BT-06). Retries still run, so a genuine blip is visible in
+      # the report rather than silently rescuing the build. Three flaky tests
+      # had been hidden this way; a real regression and a timing glitch look
+      # identical once a retry turns them into a pass.
+      run: npx playwright test --fail-on-flaky-tests $(ls tests/*.spec.ts | grep -v 'visual.spec.ts')
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -82,7 +88,8 @@ jobs:
     # job could never fail and could never detect a regression.
     - name: Compare against baselines
       if: github.event.inputs.update_visual_baselines != 'true'
-      run: npx playwright test tests/visual.spec.ts
+      # See the note on --fail-on-flaky-tests in the test job above.
+      run: npx playwright test --fail-on-flaky-tests tests/visual.spec.ts
 
     # Deliberate, manually triggered refresh: run the workflow from the Actions
     # tab with "Regenerate and commit the Linux visual baselines" checked.

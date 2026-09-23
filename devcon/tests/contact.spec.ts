@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fillContactForm, fillWhenReady } from './support/form';
 
 /**
  * CON-01 (#59) — contact form, closing FR-07.
@@ -16,10 +17,9 @@ const VALID = {
 };
 
 async function fillForm(page: import('@playwright/test').Page, values = VALID) {
-  await page.fill('#name', values.name);
-  await page.fill('#email', values.email);
-  await page.fill('#subject', values.subject);
-  await page.fill('#message', values.message);
+  // Hydration-safe: see tests/support/form.ts. Typing before React hydrates
+  // loses the first field, which is what made these tests flaky on WebKit.
+  await fillContactForm(page, values);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -82,7 +82,7 @@ test.describe('CON-01 validation', () => {
     await page.getByRole('button', { name: /send message/i }).click();
     await expect(page.locator('#email-error')).toBeVisible();
 
-    await page.fill('#email', 'juan@example.com');
+    await fillWhenReady(page, '#email', 'juan@example.com');
     await expect(page.locator('#email-error')).toHaveCount(0);
   });
 });
@@ -279,10 +279,7 @@ test.describe('CON-02 bot protection', () => {
     });
 
     await page.goto('/#contact');
-    await page.fill('#name', 'Juan Dela Cruz');
-    await page.fill('#email', 'juan@example.com');
-    await page.fill('#subject', 'Speaking proposal');
-    await page.fill('#message', 'I would love to speak at the next DevCon Laguna event.');
+    await fillContactForm(page);
     await page.getByRole('button', { name: /send message/i }).click();
     await expect(page.getByTestId('contact-success')).toBeVisible();
 
