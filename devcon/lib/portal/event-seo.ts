@@ -7,7 +7,7 @@
  */
 
 import { TBA_LABEL, formatEventDate } from './format';
-import { eventPath } from './events';
+import { eventPath, locationUrl } from './events';
 import type { PortalEvent } from './types';
 
 /** How long a description may be before it is cut for a meta description. */
@@ -83,16 +83,24 @@ export function eventJsonLd(
     startDate: event.start_date,
     url: eventUrl(siteUrl, event),
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    location: {
-      '@type': 'Place',
-      name: event.location,
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: event.location,
-        addressRegion: 'Laguna',
-        addressCountry: 'PH',
-      },
-    },
+    // A `location` that is a URL is a link to a map, not the venue's name
+    // (EVENTS-05). Publishing it as `name` would tell search engines the place
+    // is called `https://maps.app.goo.gl/…`, which is worse than saying nothing:
+    // the field is optional, a wrong value is not.
+    ...(locationUrl(event.location)
+      ? {}
+      : {
+          location: {
+            '@type': 'Place',
+            name: event.location,
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: event.location,
+              addressRegion: 'Laguna',
+              addressCountry: 'PH',
+            },
+          },
+        }),
     organizer: {
       '@type': 'Organization',
       name: organizationName,

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { CalendarIcon, MapPinIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { getPortalEvent } from '@/lib/portal/content';
-import { eventPath } from '@/lib/portal/events';
+import { eventPath, locationUrl } from '@/lib/portal/events';
 import { formatEventDate } from '@/lib/portal/format';
 import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
 import { eventDescription, eventJsonLd, eventTitle, eventUrl } from '@/lib/portal/event-seo';
@@ -85,6 +85,8 @@ export default async function EventPage({ params }: PageProps<'/events/[slug]'>)
   if (!canonical) permanentRedirect(eventPath(event));
 
   const date = formatEventDate(event.start_date, event.end_date);
+  // Officers sometimes paste a map link where a venue name belongs (EVENTS-05).
+  const mapLink = locationUrl(event.location);
   const jsonLd = eventJsonLd(event, siteConfig.url, siteConfig.name);
 
   return (
@@ -135,7 +137,22 @@ export default async function EventPage({ params }: PageProps<'/events/[slug]'>)
             <div className="flex items-center gap-2">
               <dt className="sr-only">Location</dt>
               <MapPinIcon className="w-5 h-5 shrink-0" aria-hidden />
-              <dd>{event.location}</dd>
+              <dd>
+                {mapLink ? (
+                  // The link text is what a reader needs; the URL itself says
+                  // nothing and reads terribly aloud.
+                  <a
+                    href={mapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-4 hover:text-foreground transition-colors"
+                  >
+                    View location on the map
+                  </a>
+                ) : (
+                  event.location
+                )}
+              </dd>
             </div>
           </dl>
 

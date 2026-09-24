@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { eventDescription, eventJsonLd, eventTitle, eventUrl } from '../lib/portal/event-seo';
+import { locationUrl } from '../lib/portal/events';
 import type { PortalEvent } from '../lib/portal/types';
 
 /**
@@ -119,6 +120,47 @@ test.describe('SEO-05 Event structured data', () => {
     const serialised = JSON.stringify(data).replace(/</g, '\\u003c');
     expect(serialised).not.toContain('</script>');
     expect(serialised).not.toContain('<img');
+  });
+});
+
+test.describe('EVENTS-05 a location that is a link', () => {
+  test('recognises http and https', () => {
+    expect(locationUrl('https://maps.app.goo.gl/p5JtSzfv5ngZtFVZ6')).toBe('https://maps.app.goo.gl/p5JtSzfv5ngZtFVZ6');
+    expect(locationUrl('  http://example.com/venue  ')).toBe('http://example.com/venue');
+  });
+
+  test('a place name stays a place name', () => {
+    for (const place of ['Los Baños, Laguna', 'PUP Biñan CITE Building', 'Room 204', '']) {
+      expect(locationUrl(place), place).toBeNull();
+    }
+  });
+
+  test('no other scheme becomes a link', () => {
+    // This decides what turns into a clickable link on a public page, from a
+    // field an officer types into.
+    for (const hostile of [
+      'javascript:alert(1)',
+      'data:text/html,<script>alert(1)</script>',
+      'mailto:someone@example.com',
+      'file:///etc/passwd',
+      '//evil.example.com',
+      'https:/not-really',
+    ]) {
+      expect(locationUrl(hostile), hostile).toBeNull();
+    }
+  });
+
+  test('a URL location is left out of the structured data', () => {
+    // Publishing it as the venue's `name` would tell search engines the place is
+    // called `https://maps.app.goo.gl/…`. The field is optional; a wrong value
+    // is not.
+    const data = eventJsonLd(portalEvent({ location: 'https://maps.app.goo.gl/x' }), SITE, 'DevCon Laguna');
+    expect(data).not.toHaveProperty('location');
+  });
+
+  test('a named location keeps its structured data', () => {
+    const data = eventJsonLd(portalEvent({ location: 'PUP Biñan' }), SITE, 'DevCon Laguna');
+    expect(data?.location).toMatchObject({ '@type': 'Place', name: 'PUP Biñan' });
   });
 });
 
