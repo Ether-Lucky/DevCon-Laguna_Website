@@ -3,12 +3,13 @@ import 'server-only';
 import { team, type TeamMember } from '@/lib/content/officers';
 import { events as bundledEvents, type EventItem } from '@/lib/content/events';
 import { isAllowedRemoteImage } from '@/lib/remote-images';
-import { fetchPortalLanding } from './client';
+import { fetchPortalLanding, fetchPortalPosts } from './client';
 import { upcomingEvents } from './format';
 import { findEvent, toEventItem } from './events';
 import { toTeamMembers } from './officers';
 import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
-import type { PortalEvent } from './types';
+import { findPost, sortPosts } from './posts';
+import type { PortalEvent, PortalPost } from './types';
 
 /**
  * Landing page content, sourced from the DevConnect Portal with the bundled
@@ -50,6 +51,14 @@ export type LandingContent = {
   officers: TeamMember[];
   events: EventItem[];
   images: LandingImages;
+  /**
+   * The three most recent posts, or none (NEWS-02).
+   *
+   * Unlike officers and events, there is **no bundled fallback**. A chapter with
+   * no news has no news; inventing placeholder announcements would be putting
+   * words in the organisation's mouth, and the section simply does not render.
+   */
+  posts: PortalPost[];
 };
 
 /**
@@ -81,9 +90,11 @@ export type LandingContent = {
  */
 export async function getLandingContent(): Promise<LandingContent> {
   const result = await fetchPortalLanding();
-  if (result.status !== 'ok') return { officers: team, events: bundledEvents, images: BUILT_IN_LANDING_IMAGES };
+  if (result.status !== 'ok') {
+    return { officers: team, events: bundledEvents, images: BUILT_IN_LANDING_IMAGES, posts: [] };
+  }
 
-  const { officers, events, images } = result.data;
+  const { officers, events, images, posts } = result.data;
   return {
     officers:
       officers.length > 0
@@ -97,7 +108,28 @@ export async function getLandingContent(): Promise<LandingContent> {
         : bundledEvents,
     // Resolved slot by slot; see lib/portal/landing-images.ts.
     images: resolveLandingImages(images),
+    posts: sortPosts(posts),
   };
+}
+
+/**
+ * Every published post, newest first (NEWS-02).
+ *
+ * Empty when the portal is unreachable or unconfigured, so `/news` shows an
+ * empty index rather than an error, and the sitemap simply lists fewer URLs.
+ */
+export async function getPosts(): Promise<PortalPost[]> {
+  return sortPosts(await fetchPortalPosts());
+}
+
+/**
+ * One post, for its own page.
+ *
+ * Reads the full list rather than the landing payload's three: a link to a post
+ * from months ago has to keep working, and the fetch is cached either way.
+ */
+export async function getPost(slug: string): Promise<PortalPost | undefined> {
+  return findPost(await fetchPortalPosts(), slug);
 }
 
 /**

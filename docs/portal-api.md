@@ -171,6 +171,34 @@ that editorial choice, the same way it owns officers' `display_order`.
 
 **Past events are hidden** (EVENTS-02). The section is about what is coming up.
 
+## News posts (NEWS-02)
+
+The portal added `GET /api/public/posts` and put the **three most recent** into
+`/api/public/landing`. The site reads both: the homepage section from the landing payload, and
+`/news` and the sitemap from the full endpoint, so the homepage does not pay for a page most
+visitors never open.
+
+| Field | Where it goes |
+|---|---|
+| `slug` | The URL, `/news/<slug>`. The portal freezes it at publication, so a shared link keeps working |
+| `title` | The card heading, the page heading, and the search result |
+| `body` | **Plain text**, rendered with its paragraph breaks kept. Never HTML — see below |
+| `excerpt` | The card and the search snippet. **Nullable**: the opening of the body is used instead |
+| `cover_image_url` | The card and the page. Nullable, and checked against the image allowlist |
+| `published_at` | The date shown, in Philippine time, and the order posts are listed in |
+
+**The body is never treated as HTML or Markdown.** That is the contract agreed with the portal
+team, and it is what makes a mistake in an admin screen unable to rewrite a public page: React
+escapes the text, so a post containing `<script>` shows those characters and does nothing.
+
+**A post is dropped** if it has no id, slug, title or body, or an unreadable `published_at` — each
+is the post's URL, heading, content or place in the list, and none has a sensible default.
+
+**There is no bundled fallback for news**, unlike officers and events. A chapter with no news has
+no news; the homepage section renders nothing at all rather than showing a heading over an empty
+space. `/news` still exists in that state and says there is nothing yet, because it is a
+destination people are sent to.
+
 ### One event, three ways in, one address (EVENTS-04)
 
 Slugs are generated from titles, and titles are long. The portal's first real event is

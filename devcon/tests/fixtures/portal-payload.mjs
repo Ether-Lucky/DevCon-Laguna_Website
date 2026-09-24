@@ -103,6 +103,29 @@ export const FIXTURE = {
       cover_image_url: null,
     },
   ],
+  posts: [
+    {
+      id: 'post-1',
+      slug: 'fixture-hackathon-recap',
+      title: 'What happened at the fixture hackathon',
+      excerpt: 'Sixty developers, eleven teams, and one very close final.',
+      body: 'The first paragraph of the post.\n\nThe second paragraph, after a blank line.',
+      cover_image_url: `${STORAGE}/news/recap.jpg`,
+      published_at: '2026-05-14T00:00:00.000Z',
+    },
+    {
+      // No excerpt and no cover: both are optional, and the card has to look
+      // finished without them (NEWS-02).
+      id: 'post-2',
+      slug: 'fixture-plain-post',
+      title: 'A post with no excerpt and no cover image',
+      excerpt: null,
+      body: 'This body is the only thing the card can summarise, so the excerpt comes from here.',
+      cover_image_url: null,
+      published_at: '2026-04-02T00:00:00.000Z',
+    },
+  ],
+
   images: [
     { id: 'img-1', slot: 'hero-desktop', image_url: `${STORAGE}/landing/hero-desktop.png`, alt: 'Fixture hero', label: null, display_order: 1 },
     { id: 'img-2', slot: 'hero-mobile', image_url: `${STORAGE}/landing/hero-mobile.png`, alt: 'Fixture hero on a phone', label: null, display_order: 1 },

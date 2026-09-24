@@ -220,6 +220,69 @@ test.describe('TEST-01 an event page on portal data', () => {
   });
 });
 
+test.describe('NEWS-02 news on portal data', () => {
+  const post = (slug: string) => FIXTURE.posts.find((entry) => entry.slug === slug)!;
+
+  test('the homepage shows the latest posts', async ({ page }) => {
+    await page.goto('/');
+    const section = page.locator('#news');
+    await expect(section.getByRole('heading', { name: /Latest News/i })).toBeVisible();
+
+    for (const entry of FIXTURE.posts) {
+      await expect(section.getByRole('link', { name: new RegExp(entry.title, 'i') })).toBeVisible();
+    }
+  });
+
+  test('a post with no excerpt borrows the opening of its body', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('#news a', { hasText: post('fixture-plain-post').title });
+    // The card must not be a bare heading just because the portal left the
+    // excerpt empty.
+    await expect(card).toContainText('This body is the only thing the card can summarise');
+  });
+
+  test('the index lists every post', async ({ page }) => {
+    await page.goto('/news');
+    for (const entry of FIXTURE.posts) {
+      await expect(page.getByRole('link', { name: new RegExp(entry.title, 'i') })).toBeVisible();
+    }
+  });
+
+  test('a post has its own page, with its paragraphs kept', async ({ page }) => {
+    const entry = post('fixture-hackathon-recap');
+    await page.goto(`/news/${entry.slug}`);
+
+    await expect(page.getByRole('heading', { name: entry.title, level: 1 })).toBeVisible();
+    await expect(page.getByText('The first paragraph of the post.')).toBeVisible();
+    await expect(page.getByText('The second paragraph, after a blank line.')).toBeVisible();
+    await expect(page).toHaveTitle(new RegExp(entry.title));
+  });
+
+  test('a post page carries article structured data', async ({ page }) => {
+    const entry = post('fixture-hackathon-recap');
+    await page.goto(`/news/${entry.slug}`);
+
+    const payloads = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const article = payloads.map((p) => JSON.parse(p)).find((d) => d['@type'] === 'NewsArticle');
+    expect(article, 'a post should be offered to search engines').toBeTruthy();
+    expect(article.headline).toBe(entry.title);
+    expect(article.datePublished).toBe(entry.published_at);
+  });
+
+  test('the sitemap lists the index and every post', async ({ request }) => {
+    const xml = await (await request.get('/sitemap.xml')).text();
+    expect(xml).toContain('/news');
+    for (const entry of FIXTURE.posts) {
+      expect(xml, `${entry.slug} should be listed`).toContain(`/news/${entry.slug}`);
+    }
+  });
+
+  test('an unknown post is a 404 even when posts exist', async ({ page }) => {
+    const response = await page.goto('/news/no-such-post');
+    expect(response?.status()).toBe(404);
+  });
+});
+
 test.describe('TEST-01 the sitemap on portal data', () => {
   test('lists every event at its canonical address', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();

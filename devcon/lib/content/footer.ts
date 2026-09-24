@@ -55,6 +55,7 @@ export const footerColumns: FooterColumn[] = [
       { label: 'About Us', href: '/#about' },
       { label: 'What We Do', href: '/#what-we-do' },
       { label: 'Events', href: '/#events' },
+      { label: 'News', href: '/news' },
       { label: 'Officers', href: '/#officers' },
       { label: 'Join Us', href: siteConfig.portalUrl, external: true },
     ],

@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/lib/site-config';
-import { getPortalEvents } from '@/lib/portal/content';
+import { getPortalEvents, getPosts } from '@/lib/portal/content';
 import { eventPath } from '@/lib/portal/events';
+import { postPath } from '@/lib/portal/posts';
 
 /**
- * The landing page, the legal pages (LEGAL-01), and a URL per event (SEO-05).
+ * The landing page, the legal pages (LEGAL-01), a URL per event (SEO-05), and
+ * the news index and a URL per post (NEWS-02).
  *
  * In-page anchors (#about, #events, ...) are not separate URLs, so they are
  * intentionally not listed: crawlers treat them as the same document.
@@ -18,7 +20,7 @@ import { eventPath } from '@/lib/portal/events';
  * the build. A sitemap that 500s is worse than a short one.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const events = await getPortalEvents();
+  const [events, posts] = await Promise.all([getPortalEvents(), getPosts()]);
 
   return [
     {
@@ -31,6 +33,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${siteConfig.url}${eventPath(event)}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
+    })),
+    { url: `${siteConfig.url}/news`, changeFrequency: 'weekly', priority: 0.6 },
+    ...posts.map((post) => ({
+      url: `${siteConfig.url}${postPath(post)}`,
+      lastModified: new Date(post.published_at),
+      changeFrequency: 'yearly' as const,
+      priority: 0.6,
     })),
     { url: `${siteConfig.url}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteConfig.url}/terms`, changeFrequency: 'yearly', priority: 0.3 },

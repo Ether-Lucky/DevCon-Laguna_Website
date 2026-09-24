@@ -74,10 +74,36 @@ export type PortalLandingImage = {
   display_order: number;
 };
 
+/**
+ * A news post (NEWS-02). Written by officers in the portal.
+ */
+export type PortalPost = {
+  id: string;
+  /**
+   * The URL. Frozen at publication by the portal, so retitling a published post
+   * does not break a link someone has shared.
+   */
+  slug: string;
+  title: string;
+  /**
+   * The post itself: **plain text**, with blank lines between paragraphs. Never
+   * HTML — whatever an officer types is shown as text, so a mistake in an admin
+   * screen cannot rewrite a public page.
+   */
+  body: string;
+  /** A sentence or two for the card and the search result; the body's opening is used when absent. */
+  excerpt: string | null;
+  cover_image_url: string | null;
+  /** Set by the admin, not the row's creation time. */
+  published_at: string;
+};
+
 export type PortalLanding = {
   officers: PortalOfficer[];
   events: PortalEvent[];
   /** `[]` when the portal could not load its images; the rest of the payload still arrives. */
   images: PortalLandingImage[];
+  /** The three most recent published posts. `[]` when there are none, or when they failed to load. */
+  posts: PortalPost[];
   generated_at: string;
 };

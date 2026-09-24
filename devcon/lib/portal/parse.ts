@@ -6,6 +6,7 @@ import {
   type PortalEventCategory,
   type PortalLandingImage,
   type PortalOfficer,
+  type PortalPost,
 } from './types';
 
 /**
@@ -102,6 +103,48 @@ export function parseEvents(value: unknown): PortalEvent[] {
     });
   }
   return events;
+}
+
+/**
+ * Posts the news section can render (NEWS-02).
+ *
+ * Dropped, and logged so the data can be fixed at source:
+ * - a missing id, slug, title or body — each is the post's URL, heading or
+ *   content, and none of them has a sensible default
+ * - a `published_at` that is missing or unreadable, because it is both the date
+ *   shown and the order posts are listed in
+ *
+ * A missing `excerpt` or `cover_image_url` is normal and handled at render.
+ */
+export function parsePosts(value: unknown): PortalPost[] {
+  if (!Array.isArray(value)) return [];
+
+  const posts: PortalPost[] = [];
+  for (const entry of value) {
+    if (!isRecord(entry)) continue;
+
+    const required = [entry.id, entry.slug, entry.title, entry.body];
+    if (required.some((field) => typeof field !== 'string' || field.trim().length === 0)) {
+      console.warn(`[portal] a post is missing an id, slug, title or body and was skipped.`);
+      continue;
+    }
+
+    if (!isDateString(entry.published_at)) {
+      console.warn(`[portal] post "${String(entry.title)}" has an unreadable published_at and was skipped.`);
+      continue;
+    }
+
+    posts.push({
+      id: entry.id as string,
+      slug: entry.slug as string,
+      title: entry.title as string,
+      body: entry.body as string,
+      excerpt: typeof entry.excerpt === 'string' && entry.excerpt.trim().length > 0 ? entry.excerpt.trim() : null,
+      cover_image_url: typeof entry.cover_image_url === 'string' ? entry.cover_image_url : null,
+      published_at: entry.published_at,
+    });
+  }
+  return posts;
 }
 
 function isSlot(value: unknown): value is LandingSlot {

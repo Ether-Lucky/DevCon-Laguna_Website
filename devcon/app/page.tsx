@@ -4,6 +4,7 @@ import NavBar from '@/components/ui/nav-bar/nav-bar';
 import Hero from '@/components/ui/sections/hero';
 import Stats from '@/components/ui/sections/stats';
 import Events from '@/components/ui/sections/events';
+import News from '@/components/ui/sections/news';
 import WhatWeDo from '@/components/ui/sections/what-we-do';
 import Officers from '@/components/ui/sections/officers';
 import { getLandingContent } from '@/lib/portal/content';
@@ -18,7 +19,9 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  *
  * Composes all homepage sections in order:
  *   NavBar → Hero → Stats → About → MissionVision → WhatWeDo
- *   → Events → Officers → Contact → ProgramsAndActivities → Footer
+ *   → Events → News → Officers → Contact → ProgramsAndActivities → Footer
+ *
+ * News only appears when the portal has published posts (NEWS-02).
  *
  * Each section (except NavBar) is wrapped in a `ScrollReveal` animation
  * that triggers once when it enters the viewport.
@@ -29,7 +32,7 @@ import ScrollReveal from '@/components/ui/scroll-reveal';
  * on a timer, not per request.
  */
 export default async function Home() {
-  const { officers, events, images } = await getLandingContent();
+  const { officers, events, images, posts } = await getLandingContent();
 
   return (
     <>
@@ -62,6 +65,16 @@ export default async function Home() {
         <ScrollReveal className="w-full">
           <Events items={events} />
         </ScrollReveal>
+        {/*
+          Latest News sits between what is coming up and who runs it, and
+          renders nothing at all when there are no posts (NEWS-02) — including
+          this wrapper, so there is no revealed empty box.
+        */}
+        {posts.length > 0 ? (
+          <ScrollReveal className="w-full">
+            <News posts={posts} />
+          </ScrollReveal>
+        ) : null}
         <ScrollReveal className="w-full">
           <Officers members={officers} />
         </ScrollReveal>
