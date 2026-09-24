@@ -49,9 +49,26 @@ test.describe('#83/#94 hero images', () => {
     const heroPreloads = await page
       .locator('link[rel="preload"][as="image"]')
       .evaluateAll((links) =>
-        links.filter((l) => (l.getAttribute('imagesrcset') ?? '').includes('hero')).length,
+        links
+          .filter((l) => (l.getAttribute('imagesrcset') ?? '').includes('hero'))
+          .map((l) => ({
+            media: l.getAttribute('media') ?? '',
+            srcset: l.getAttribute('imagesrcset') ?? '',
+          })),
       );
-    expect(heroPreloads).toBeLessThanOrEqual(1);
+    // Since PERF-02, the two hero preloads are media-qualified and mirror the
+    // <picture> sources. The media queries are mutually exclusive, so a single
+    // device matches only one — the no-double-download guarantee still holds.
+    expect(heroPreloads.length).toBeLessThanOrEqual(2);
+    for (const preload of heroPreloads) {
+      if (preload.media === '(min-width: 768px)') {
+        expect(preload.srcset).toMatch(/web\.webp/);
+        expect(preload.srcset).not.toMatch(/mobile\.webp/);
+      } else if (preload.media === '(max-width: 767.98px)') {
+        expect(preload.srcset).toMatch(/mobile\.webp/);
+        expect(preload.srcset).not.toMatch(/web\.webp/);
+      }
+    }
   });
 });
 
