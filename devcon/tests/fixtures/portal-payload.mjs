@@ -80,7 +80,9 @@ export const FIXTURE = {
       slug_aliases: [],
       title: 'Fixture Meetup',
       description: null,
-      location: 'Santa Cruz, Laguna',
+      // The shape the portal's first real event arrived in: a map link where a
+      // venue name belongs (EVENTS-05).
+      location: 'https://maps.app.goo.gl/p5JtSzfv5ngZtFVZ6',
       category: 'community',
       start_date: null,
       end_date: null,

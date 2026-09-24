@@ -87,3 +87,26 @@ export function findEvent(
 
   return undefined;
 }
+
+/**
+ * Whether an event's `location` is a link rather than a place (EVENTS-05).
+ *
+ * The field is documented as a place name, and the portal's first real event
+ * arrived with a Google Maps URL in it. A URL printed under a map pin reads as
+ * broken, and published as the venue's *name* in structured data it tells search
+ * engines the place is called `https://maps.app.goo.gl/…`.
+ *
+ * Only `http` and `https` count. Anything else — `javascript:`, `data:`, a bare
+ * `mailto:` — is text, because this decides what becomes a clickable link on a
+ * public page from a field an officer types into.
+ */
+export function locationUrl(location: string): string | null {
+  const trimmed = location.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return null;
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}

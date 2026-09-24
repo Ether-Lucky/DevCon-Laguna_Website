@@ -174,6 +174,19 @@ test.describe('TEST-01 an event page on portal data', () => {
     expect(types).not.toContain('Event');
   });
 
+  test('a location that is a map link is a link, not printed text', async ({ page }) => {
+    // The portal's first real event arrived with a Google Maps URL in
+    // `location`; printed under a map pin it reads as broken (EVENTS-05).
+    const target = event('event-tba');
+    await page.goto(`/events/${target.slug}`);
+
+    const link = page.getByRole('link', { name: 'View location on the map' });
+    await expect(link).toHaveAttribute('href', target.location);
+    await expect(link).toHaveAttribute('rel', /noopener/);
+    // The raw URL is never printed.
+    await expect(page.getByText(target.location, { exact: true })).toHaveCount(0);
+  });
+
   test('an alias reaches the event, and moves to its real address', async ({ page }) => {
     const target = event('event-upcoming');
     const response = await page.goto(`/events/${target.slug_aliases[0]}`);
