@@ -106,10 +106,13 @@ test.describe('TEST-01 the events section on portal data', () => {
     }
   });
 
-  test('each card links to its own page, by the portal id', async ({ page }) => {
-    const link = page.locator(`#events a[href="/events/${event('event-upcoming').id}"]`);
+  test('each card links to its own page, by the canonical slug', async ({ page }) => {
+    const target = event('event-upcoming');
+    const link = page.locator(`#events a[href="/events/${target.slug}"]`);
     await expect(link).toHaveCount(1);
-    await expect(link).toContainText(event('event-upcoming').title);
+    await expect(link).toContainText(target.title);
+    // Never the alias, and never the id when a slug exists (EVENTS-04).
+    await expect(page.locator(`#events a[href="/events/${target.id}"]`)).toHaveCount(0);
   });
 
   test('a TBA event says so rather than showing a date', async ({ page }) => {
@@ -121,7 +124,7 @@ test.describe('TEST-01 the events section on portal data', () => {
 test.describe('TEST-01 an event page on portal data', () => {
   test('shows everything the card had no room for', async ({ page }) => {
     const target = event('event-upcoming');
-    await page.goto(`/events/${target.id}`);
+    await page.goto(`/events/${target.slug}`);
 
     await expect(page.getByRole('heading', { name: target.title, level: 1 })).toBeVisible();
     // `description` and `location` were sent by the portal for two sprints
@@ -141,7 +144,7 @@ test.describe('TEST-01 an event page on portal data', () => {
   });
 
   test('carries its own title and description, not the site defaults', async ({ page }) => {
-    await page.goto(`/events/${event('event-upcoming').id}`);
+    await page.goto(`/events/${event('event-upcoming').slug}`);
     await expect(page).toHaveTitle(new RegExp(event('event-upcoming').title));
 
     const description = await page.locator('meta[name="description"]').getAttribute('content');
@@ -149,7 +152,7 @@ test.describe('TEST-01 an event page on portal data', () => {
   });
 
   test('emits Event structured data for a dated event', async ({ page }) => {
-    await page.goto(`/events/${event('event-upcoming').id}`);
+    await page.goto(`/events/${event('event-upcoming').slug}`);
     const payloads = await page.locator('script[type="application/ld+json"]').allTextContents();
     const eventData = payloads.map((p) => JSON.parse(p)).find((d) => d['@type'] === 'Event');
 
@@ -160,7 +163,7 @@ test.describe('TEST-01 an event page on portal data', () => {
   });
 
   test('emits none for a TBA event', async ({ page }) => {
-    await page.goto(`/events/${event('event-tba').id}`);
+    await page.goto(`/events/${event('event-tba').slug}`);
     const payloads = await page.locator('script[type="application/ld+json"]').allTextContents();
     const types = payloads.map((p) => JSON.parse(p)['@type']);
 
@@ -171,6 +174,33 @@ test.describe('TEST-01 an event page on portal data', () => {
     expect(types).not.toContain('Event');
   });
 
+  test('an alias reaches the event, and moves to its real address', async ({ page }) => {
+    const target = event('event-upcoming');
+    const response = await page.goto(`/events/${target.slug_aliases[0]}`);
+
+    // The short link works, and the visitor ends up on the canonical URL — the
+    // same page at three addresses would leave search engines guessing which
+    // one is the event (EVENTS-04).
+    expect(response?.status()).toBe(200);
+    expect(new URL(page.url()).pathname).toBe(`/events/${target.slug}`);
+    await expect(page.getByRole('heading', { name: target.title, level: 1 })).toBeVisible();
+  });
+
+  test('an id still reaches an event that has since gained a slug', async ({ page }) => {
+    // Every link shared before the portal added slugs uses the id.
+    const target = event('event-upcoming');
+    await page.goto(`/events/${target.id}`);
+    expect(new URL(page.url()).pathname).toBe(`/events/${target.slug}`);
+  });
+
+  test('an event with no slug keeps its id as its address', async ({ page }) => {
+    const target = event('event-past');
+    const response = await page.goto(`/events/${target.id}`);
+    expect(response?.status()).toBe(200);
+    // No redirect: there is nowhere better to send it.
+    expect(new URL(page.url()).pathname).toBe(`/events/${target.id}`);
+  });
+
   test('an id the portal does not have is still a 404', async ({ page }) => {
     const response = await page.goto('/events/event-that-does-not-exist');
     expect(response?.status()).toBe(404);
@@ -178,11 +208,16 @@ test.describe('TEST-01 an event page on portal data', () => {
 });
 
 test.describe('TEST-01 the sitemap on portal data', () => {
-  test('lists every event, including the past one', async ({ request }) => {
+  test('lists every event at its canonical address', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
     for (const entry of FIXTURE.events) {
-      expect(xml, `${entry.id} should be listed`).toContain(`/events/${entry.id}`);
+      const canonical = entry.slug ?? entry.id;
+      expect(xml, `${entry.title} should be listed`).toContain(`/events/${canonical}`);
     }
+    // An alias is a way in, not an address: listing it would offer search
+    // engines a second URL for the same event.
+    expect(xml).not.toContain('fixture-hack"');
+    expect(xml).not.toContain('/events/event-upcoming');
     expect(xml).toContain('/privacy');
   });
 });

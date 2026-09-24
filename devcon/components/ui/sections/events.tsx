@@ -6,7 +6,6 @@ import { EventItem, events } from '@/lib/content/events';
 import Link from 'next/link';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
 import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
-import { eventPath } from '@/lib/portal/events';
 import { socialLinks } from '@/lib/content/social-links';
 
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -56,11 +55,11 @@ function CardFrame({ event, children }: { event: EventItem; children: React.Reac
   const className =
     'relative flex-shrink-0 h-[400px] sm:h-[600px] w-[80vw] sm:w-[45vw] md:w-[30vw] rounded-[28px] overflow-hidden bg-zinc-900 group';
 
-  if (!event.portalId) return <div className={className}>{children}</div>;
+  if (!event.href) return <div className={className}>{children}</div>;
 
   return (
     <Link
-      href={eventPath(event.portalId)}
+      href={event.href}
       // The card is one link, so the whole thing is clickable and a screen
       // reader hears one target rather than a title and an image separately.
       // Its accessible name comes from the heading inside it.

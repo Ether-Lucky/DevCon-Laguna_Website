@@ -51,7 +51,7 @@ function truncate(text: string, limit: number): string {
 
 /** The absolute URL of an event's page. */
 export function eventUrl(siteUrl: string, event: PortalEvent): string {
-  return `${siteUrl}${eventPath(event.id)}`;
+  return `${siteUrl}${eventPath(event)}`;
 }
 
 /**

@@ -154,7 +154,9 @@ The portal's shapes and ours do not match one-to-one.
 | `category` | `category` | One of five. `hackaton` misspelled on purpose, on both sides. Anything else → event skipped and logged |
 | `start_date` / `end_date` | `date` label | `null` → **"TBA"**. Otherwise "May 10–12, 2026" style, see below |
 | `cover_image_url` | `img` | Nullable, and checked against the image allowlist; a placeholder shows otherwise |
-| `description`, `location` | — | Received, not rendered. The card shows title, date and category |
+| `description`, `location` | the event's page | The card shows title, date and category; the rest is on `/events/…` (EVENTS-03) |
+| `slug` | the URL | The canonical address. `null` on events created before the portal added slugs, which keep the `id` as their address |
+| `slug_aliases` | extra ways in | Short links an officer added. Each reaches the event and **redirects to the canonical URL** (EVENTS-04) |
 
 **Dates are formatted in Philippine time.** The portal sends UTC timestamps, and Vercel's servers
 run in UTC. Formatting without an explicit time zone would put an evening event in Laguna on the
@@ -168,6 +170,26 @@ dash characters vary between ICU versions.
 that editorial choice, the same way it owns officers' `display_order`.
 
 **Past events are hidden** (EVENTS-02). The section is about what is coming up.
+
+### One event, three ways in, one address (EVENTS-04)
+
+Slugs are generated from titles, and titles are long. The portal's first real event is
+`move-smart-contracts-code-camp-level-up-tech-level-up-you`. Rather than change a slug — which
+would break every link already shared — an officer adds a shorter **alias**, and both work.
+
+| The visitor asks for | What happens |
+|---|---|
+| The `slug` | The page, at its canonical URL |
+| An alias | **308 to the slug** |
+| The `id`, on an event that has a slug | **308 to the slug** |
+| The `id`, on an event with `slug: null` | The page. There is nowhere better to send it |
+| Anything else | 404 |
+
+The redirects are the point. The same page at three addresses leaves a search engine to guess which
+one is the event, and it may guess the alias someone will delete later.
+
+Cards, `sitemap.xml`, the `canonical` link and the structured data all use the canonical address.
+`lib/portal/events.ts` decides what that is, in one place — `eventPath`.
 
 - An event drops off once its day is over. **TBA events always stay**: they have not happened yet.
 - The cut-off is **midnight Manila at the end of the event's last day**, not the timestamp. The

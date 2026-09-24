@@ -107,16 +107,22 @@ export async function getLandingContent(): Promise<LandingContent> {
  * costs no extra portal request, and an event shown on a card and the page it
  * links to can never disagree.
  *
- * Undefined means "no page to show", whether the id is unknown, the portal is
- * unreachable, or the portal is not configured at all. The caller turns that
+ * The identifier may be the event's slug, one of its aliases, or its id
+ * (EVENTS-04); `canonical` says whether it was the address the page should be
+ * served at, and the page redirects when it was not.
+ *
+ * Undefined means "no page to show", whether the identifier is unknown, the
+ * portal is unreachable, or the portal is not configured at all. The caller turns that
  * into a 404 — the alternative is a page promising an event it cannot display.
  *
  * Past events are **not** filtered here, unlike the section. A link to an event
  * that has just finished should still open, or every shared link dies at
  * midnight; it is the carousel's job to be about what is coming up.
  */
-export async function getPortalEvent(id: string): Promise<PortalEvent | undefined> {
-  return findEvent(await getPortalEvents(), id);
+export async function getPortalEvent(
+  identifier: string,
+): Promise<{ event: PortalEvent; canonical: boolean } | undefined> {
+  return findEvent(await getPortalEvents(), identifier);
 }
 
 /**
