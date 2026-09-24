@@ -20,6 +20,9 @@
 # production
 /devcon/build
 
+# the test suite's second build, against the fixture portal (TEST-01)
+/devcon/.next-portal
+
 # misc
 .DS_Store
 *.pem

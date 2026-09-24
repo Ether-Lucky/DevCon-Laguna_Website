@@ -9,6 +9,9 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    // The test suite's second build, against the fixture portal (TEST-01).
+    // Linting a build output is thousands of problems in generated code.
+    ".next-portal/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
