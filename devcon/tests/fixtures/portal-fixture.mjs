@@ -29,7 +29,7 @@ const server = createServer((request, response) => {
     return;
   }
 
-  if (url.pathname !== '/api/public/landing') {
+  if (url.pathname !== '/api/public/landing' && url.pathname !== '/api/public/posts') {
     response.writeHead(404, { 'content-type': 'application/json' });
     response.end(JSON.stringify({ error: 'not found' }));
     return;
@@ -50,7 +50,12 @@ const server = createServer((request, response) => {
     // it does not see, so caching is the consumer's job.
     'cache-control': 'private, no-store',
   });
-  response.end(JSON.stringify(FIXTURE));
+  // `/api/public/landing` carries the three most recent posts; `/api/public/posts`
+  // carries all of them. The fixture has two, so both are the same list — the
+  // difference that matters to the site is which endpoint it asks.
+  response.end(
+    JSON.stringify(url.pathname === '/api/public/posts' ? { posts: FIXTURE.posts } : FIXTURE),
+  );
 });
 
 server.listen(PORT, () => {

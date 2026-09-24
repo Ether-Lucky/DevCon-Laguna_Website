@@ -1,7 +1,7 @@
 import 'server-only';
 
-import { parseEvents, parseLandingImages, parseOfficers } from './parse';
-import type { PortalLanding } from './types';
+import { parseEvents, parseLandingImages, parseOfficers, parsePosts } from './parse';
+import type { PortalLanding, PortalPost } from './types';
 
 /**
  * Client for the DevConnect Portal's public API (CMS-02, CMS-03).
@@ -87,6 +87,10 @@ export async function fetchPortalLanding(): Promise<PortalResult> {
         officers: parseOfficers(record.officers),
         events: parseEvents(record.events),
         images: parseLandingImages(record.images),
+        // Added by the portal in their news release (NEWS-02). An older portal
+        // that does not send it yields `[]`, which is also what "no posts yet"
+        // looks like — so the site behaves the same either way.
+        posts: parsePosts(record.posts),
         generated_at: typeof record.generated_at === 'string' ? record.generated_at : '',
       },
     };
@@ -94,5 +98,42 @@ export async function fetchPortalLanding(): Promise<PortalResult> {
     const reason = error instanceof Error && error.name === 'TimeoutError' ? 'timeout' : 'unreachable';
     console.error(`[portal] landing fetch ${reason}:`, error);
     return { status: 'failed', reason };
+  }
+}
+
+/**
+ * Every published post, for `/news` and the sitemap (NEWS-02).
+ *
+ * `/api/public/landing` carries only the three most recent, which is what the
+ * homepage shows. The index needs all of them, and that is a second endpoint
+ * rather than a bigger landing payload — the homepage should not pay for a page
+ * most visitors never open.
+ *
+ * Never throws, for the same reason as the landing fetch: an empty list renders
+ * an empty index, and a landing page that cannot load news still has everything
+ * else on it.
+ */
+export async function fetchPortalPosts(): Promise<PortalPost[]> {
+  const key = process.env.PORTAL_API_KEY;
+  if (!key) return [];
+
+  try {
+    const response = await fetch(`${baseUrl()}/api/public/posts`, {
+      headers: { 'x-api-key': key, accept: 'application/json' },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      next: { revalidate: REVALIDATE_SECONDS, tags: [PORTAL_CONTENT_TAG] },
+    });
+
+    if (!response.ok) {
+      console.warn(`[portal] posts request failed: http-${response.status}`);
+      return [];
+    }
+
+    const body: unknown = await response.json();
+    if (typeof body !== 'object' || body === null) return [];
+    return parsePosts((body as Record<string, unknown>).posts);
+  } catch (error) {
+    console.warn(`[portal] posts request failed: ${error instanceof Error ? error.message : 'unknown'}`);
+    return [];
   }
 }
