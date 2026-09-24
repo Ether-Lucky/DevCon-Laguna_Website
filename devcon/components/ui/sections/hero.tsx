@@ -1,6 +1,7 @@
 import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/button";
 import SocialMedia from '@/components/ui/sections/social-media';
+import HeroImagePreload from '@/components/ui/sections/hero-image-preload';
 import { siteConfig } from '@/lib/site-config';
 import type { HeroImage } from '@/lib/portal/landing-images';
 
@@ -87,6 +88,10 @@ export default function Hero({ desktop, mobile }: { desktop?: HeroImage; mobile?
             the LCP image was lazy and the browser found it ~990ms late, which is
             what dropped Largest Contentful Paint to 4.6s. One image per breakpoint
             removes the dilemma, so it can be eager and high priority.
+
+            The preloads below are the non-lazy part, done safely: two
+            media-qualified links that mirror the <source>/<img> srcsets exactly,
+            so only the matched breakpoint's variant is preloaded (PERF-02).
           */}
           {(() => {
             // Each variant declares the size of its frame. For the built-in artwork
@@ -110,24 +115,30 @@ export default function Hero({ desktop, mobile }: { desktop?: HeroImage; mobile?
             // that promotes the <source> to a flex item too, adding one extra `gap`
             // (16px) which narrows the text column and rewraps the heading.
             return (
-              <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
-                <source media="(min-width: 768px)" srcSet={desktopSrcSet} sizes="60vw" />
-                {/*
-                  A fixed frame, not `h-auto` (CMS-04, PM decision 2026-09-22). With
-                  `h-auto` the hero's height followed the loaded file, so an
-                  uploaded image of any other shape would reflow the top of the
-                  page. The aspect ratios are the built-in artwork's own, so it
-                  renders exactly as before; anything else is cropped to fit.
-                */}
-                <img
-                  {...rest}
-                  alt={alt}
-                  srcSet={mobileSrcSet}
-                  fetchPriority="high"
-                  loading="eager"
-                  className="block w-full aspect-[786/1194] md:aspect-[2048/2036] object-cover"
+              <>
+                <HeroImagePreload
+                  desktop={{ href: desktop?.src ?? BUILT_IN.desktop.src, srcSet: desktopSrcSet }}
+                  mobile={{ href: mobile?.src ?? BUILT_IN.mobile.src, srcSet: mobileSrcSet }}
                 />
-              </picture>
+                <picture className="w-[140vw] max-w-none -my-[50vw] md:w-[60vw] md:max-w-full md:-my-[10%] flex-shrink-0 z-0 block">
+                  <source media="(min-width: 768px)" srcSet={desktopSrcSet} sizes="60vw" />
+                  {/*
+                    A fixed frame, not `h-auto` (CMS-04, PM decision 2026-09-22). With
+                    `h-auto` the hero's height followed the loaded file, so an
+                    uploaded image of any other shape would reflow the top of the
+                    page. The aspect ratios are the built-in artwork's own, so it
+                    renders exactly as before; anything else is cropped to fit.
+                  */}
+                  <img
+                    {...rest}
+                    alt={alt}
+                    srcSet={mobileSrcSet}
+                    fetchPriority="high"
+                    loading="eager"
+                    className="block w-full aspect-[786/1194] md:aspect-[2048/2036] object-cover"
+                  />
+                </picture>
+              </>
             );
           })()}
       </div>
