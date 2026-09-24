@@ -270,6 +270,8 @@ test.describe('EVENTS-02 upcomingEvents, the list filter', () => {
 
   const event = (title: string, start: string | null, end: string | null): PortalEvent => ({
     id: title,
+    slug: null,
+    slug_aliases: [],
     title,
     description: null,
     location: 'Laguna',

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { CalendarIcon, MapPinIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { getPortalEvent } from '@/lib/portal/content';
 import { eventPath } from '@/lib/portal/events';
@@ -45,10 +45,12 @@ import Footer from '@/components/ui/sections/footer';
  * An unknown event returns the defaults rather than throwing; the page renders
  * a 404 a moment later.
  */
-export async function generateMetadata({ params }: PageProps<'/events/[id]'>): Promise<Metadata> {
-  const { id } = await params;
-  const event = await getPortalEvent(id);
-  if (!event) return {};
+export async function generateMetadata({ params }: PageProps<'/events/[slug]'>): Promise<Metadata> {
+  const { slug } = await params;
+  const match = await getPortalEvent(slug);
+  if (!match) return {};
+
+  const { event } = match;
 
   const url = eventUrl(siteConfig.url, event);
   const description = eventDescription(event);
@@ -56,7 +58,9 @@ export async function generateMetadata({ params }: PageProps<'/events/[id]'>): P
   return {
     title: eventTitle(event),
     description,
-    alternates: { canonical: eventPath(event.id) },
+    // Always the canonical path, never the alias or id the visitor arrived on
+    // (EVENTS-04). The page redirects anyway, but metadata is generated first.
+    alternates: { canonical: eventPath(event) },
     openGraph: {
       type: 'article',
       title: eventTitle(event),
@@ -69,10 +73,16 @@ export async function generateMetadata({ params }: PageProps<'/events/[id]'>): P
   };
 }
 
-export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
-  const { id } = await params;
-  const event = await getPortalEvent(id);
-  if (!event) notFound();
+export default async function EventPage({ params }: PageProps<'/events/[slug]'>) {
+  const { slug } = await params;
+  const match = await getPortalEvent(slug);
+  if (!match) notFound();
+
+  const { event, canonical } = match;
+  // An alias, or an id for an event that has a slug. Both reach the event, and
+  // both then move to its one real address: serving the same page at three
+  // URLs would leave search engines guessing which is the event (EVENTS-04).
+  if (!canonical) permanentRedirect(eventPath(event));
 
   const date = formatEventDate(event.start_date, event.end_date);
   const jsonLd = eventJsonLd(event, siteConfig.url, siteConfig.name);

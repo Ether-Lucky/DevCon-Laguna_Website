@@ -16,6 +16,8 @@ const SITE = 'https://example.test';
 function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
   return {
     id: 'evt-1',
+    slug: null,
+    slug_aliases: [],
     title: 'DevCon Hackathon 2026',
     description: 'Two days of building.',
     location: 'Los Baños',

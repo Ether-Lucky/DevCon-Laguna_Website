@@ -85,6 +85,13 @@ export function parseEvents(value: unknown): PortalEvent[] {
 
     events.push({
       id: entry.id,
+      // The portal promises a string or null, and an array. That promise lives
+      // in another codebase, so anything else is treated as absent rather than
+      // rendered into a URL (EVENTS-04).
+      slug: typeof entry.slug === 'string' && entry.slug.length > 0 ? entry.slug : null,
+      slug_aliases: Array.isArray(entry.slug_aliases)
+        ? entry.slug_aliases.filter((alias): alias is string => typeof alias === 'string' && alias.length > 0)
+        : [],
       title: entry.title,
       description: typeof entry.description === 'string' ? entry.description : null,
       location: typeof entry.location === 'string' ? entry.location : '',

@@ -10,18 +10,26 @@ import type { EventItem } from '@/lib/content/events';
 import { formatEventDate } from './format';
 import type { PortalEvent } from './types';
 
-/** Where an event's own page lives (EVENTS-03). */
-export function eventPath(id: string): string {
-  return `/events/${encodeURIComponent(id)}`;
+/**
+ * Where an event's page lives — its **canonical** address (EVENTS-03, EVENTS-04).
+ *
+ * The portal's slug where there is one, and the id otherwise: events created
+ * before the portal added slugs have `slug: null`, and their links have to keep
+ * working.
+ *
+ * Aliases never appear here. They are ways in, not the address.
+ */
+export function eventPath(event: Pick<PortalEvent, 'id' | 'slug'>): string {
+  return `/events/${encodeURIComponent(event.slug ?? event.id)}`;
 }
 
 /**
  * One portal event as a card.
  *
  * `id` stays a card-local number because the bundled placeholders use numbers
- * and the carousel keys on it. The portal's own id rides along in `portalId`,
- * which is what the detail page's URL is built from — and what tells a card it
- * has a page to link to at all.
+ * and the carousel keys on it. The event's **canonical path** rides along in
+ * `href`, which is what tells a card it has a page to link to at all — and
+ * keeps the slug-or-id decision in one place rather than in the markup.
  *
  * `photo` arrives already checked against the image allowlist: deciding whether
  * a remote image is renderable belongs with the images, not here.
@@ -37,17 +45,45 @@ export function toEventItem(
     date: formatEventDate(event.start_date, event.end_date),
     category: event.category,
     img: photo,
-    portalId: event.id,
+    href: eventPath(event),
   };
 }
 
 /**
- * The event with this id, or undefined.
+ * The event this URL segment refers to, and whether the segment was its
+ * canonical address.
+ *
+ * An event answers to three things (EVENTS-04):
+ *
+ * - its **slug**, the canonical address;
+ * - its **id**, which every link shared before slugs existed still uses;
+ * - any of its **aliases**, short links an officer added because slugs come
+ *   from titles and titles are long.
+ *
+ * Only one of them is the address. The other two reach the event and then
+ * redirect, so the page is never served at more than one URL — search engines
+ * would otherwise see the same event several times and have to guess which is
+ * real.
  *
  * Undefined is the honest answer for both "no such event" and "the portal did
- * not answer": the detail page turns either into a 404, because a page that
- * cannot show the event it promised is not a page.
+ * not answer": the page turns either into a 404, because a page that cannot
+ * show the event it promised is not a page.
  */
-export function findEvent(events: PortalEvent[], id: string): PortalEvent | undefined {
-  return events.find((event) => event.id === id);
+export function findEvent(
+  events: PortalEvent[],
+  identifier: string,
+): { event: PortalEvent; canonical: boolean } | undefined {
+  // Slug first: it is the canonical address, and checking it first means the
+  // common case costs one comparison.
+  const bySlug = events.find((event) => event.slug === identifier);
+  if (bySlug) return { event: bySlug, canonical: true };
+
+  const byId = events.find((event) => event.id === identifier);
+  // An event with no slug is served at its id, so that *is* canonical.
+  if (byId) return { event: byId, canonical: byId.slug === null };
+
+  const byAlias = events.find((event) => event.slug_aliases.includes(identifier));
+  if (byAlias) return { event: byAlias, canonical: false };
+
+  return undefined;
 }

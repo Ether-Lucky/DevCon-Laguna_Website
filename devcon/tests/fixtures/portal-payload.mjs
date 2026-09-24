@@ -62,6 +62,10 @@ export const FIXTURE = {
   events: [
     {
       id: 'event-upcoming',
+      // The canonical address, plus a short link an officer added because slugs
+      // come from titles and titles are long (EVENTS-04).
+      slug: 'fixture-hackathon-with-a-very-long-title',
+      slug_aliases: ['fixture-hack'],
       title: 'Fixture Hackathon',
       description: 'Two days of building.\n\nBring a laptop and a team.',
       location: 'Los Baños, Laguna',
@@ -72,6 +76,8 @@ export const FIXTURE = {
     },
     {
       id: 'event-tba',
+      slug: 'fixture-meetup',
+      slug_aliases: [],
       title: 'Fixture Meetup',
       description: null,
       location: 'Santa Cruz, Laguna',
@@ -82,6 +88,10 @@ export const FIXTURE = {
     },
     {
       id: 'event-past',
+      // Created before the portal added slugs: its id is still its address, and
+      // every link shared for it has to keep working.
+      slug: null,
+      slug_aliases: [],
       title: 'Fixture Workshop',
       description: 'Already happened.',
       location: 'Calamba, Laguna',

@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...events.map((event) => ({
-      url: `${siteConfig.url}${eventPath(event.id)}`,
+      url: `${siteConfig.url}${eventPath(event)}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),

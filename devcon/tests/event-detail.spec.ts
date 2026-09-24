@@ -16,6 +16,8 @@ import type { PortalEvent } from '../lib/portal/types';
 function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
   return {
     id: '11111111-2222-3333-4444-555555555555',
+    slug: null,
+    slug_aliases: [],
     title: 'DevCon Hackathon 2026',
     description: 'Two days of building.',
     location: 'Los Baños, Laguna',
@@ -28,12 +30,17 @@ function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
 }
 
 test.describe('EVENTS-03 the link a card points at', () => {
-  test('a portal event carries its portal id, not the card index', () => {
-    // The card's own `id` is a position used as a React key; the URL has to be
-    // the portal's id or the link breaks the moment the order changes.
+  test('a portal event carries its canonical path, not the card index', () => {
+    // The card's own `id` is a position used as a React key; the URL has to
+    // come from the portal or the link breaks the moment the order changes.
     const item = toEventItem(portalEvent(), 0, undefined);
     expect(item.id).toBe(1);
-    expect(item.portalId).toBe('11111111-2222-3333-4444-555555555555');
+    expect(item.href).toBe('/events/11111111-2222-3333-4444-555555555555');
+  });
+
+  test('an event with a slug is addressed by its slug', () => {
+    const item = toEventItem(portalEvent({ slug: 'devcon-hackathon-2026' }), 0, undefined);
+    expect(item.href).toBe('/events/devcon-hackathon-2026');
   });
 
   test('the bundled placeholders have no portal id, so they link nowhere', () => {
@@ -41,20 +48,37 @@ test.describe('EVENTS-03 the link a card points at', () => {
     // exactly what the card already shows. An anchor that adds nothing is a
     // promise of more.
     for (const event of bundledEvents) {
-      expect(event.portalId, `${event.title} should not link`).toBeUndefined();
+      expect(event.href, `${event.title} should not link`).toBeUndefined();
     }
   });
 
-  test('ids are escaped into the path', () => {
-    expect(eventPath('a b/c')).toBe('/events/a%20b%2Fc');
+  test('identifiers are escaped into the path', () => {
+    expect(eventPath({ id: 'a b/c', slug: null })).toBe('/events/a%20b%2Fc');
+    expect(eventPath({ id: 'x', slug: 'a b/c' })).toBe('/events/a%20b%2Fc');
   });
 });
 
 test.describe('EVENTS-03 finding an event', () => {
   const events = [portalEvent(), portalEvent({ id: 'other', title: 'Web Dev Workshop' })];
 
-  test('finds the event with that id', () => {
-    expect(findEvent(events, 'other')?.title).toBe('Web Dev Workshop');
+  test('finds the event with that id, and says the id is its address', () => {
+    const match = findEvent(events, 'other');
+    expect(match?.event.title).toBe('Web Dev Workshop');
+    // Neither fixture event has a slug, so the id *is* canonical.
+    expect(match?.canonical).toBe(true);
+  });
+
+  test('a slug is canonical, and an id or alias is not', () => {
+    const slugged = [
+      portalEvent({ id: 'evt', slug: 'the-slug', slug_aliases: ['short'] }),
+    ];
+    expect(findEvent(slugged, 'the-slug')?.canonical).toBe(true);
+    expect(findEvent(slugged, 'evt')?.canonical).toBe(false);
+    expect(findEvent(slugged, 'short')?.canonical).toBe(false);
+    // All three reach the same event; only one is where it is served.
+    for (const identifier of ['the-slug', 'evt', 'short']) {
+      expect(findEvent(slugged, identifier)?.event.id, identifier).toBe('evt');
+    }
   });
 
   test('an unknown id finds nothing', () => {
