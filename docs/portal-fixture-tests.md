@@ -82,6 +82,13 @@ second copy in a second process — the same mistake in a different costume.
 is what the image allowlist permits. The optimizer logs `upstream image response failed` during the
 run; that is expected. These tests assert on attributes, never on a rendered pixel.
 
+## One side effect to expect
+
+Next rewrites `tsconfig.json` when it builds, adding its dist directory's generated types to
+`include`. The fixture build therefore adds `.next-portal/types/**/*.ts` alongside `.next`'s, and
+reformats the file. That edit is committed, so running the suite does not leave a dirty working tree
+for the next person — it is Next's own output, not a hand edit.
+
 ## Running it
 
 ```bash
