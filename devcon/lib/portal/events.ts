@@ -7,7 +7,7 @@
  */
 
 import type { EventItem } from '@/lib/content/events';
-import { formatEventDate } from './format';
+import { formatEventDate, isUpcoming } from './format';
 import type { PortalEvent } from './types';
 
 /**
@@ -38,6 +38,7 @@ export function toEventItem(
   event: PortalEvent,
   index: number,
   photo: string | undefined,
+  now: Date = new Date(),
 ): EventItem {
   return {
     id: index + 1,
@@ -46,7 +47,33 @@ export function toEventItem(
     category: event.category,
     img: photo,
     href: eventPath(event),
+    // Only a past event an officer chose to `show` can reach the carousel, and
+    // it is marked so a visitor does not read it as coming up (EVENTS-06).
+    past: !isUpcoming(event, now),
   };
+}
+
+/**
+ * The events Featured Events shows, in the portal's order (EVENTS-06).
+ *
+ * Each event's `landing_visibility` decides:
+ *
+ * - `show` — in, even if it has already happened
+ * - `hide` — out, even if it is upcoming
+ * - `auto` — the EVENTS-02 rule: in while upcoming or undated, out once past
+ *
+ * The portal's order is kept (undated first, then newest start date first). It
+ * is their editorial choice, as `display_order` is for officers.
+ *
+ * This decides the **carousel only**. A hidden event still has its page, and
+ * its sitemap entry, because a link someone shared must keep working.
+ */
+export function landingEvents(events: PortalEvent[], now: Date = new Date()): PortalEvent[] {
+  return events.filter((event) => {
+    if (event.landing_visibility === 'show') return true;
+    if (event.landing_visibility === 'hide') return false;
+    return isUpcoming(event, now);
+  });
 }
 
 /**

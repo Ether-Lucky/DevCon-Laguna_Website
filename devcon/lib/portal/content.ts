@@ -4,8 +4,7 @@ import { team, type TeamMember } from '@/lib/content/officers';
 import { events as bundledEvents, type EventItem } from '@/lib/content/events';
 import { isAllowedRemoteImage } from '@/lib/remote-images';
 import { fetchPortalLanding, fetchPortalPosts } from './client';
-import { upcomingEvents } from './format';
-import { findEvent, toEventItem } from './events';
+import { findEvent, landingEvents, toEventItem } from './events';
 import { toTeamMembers } from './officers';
 import { BUILT_IN_LANDING_IMAGES, resolveLandingImages, type LandingImages } from './landing-images';
 import { findPost, sortPosts } from './posts';
@@ -77,9 +76,10 @@ export type LandingContent = {
  * date first. The portal owns that editorial choice, as it owns officers'
  * `display_order`.
  *
- * **Past events are filtered out** (EVENTS-02): the section is about what is
- * coming up. The filter is `upcomingEvents` in `lib/portal/format.ts` and is
- * applied to the portal's events only. The bundled list is design placeholder
+ * **Which events appear is the portal's choice, per event** (EVENTS-06). By
+ * default past events are left out (EVENTS-02), but an officer can set an event
+ * to always show — a past event worth featuring — or never show. The filter is
+ * `landingEvents` in `lib/portal/events.ts`, applied to the portal's events only. The bundled list is design placeholder
  * content shown while the portal has no events at all — filtering it would
  * leave six placeholder "TBA" cards, which is worse than the placeholder set it
  * was drawn with. Once the portal has events, the bundled list is never shown
@@ -102,7 +102,7 @@ export async function getLandingContent(): Promise<LandingContent> {
         : team,
     events:
       events.length > 0
-        ? upcomingEvents(events).map((event, index) =>
+        ? landingEvents(events).map((event, index) =>
             toEventItem(event, index, renderablePhoto(event.cover_image_url, 'event cover')),
           )
         : bundledEvents,

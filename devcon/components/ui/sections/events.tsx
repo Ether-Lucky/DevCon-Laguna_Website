@@ -91,9 +91,25 @@ function EventCard({ event }: { event: EventItem }) {
         </div>
       )}
 
-      {/* Category Badge */}
-      <div className={`absolute top-6 left-6 z-10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${categoryColors[event.category]}`}>
-        {event.category}
+      {/* Category Badge, and a "Past event" marker beside it (EVENTS-06) */}
+      <div className="absolute top-6 left-6 z-10 flex flex-wrap items-center gap-2">
+        <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${categoryColors[event.category]}`}>
+          {event.category}
+        </span>
+        {/*
+          Officers can keep a past event on the landing page. In a section called
+          Featured Events a visitor would otherwise read it as coming up, and the
+          date alone is easy to miss. Plain text rather than an icon, so a screen
+          reader says it too.
+        */}
+        {event.past ? (
+          <span
+            data-past-event
+            className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 text-white ring-1 ring-white/30"
+          >
+            Past event
+          </span>
+        ) : null}
       </div>
 
       {/* Card Details */}

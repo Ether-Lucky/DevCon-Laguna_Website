@@ -169,7 +169,20 @@ dash characters vary between ICU versions.
 **Event order is the portal's**: undated first, then newest start date first. The portal owns
 that editorial choice, the same way it owns officers' `display_order`.
 
-**Past events are hidden** (EVENTS-02). The section is about what is coming up.
+**Which events Featured Events shows is the portal's choice, per event** (EVENTS-06). The portal
+sends `landing_visibility`:
+
+| Value | In the carousel |
+|---|---|
+| `auto` (default) | Upcoming and TBA events; past ones leave by themselves (the EVENTS-02 rule) |
+| `show` | Always — a past event worth featuring stays, **marked "Past event"** on its card |
+| `hide` | Never, even while upcoming |
+
+Absent or unrecognised means `auto`, so the site behaves exactly as before until the portal sends the
+field, and an unknown value can never hide an event nobody asked to hide.
+
+**It decides the carousel only.** Every published event keeps its own page and its sitemap entry,
+whatever its setting — a link someone shared must keep working.
 
 ## News posts (NEWS-02)
 

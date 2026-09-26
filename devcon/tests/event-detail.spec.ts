@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { eventPath, findEvent, toEventItem } from '../lib/portal/events';
+import { eventPath, findEvent, landingEvents, toEventItem } from '../lib/portal/events';
+import { parseEvents } from '../lib/portal/parse';
 import { events as bundledEvents } from '../lib/content/events';
 import type { PortalEvent } from '../lib/portal/types';
 
@@ -18,6 +19,7 @@ function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
     id: '11111111-2222-3333-4444-555555555555',
     slug: null,
     slug_aliases: [],
+    landing_visibility: 'auto',
     title: 'DevCon Hackathon 2026',
     description: 'Two days of building.',
     location: 'Los Baños, Laguna',
@@ -85,6 +87,74 @@ test.describe('EVENTS-03 finding an event', () => {
     // Undefined is what the page turns into a 404, so this is the 404's source.
     expect(findEvent(events, 'no-such-event')).toBeUndefined();
     expect(findEvent([], '11111111-2222-3333-4444-555555555555')).toBeUndefined();
+  });
+});
+
+test.describe('EVENTS-06 the portal chooses what the landing page shows', () => {
+  const now = new Date('2026-09-27T04:00:00.000Z');
+  const upcoming = { start_date: '2026-12-01T00:00:00.000Z', end_date: '2026-12-01T00:00:00.000Z' };
+  const past = { start_date: '2026-05-29T02:00:00.000Z', end_date: '2026-05-29T02:00:00.000Z' };
+  const tba = { start_date: null, end_date: null };
+
+  const titles = (events: PortalEvent[]) => landingEvents(events, now).map((event) => event.title);
+
+  test('auto is the rule the site always followed', () => {
+    expect(
+      titles([
+        portalEvent({ title: 'Upcoming', ...upcoming }),
+        portalEvent({ title: 'Undated', ...tba }),
+        portalEvent({ title: 'Past', ...past }),
+      ]),
+    ).toEqual(['Upcoming', 'Undated']);
+  });
+
+  test('show keeps a past event on the landing page', () => {
+    expect(titles([portalEvent({ title: 'Past highlight', landing_visibility: 'show', ...past })])).toEqual([
+      'Past highlight',
+    ]);
+  });
+
+  test('hide keeps an upcoming or undated event off it', () => {
+    expect(
+      titles([
+        portalEvent({ title: 'Upcoming', landing_visibility: 'hide', ...upcoming }),
+        portalEvent({ title: 'Undated', landing_visibility: 'hide', ...tba }),
+      ]),
+    ).toEqual([]);
+  });
+
+  test("keeps the portal's order", () => {
+    // Undated first, then newest start date first, is the portal's editorial
+    // choice. Showing a past event must not reshuffle it.
+    const order = ['Undated', 'Upcoming', 'Past highlight'];
+    expect(
+      titles([
+        portalEvent({ title: 'Undated', ...tba }),
+        portalEvent({ title: 'Upcoming', ...upcoming }),
+        portalEvent({ title: 'Past highlight', landing_visibility: 'show', ...past }),
+      ]),
+    ).toEqual(order);
+  });
+
+  test('a past event on the card is marked past, an upcoming one is not', () => {
+    expect(toEventItem(portalEvent(past), 0, undefined, now).past).toBe(true);
+    expect(toEventItem(portalEvent(upcoming), 0, undefined, now).past).toBe(false);
+    expect(toEventItem(portalEvent(tba), 0, undefined, now).past).toBe(false);
+  });
+
+  test('absent or unknown visibility means auto, never hide', () => {
+    // Until the portal ships the field, and for any value we do not recognise,
+    // the site must behave exactly as it did before. An unknown value must never
+    // hide an event nobody asked to hide.
+    const base = { id: 'e', title: 'E', category: 'workshop', ...upcoming };
+    for (const raw of [undefined, null, '', 'SHOW', 'visible', 1, true]) {
+      const [parsed] = parseEvents([{ ...base, landing_visibility: raw }]);
+      expect(parsed.landing_visibility, JSON.stringify(raw)).toBe('auto');
+    }
+    for (const value of ['auto', 'show', 'hide'] as const) {
+      const [parsed] = parseEvents([{ ...base, landing_visibility: value }]);
+      expect(parsed.landing_visibility).toBe(value);
+    }
   });
 });
 

@@ -1,6 +1,8 @@
 import {
   EVENT_CATEGORIES,
   LANDING_SLOTS,
+  LANDING_VISIBILITIES,
+  type LandingVisibility,
   type LandingSlot,
   type PortalEvent,
   type PortalEventCategory,
@@ -93,6 +95,10 @@ export function parseEvents(value: unknown): PortalEvent[] {
       slug_aliases: Array.isArray(entry.slug_aliases)
         ? entry.slug_aliases.filter((alias): alias is string => typeof alias === 'string' && alias.length > 0)
         : [],
+      // Absent until the portal ships it, and anything unrecognised: `auto`,
+      // which is exactly the rule the site followed before the field existed.
+      // An unknown value must never *hide* an event nobody asked to hide.
+      landing_visibility: isLandingVisibility(entry.landing_visibility) ? entry.landing_visibility : 'auto',
       title: entry.title,
       description: typeof entry.description === 'string' ? entry.description : null,
       location: typeof entry.location === 'string' ? entry.location : '',
@@ -145,6 +151,10 @@ export function parsePosts(value: unknown): PortalPost[] {
     });
   }
   return posts;
+}
+
+function isLandingVisibility(value: unknown): value is LandingVisibility {
+  return typeof value === 'string' && (LANDING_VISIBILITIES as readonly string[]).includes(value);
 }
 
 function isSlot(value: unknown): value is LandingSlot {

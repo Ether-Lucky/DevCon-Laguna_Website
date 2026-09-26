@@ -102,6 +102,34 @@ export const FIXTURE = {
       end_date: LONG_PAST,
       cover_image_url: null,
     },
+    {
+      // A past event an officer chose to keep on the landing page (EVENTS-06).
+      id: 'event-past-shown',
+      slug: 'fixture-past-featured',
+      slug_aliases: [],
+      landing_visibility: 'show',
+      title: 'Fixture Past Highlight',
+      description: 'Worth showing even though it is over.',
+      location: 'Biñan, Laguna',
+      category: 'seminar',
+      start_date: LONG_PAST,
+      end_date: LONG_PAST,
+      cover_image_url: null,
+    },
+    {
+      // An upcoming event an officer chose to keep off the landing page.
+      id: 'event-upcoming-hidden',
+      slug: 'fixture-hidden-upcoming',
+      slug_aliases: [],
+      landing_visibility: 'hide',
+      title: 'Fixture Hidden Workshop',
+      description: 'Upcoming, but not for the landing page.',
+      location: 'Calamba, Laguna',
+      category: 'workshop',
+      start_date: FAR_FUTURE_START,
+      end_date: FAR_FUTURE_END,
+      cover_image_url: null,
+    },
   ],
   posts: [
     {

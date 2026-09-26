@@ -99,6 +99,23 @@ test.describe('TEST-01 the events section on portal data', () => {
     await expect(section.getByText(event('event-past').title, { exact: true })).toHaveCount(0);
   });
 
+  test('a past event the portal chose to show is there, and marked past', async ({ page }) => {
+    const target = event('event-past-shown');
+    const card = page.locator('#events a', { hasText: target.title });
+    await expect(card).toHaveCount(1);
+    // In a section called Featured Events a visitor would read it as coming up.
+    await expect(card.locator('[data-past-event]')).toHaveText(/Past event/i);
+  });
+
+  test('an upcoming event the portal chose to hide is not', async ({ page }) => {
+    await expect(page.locator('#events').getByText(event('event-upcoming-hidden').title, { exact: true })).toHaveCount(0);
+  });
+
+  test('upcoming events are not marked past', async ({ page }) => {
+    const card = page.locator('#events a', { hasText: event('event-upcoming').title });
+    await expect(card.locator('[data-past-event]')).toHaveCount(0);
+  });
+
   test('drops the bundled placeholders entirely', async ({ page }) => {
     const section = page.locator('#events');
     for (const placeholder of bundledEvents.slice(0, 3)) {
@@ -132,6 +149,16 @@ test.describe('TEST-01 an event page on portal data', () => {
     await expect(page.getByText('Bring a laptop and a team.')).toBeVisible();
     await expect(page.getByText(target.location, { exact: true })).toBeVisible();
     await expect(page.locator(`img[src*="${encodeURIComponent('events/hackathon.jpg')}"]`)).toHaveCount(1);
+  });
+
+  test('hiding an event from the landing page does not take its page down', async ({ page }) => {
+    // `landing_visibility` decides the carousel only. A link someone shared
+    // to an upcoming event must keep working when an officer hides it from the
+    // homepage (EVENTS-06).
+    const target = event('event-upcoming-hidden');
+    const response = await page.goto(`/events/${target.slug}`);
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('heading', { name: target.title, level: 1 })).toBeVisible();
   });
 
   test('a past event still has a working page', async ({ page }) => {
