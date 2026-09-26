@@ -34,6 +34,11 @@ interface EventItem {
   category: Category;
   img?: string;
   href?: string;
+  /**
+   * The event has already happened (EVENTS-06). Only a portal event an officer
+   * chose to keep on the landing page can be past here; the card says so.
+   */
+  past?: boolean;
 }
 
 const events: EventItem[] = [

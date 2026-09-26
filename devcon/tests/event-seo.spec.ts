@@ -19,6 +19,7 @@ function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
     id: 'evt-1',
     slug: null,
     slug_aliases: [],
+    landing_visibility: 'auto',
     title: 'DevCon Hackathon 2026',
     description: 'Two days of building.',
     location: 'Los Baños',

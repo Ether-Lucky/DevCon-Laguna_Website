@@ -272,6 +272,7 @@ test.describe('EVENTS-02 upcomingEvents, the list filter', () => {
     id: title,
     slug: null,
     slug_aliases: [],
+    landing_visibility: 'auto',
     title,
     description: null,
     location: 'Laguna',

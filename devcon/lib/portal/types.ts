@@ -20,6 +20,19 @@ export type PortalOfficer = {
   bio: string | null;
 };
 
+/**
+ * Whether an event appears in the landing page's Featured Events (EVENTS-06).
+ *
+ * - `auto` — the default rule: upcoming and TBA events are shown, past ones not
+ * - `show` — always shown, even after it has happened
+ * - `hide` — never shown, even while it is upcoming
+ *
+ * Chosen by officers in the portal, per event. It affects **only the carousel**:
+ * every published event keeps its own page and its sitemap entry.
+ */
+export const LANDING_VISIBILITIES = ['auto', 'show', 'hide'] as const;
+export type LandingVisibility = (typeof LANDING_VISIBILITIES)[number];
+
 /** The five categories the events UI has badge colours for. */
 export const EVENT_CATEGORIES = ['hackaton', 'workshop', 'seminar', 'community', 'career'] as const;
 export type PortalEventCategory = (typeof EVENT_CATEGORIES)[number];
@@ -40,6 +53,8 @@ export type PortalEvent = {
    * adds an alias. The portal promises an array, never null.
    */
   slug_aliases: string[];
+  /** See `LANDING_VISIBILITIES`. `auto` when the portal does not send it. */
+  landing_visibility: LandingVisibility;
   title: string;
   description: string | null;
   location: string;
