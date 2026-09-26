@@ -19,6 +19,22 @@ import { postPath } from '@/lib/portal/posts';
  * unconfigured, so the sitemap degrades to the static pages rather than failing
  * the build. A sitemap that 500s is worse than a short one.
  */
+/**
+ * Regenerated at most every 30 minutes, the same window as the portal fetch.
+ *
+ * Declared rather than left to be inferred (SEO-05-BT-01). The build does infer
+ * a 30-minute window from the fetches inside — but in production the sitemap was
+ * served from Vercel's cache for 59 hours after a deploy, never regenerating,
+ * while the homepage built from the same fetch regenerated normally. Every event
+ * and post published in that time was missing from it.
+ *
+ * `sitemap.ts` is a route handler, which Next caches by default unless it is
+ * given dynamic or revalidate config; stating the window is the documented way
+ * to give it one. `force-dynamic` would also work, but it would make every
+ * sitemap request call the portal uncached.
+ */
+export const revalidate = 1800;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [events, posts] = await Promise.all([getPortalEvents(), getPosts()]);
 
