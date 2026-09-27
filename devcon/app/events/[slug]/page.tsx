@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { CalendarIcon, MapPinIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { getPortalEvent } from '@/lib/portal/content';
-import { eventPath, locationUrl } from '@/lib/portal/events';
+import { eventPath, isOpenForRegistration, locationUrl, portalEventUrl } from '@/lib/portal/events';
+import RegistrationNotice from '@/components/ui/events/registration-notice';
 import { formatEventDate } from '@/lib/portal/format';
 import CategoryBadges from '@/components/ui/events/category-badges';
 import { eventDescription, eventJsonLd, eventTitle, eventUrl } from '@/lib/portal/event-seo';
@@ -183,6 +184,14 @@ export default async function EventPage({ params }: PageProps<'/events/[slug]'>)
             <p className="mt-10 text-base md:text-lg leading-relaxed text-foreground whitespace-pre-line">
               {event.description}
             </p>
+          ) : null}
+
+          {/* How to take part (EVENTS-08). Not for a past event: it's over. */}
+          {isOpenForRegistration(event) ? (
+            <RegistrationNotice
+              joinUrl={siteConfig.portalUrl}
+              eventUrl={portalEventUrl(siteConfig.portalUrl, event)}
+            />
           ) : null}
         </article>
       </main>

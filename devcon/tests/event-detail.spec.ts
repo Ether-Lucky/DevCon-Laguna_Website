@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { eventPath, findEvent, landingEvents, toEventItem } from '../lib/portal/events';
+import { eventPath, findEvent, isOpenForRegistration, landingEvents, portalEventUrl, toEventItem } from '../lib/portal/events';
 import { parseEvents } from '../lib/portal/parse';
 import { events as bundledEvents } from '../lib/content/events';
 import type { PortalEvent } from '../lib/portal/types';
@@ -214,6 +214,22 @@ test.describe('EVENTS-07 every category, primary first', () => {
       { name: 'Code Camp', category: 'seminar' },
       { name: 'Workshop', category: 'workshop' },
     ]);
+  });
+});
+
+test.describe('EVENTS-08 registration', () => {
+  const now = new Date('2026-09-27T04:00:00.000Z');
+
+  test('open while upcoming or undated, closed once past', () => {
+    expect(isOpenForRegistration({ start_date: '2026-12-01T00:00:00Z', end_date: '2026-12-01T00:00:00Z' }, now)).toBe(true);
+    expect(isOpenForRegistration({ start_date: null, end_date: null }, now)).toBe(true);
+    expect(isOpenForRegistration({ start_date: '2026-05-29T02:00:00Z', end_date: '2026-05-29T02:00:00Z' }, now)).toBe(false);
+  });
+
+  test("links to the event by the portal's own id, not our slug", () => {
+    // The portal's address for the event; our slug means nothing there.
+    expect(portalEventUrl('https://portal.example/', { id: 'abc-123' })).toBe('https://portal.example/events/abc-123');
+    expect(portalEventUrl('https://portal.example', { id: 'a b' })).toBe('https://portal.example/events/a%20b');
   });
 });
 
