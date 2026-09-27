@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import LegalPage, { LegalSection } from '@/components/ui/legal/legal-page';
 import { siteConfig } from '@/lib/site-config';
+import { isNewsletterEnabled } from '@/lib/newsletter';
 
 /**
  * Privacy Policy (LEGAL-01, #73).
@@ -17,6 +18,8 @@ import { siteConfig } from '@/lib/site-config';
  *
  * Sources for each section:
  *   Contact form     app/api/contact/route.ts, lib/contact-schema.ts
+ *   Newsletter       app/api/newsletter/route.ts, lib/portal/client.ts (NEWS-01);
+ *                    shown only while the sign-up form is (lib/newsletter.ts)
  *   Spam protection  lib/turnstile.ts (sends the visitor's IP as `remoteip`)
  *   Analytics        docs/analytics.md, lib/analytics-config.ts
  *   Theme            next-themes (browser localStorage only)
@@ -79,6 +82,31 @@ export default function PrivacyPage() {
             deleted.
           </li>
         </ul>
+
+        {isNewsletterEnabled() && (
+          <>
+            <h3 className="text-lg font-semibold text-foreground">When you subscribe to event updates</h3>
+            <ul className={list}>
+              <li>
+                <strong>Your email address.</strong> We use it only to send you news about{' '}
+                {siteConfig.name} events.
+              </li>
+              <li>
+                The website does not store it. It is passed to the{' '}
+                <Link href={siteConfig.portalUrl} className="underline underline-offset-4">DevConnect Portal</Link>,{' '}
+                {siteConfig.name}&apos;s member system, which keeps the list and sends the emails.
+              </li>
+              <li>
+                You will first get an email asking you to confirm. Nothing else is sent until you do, and
+                an address that is never confirmed is deleted.
+              </li>
+              <li>
+                Every email has an unsubscribe link. When you unsubscribe, your address is removed from
+                the list.
+              </li>
+            </ul>
+          </>
+        )}
 
         <h3 className="text-lg font-semibold text-foreground">To keep out spam</h3>
         <ul className={list}>

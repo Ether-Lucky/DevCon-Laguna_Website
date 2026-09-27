@@ -494,3 +494,74 @@ test.describe('EVENTS-07 accessibility on portal data', () => {
     });
   }
 });
+
+test.describe('NEWS-01 newsletter sign-up on portal data', () => {
+  const received = async (request: import('@playwright/test').APIRequestContext, email: string) =>
+    (await request.get(`http://localhost:3999/__newsletter/received?email=${encodeURIComponent(email)}`)).json();
+
+  async function footerForm(page: Page) {
+    await page.goto('/', { waitUntil: 'load' });
+    const form = page.getByTestId('newsletter-form');
+    await form.scrollIntoViewIfNeeded();
+    await expect(page.locator('#newsletter-email')).toBeEditable();
+    return form;
+  }
+
+  async function subscribe(page: Page, email: string) {
+    const form = await footerForm(page);
+    // Retried until the value sticks, so hydration on a slow runner cannot wipe it.
+    await expect(async () => {
+      await page.locator('#newsletter-email').fill(email);
+      await expect(page.locator('#newsletter-email')).toHaveValue(email);
+    }).toPass();
+    await form.getByRole('button', { name: 'Subscribe' }).click();
+    return page.getByTestId('newsletter-status');
+  }
+
+  test('relays the address to the portal, with the key, and asks the visitor to confirm', async ({ page, request }) => {
+    const email = `visitor-${Date.now()}@example.com`;
+    const status = await subscribe(page, email);
+    await expect(status).toHaveText(/check your inbox to confirm/i);
+    await expect(page.locator('#newsletter-email')).toHaveValue('');
+
+    const last = await received(request, email);
+    expect(last.keyed).toBe(true);
+    expect(last.body).toMatchObject({ email, source: 'landing-page' });
+    expect(last.body.consent_text).toMatch(/unsubscribe any time/i);
+  });
+
+  test('checks the address in the browser before sending anything', async ({ page, request }) => {
+    const status = await subscribe(page, 'not-an-email');
+    await expect(status).toHaveText('Please enter a valid email address.');
+    await expect(page.locator('#newsletter-email')).toHaveAttribute('aria-invalid', 'true');
+    expect(await received(request, 'not-an-email')).toBeNull();
+  });
+
+  for (const [local, message] of [
+    ['rate-limited', /too many attempts/i],
+    ['rejected', /valid email address/i],
+    ['portal-down', /could not sign you up/i],
+  ] as const) {
+    test(`says so plainly when the portal answers ${local}`, async ({ page }) => {
+      const status = await subscribe(page, `${local}@example.com`);
+      await expect(status).toHaveText(message);
+      // The visitor's input is kept, so they can retry.
+      await expect(page.locator('#newsletter-email')).toHaveValue(`${local}@example.com`);
+    });
+  }
+
+  test('the Privacy Policy explains the list once the form is live', async ({ page }) => {
+    await page.goto('/privacy', { waitUntil: 'load' });
+    await expect(page.getByRole('heading', { name: 'When you subscribe to event updates' })).toBeVisible();
+    await expect(page.getByText(/unsubscribe, your address is removed/i)).toBeVisible();
+  });
+
+  test('the server re-validates, and a honeypot submission relays nothing', async ({ request }) => {
+    const invalid = await request.post('/api/newsletter', { data: { email: 'nope' } });
+    expect(invalid.status()).toBe(400);
+
+    const bot = await request.post('/api/newsletter', { data: { email: 'bot@example.com', website: 'spam.example' } });
+    expect(bot.status()).toBe(200);
+    expect(await received(request, 'bot@example.com')).toBeNull();
+  });
+});

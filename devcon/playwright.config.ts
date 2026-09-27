@@ -149,6 +149,8 @@ export default defineConfig({
         NEXT_DIST_DIR: '.next-portal',
         PORTAL_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
         PORTAL_API_KEY: FIXTURE_API_KEY,
+        // NEWS-01: the fixture serves the subscribe endpoint, so the form is on.
+        NEWSLETTER_ENABLED: 'true',
       },
     },
   ],

@@ -22,6 +22,15 @@ export const LIMITS = {
 /** Pragmatic address check: something@something.tld with no spaces. */
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/** The email rule on its own, shared with the newsletter sign-up (NEWS-01). */
+export function validateEmailAddress(value: string): string | undefined {
+  const email = value.trim();
+  if (!email) return 'Please enter your email address.';
+  if (email.length > LIMITS.email.max) return 'That email address is too long.';
+  if (!EMAIL.test(email)) return 'Please enter a valid email address.';
+  return undefined;
+}
+
 export function validateContact(input: Partial<ContactPayload>): ContactErrors {
   const errors: ContactErrors = {};
   const name = (input.name ?? '').trim();
@@ -33,9 +42,8 @@ export function validateContact(input: Partial<ContactPayload>): ContactErrors {
   else if (name.length < LIMITS.name.min) errors.name = 'Please enter your full name.';
   else if (name.length > LIMITS.name.max) errors.name = 'That name is too long.';
 
-  if (!email) errors.email = 'Please enter your email address.';
-  else if (email.length > LIMITS.email.max) errors.email = 'That email address is too long.';
-  else if (!EMAIL.test(email)) errors.email = 'Please enter a valid email address.';
+  const emailError = validateEmailAddress(email);
+  if (emailError) errors.email = emailError;
 
   if (!subject) errors.subject = 'Please enter a subject.';
   else if (subject.length < LIMITS.subject.min) errors.subject = 'Please give a slightly longer subject.';

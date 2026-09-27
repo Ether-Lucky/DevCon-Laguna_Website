@@ -137,3 +137,42 @@ export async function fetchPortalPosts(): Promise<PortalPost[]> {
     return [];
   }
 }
+
+export type SubscribeResult =
+  | { status: 'subscribed' }
+  | { status: 'invalid' }
+  | { status: 'rate-limited' }
+  | { status: 'failed'; reason: string };
+
+/**
+ * Sends a newsletter sign-up to the portal, which owns the list (NEWS-01).
+ *
+ * The portal stores the address, sends the confirmation email and handles
+ * unsubscribes; this site only collects the address and relays it with the key.
+ * A new subscriber and an existing one get the same answer from the portal, so a
+ * visitor cannot use the form to learn who is on the list.
+ *
+ * Never cached, never throws.
+ */
+export async function subscribeToNewsletter(email: string, consentText: string): Promise<SubscribeResult> {
+  const key = process.env.PORTAL_API_KEY;
+  if (!key) return { status: 'failed', reason: 'unconfigured' };
+
+  try {
+    const response = await fetch(`${baseUrl()}/api/public/newsletter/subscribe`, {
+      method: 'POST',
+      headers: { 'x-api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ email, source: 'landing-page', consent_text: consentText }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      cache: 'no-store',
+    });
+
+    if (response.ok) return { status: 'subscribed' };
+    if (response.status === 400 || response.status === 422) return { status: 'invalid' };
+    if (response.status === 429) return { status: 'rate-limited' };
+    return { status: 'failed', reason: `http-${response.status}` };
+  } catch (error) {
+    const reason = error instanceof Error && error.name === 'TimeoutError' ? 'timeout' : 'unreachable';
+    return { status: 'failed', reason };
+  }
+}

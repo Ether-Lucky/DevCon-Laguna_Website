@@ -20,12 +20,61 @@ import { FIXTURE } from './portal-payload.mjs';
 const PORT = Number(process.env.PORT ?? 3999);
 const API_KEY = process.env.FIXTURE_API_KEY ?? 'fixture-key';
 
+/** Every sign-up the site relayed, by address, with whether it carried the key. */
+const received = new Map();
+
+/**
+ * The newsletter endpoint the portal team was asked to build (NEWS-01). The
+ * address's local part picks the answer, so a test can ask for each one:
+ * `rate-limited@…` → 429, `rejected@…` → 422, `portal-down@…` → 500, anything
+ * else → 202, the same answer for a new and an existing subscriber.
+ */
+function handleSubscribe(request, response) {
+  let raw = '';
+  request.on('data', (chunk) => (raw += chunk));
+  request.on('end', () => {
+    const keyed = request.headers['x-api-key'] === API_KEY;
+    let body = null;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      // Recorded as null; the site never sends malformed JSON.
+    }
+    received.set(String(body?.email ?? ''), { keyed, body });
+
+    const reply = (status, payload) => {
+      response.writeHead(status, { 'content-type': 'application/json' });
+      response.end(JSON.stringify(payload));
+    };
+    if (request.method !== 'POST') return reply(405, { error: 'method not allowed' });
+    if (!keyed) return reply(401, { error: 'unauthorized' });
+    const local = String(body?.email ?? '').split('@')[0];
+    if (local === 'rate-limited') return reply(429, { error: 'too many requests' });
+    if (local === 'rejected') return reply(422, { error: 'invalid email' });
+    if (local === 'portal-down') return reply(500, { error: 'internal error' });
+    return reply(202, { status: 'pending_confirmation' });
+  });
+}
+
 const server = createServer((request, response) => {
   const url = new URL(request.url ?? '/', `http://localhost:${PORT}`);
 
   if (url.pathname === '/health') {
     response.writeHead(200, { 'content-type': 'text/plain' });
     response.end('ok');
+    return;
+  }
+
+  // Test-only: what the site relayed for one address, or null (NEWS-01). Keyed
+  // by address because tests run in parallel against this one fixture.
+  if (url.pathname === '/__newsletter/received') {
+    response.writeHead(200, { 'content-type': 'application/json' });
+    response.end(JSON.stringify(received.get(url.searchParams.get('email') ?? '') ?? null));
+    return;
+  }
+
+  if (url.pathname === '/api/public/newsletter/subscribe') {
+    handleSubscribe(request, response);
     return;
   }
 

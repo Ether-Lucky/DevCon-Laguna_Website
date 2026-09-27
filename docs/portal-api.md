@@ -126,6 +126,7 @@ serving the last known good content rather than reverting to bundled defaults.
 | `PORTAL_API_KEY` | to use live content | The `x-api-key` credential. **Server-side secret** |
 | `PORTAL_API_BASE_URL` | no | Defaults to the portal's production URL. Used to point at a mock |
 | `PORTAL_REVALIDATE_SECRET` | for instant publish | Shared with the portal. **Server-side secret**, 32+ characters |
+| `NEWSLETTER_ENABLED` | to show the sign-up | `true` shows the footer form and the Privacy Policy section (NEWS-01). Set it **only once the portal's subscribe endpoint is live**. Needs `PORTAL_API_KEY` too |
 
 Set `PORTAL_API_KEY` in Vercel and **redeploy**. For local development put it in
 `devcon/.env.local`, which is gitignored.
@@ -315,6 +316,39 @@ else will show as initials. The `[portal]` warning in the server logs names the 
 
 
 ---
+
+## Newsletter sign-up (NEWS-01)
+
+**The portal owns the list** (PM decision, 2026-09-27). DevCon Laguna has no domain of its own, so
+this site cannot send bulk email, and the portal already holds the community's member data. The site
+only collects an address and relays it.
+
+```
+browser ── POST /api/newsletter {email, website} ──▶ this site (validates, honeypot)
+this site ── POST /api/public/newsletter/subscribe + x-api-key ──▶ portal
+```
+
+The key stays on our server, as with every other portal call. The request we send:
+
+```json
+{ "email": "visitor@example.com", "source": "landing-page", "consent_text": "We’ll email you about …" }
+```
+
+| Portal answers | Visitor sees |
+|---|---|
+| any `2xx` | "Almost done: check your inbox to confirm your subscription." |
+| `400` / `422` | "Please enter a valid email address." |
+| `429` | "Too many attempts. Please try again in a few minutes." |
+| anything else, or a timeout | "We could not sign you up just now." (HTTP 502, logged) |
+
+**Hidden until live.** With `NEWSLETTER_ENABLED` unset, the footer form and the Privacy Policy's
+newsletter section are not rendered, and `/api/newsletter` answers `503`. That is production today.
+Tested both ways: `tests/newsletter.spec.ts` (off) and `tests/portal-data.spec.ts` (on, against a
+fixture that implements the endpoint).
+
+**Before turning it on:** the portal endpoint is live, and the Privacy Policy text is approved by the
+PM (it promises confirmation first, deletion of unconfirmed addresses, and removal on unsubscribe;
+the portal must actually do all three).
 
 ## Change requests for the portal team
 
