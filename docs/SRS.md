@@ -276,6 +276,16 @@ managed by officers rather than by developers in code.
 | FR-27 | Each portal event shall have its own page showing its title, date, category, cover image, description and location, linked from the Featured Events cards; an unknown event shall return a 404 | ✅ Sprint 5 (#156, PR #164) |
 | FR-28 | Each event page shall carry its own title, description and canonical URL, valid `Event` structured data where the event has a date, and an entry in the sitemap | ✅ Sprint 5 (#157, PR #165) |
 | FR-29 | An officer's biography shall be shown when the portal provides one, and shall leave the card unchanged when it does not | ✅ Sprint 5 (#155, PR #162) |
+| FR-30 | An event with a slug shall be served at `/events/<slug>`; its aliases, and its id, shall redirect there permanently; an event without a slug shall keep its id as its address | ✅ Sprint 5 (#175, PR #176) |
+| FR-31 | A location that is a web address shall render as a link, and shall never be published as the venue's name in structured data | ✅ Sprint 5 (#177, PR #178) |
+| FR-32 | The site shall publish news from the portal: an index at `/news`, a page per post, and a homepage section that renders only when there are posts | ✅ Sprint 5 (#179, PR #180) |
+| FR-33 | Which events Featured Events shows shall be chosen per event in the portal — automatically while upcoming, always (a past event, labelled as past), or never — without affecting the event's page | ✅ Sprint 5 (#184, PR #185) |
+| FR-34 | Every category an event has shall be shown, the primary as the main badge under its own name and the rest as sub-categories | ✅ Sprint 5 (#186, PR #188) |
+| FR-35 | An upcoming or undated event's page shall state that registration is for members and link to join first, then to the event in the portal | ✅ Sprint 5 (#190, PR #191) |
+
+**Verified on real data.** FR-27, FR-30, FR-33 and FR-34 were confirmed on the live site against
+the portal's first real event (the Move Smart Contracts Code Camp) on 2026-09-27. FR-32 is live and
+tested against a fixture portal; it renders its first post when the portal publishes one.
 
 **On FR-27 and FR-28.** Only portal events have pages. The bundled events are design placeholders
 with no description or location, so a page for one would show exactly what its card already shows.

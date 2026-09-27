@@ -38,7 +38,7 @@ in the sprints below.
 | Content maintainable without code changes | ✅ Officers, events and landing images come from the DevConnect Portal (Sprint 3) |
 | SEO and metadata | ✅ Sitemap, robots, structured data, share image; SEO audits pass after SEO-04 |
 | Accessibility (WCAG 2.1 AA target) | ✅ Lighthouse 1.00; nine axe violations found and fixed; the audit runs in CI (A11Y-01) |
-| **Performance — Lighthouse ≥ 0.90** | ⚠️ **Not met.** ~0.90 across CI runs (0.88–0.92), LCP ~3.5 s against a 2.5 s target. The assertion remains a warning. Measured again in Sprint 5 with real throttling: LCP ~3.0 s, so CI is ~0.9 s pessimistic and the gap is real but smaller — [performance.md](./performance.md) |
+| **Performance — Lighthouse ≥ 0.90** | ⚠️ **Not met in Phase 2**: ~0.90 across CI runs, LCP ~3.5 s against 2.5 s. **Addressed in Phase 3** (PERF-02): serving the hero as AVIF brought real-throttling LCP from 2.90 s to 2.41 s, under the target — [performance.md](./performance.md) |
 | Analytics and engagement tracking | ✅ Pageviews live; custom events need a Vercel Pro plan (a cost decision, not a code gap) |
 | Automated test coverage for new functionality | ✅ 94 → 348 tests; CI fails on flaky results (CICD-BT-06) |
 | Continued deployment to Vercel | ✅ Every merge deployed via the `laguna-devcon` fork |
@@ -87,40 +87,55 @@ measurements live in [performance.md](./performance.md).
 
 ---
 
-## Phase 3: started (Sprint 5 — DOCS-02, #158)
+## Phase 3: complete (Sprint 5)
 
-**Phase 3 began on 2026-09-24**, planned in [sprint-5-plan](./sprint-5-plan.md). Sprint 5 takes only
-the work this team controls, so a phase does not open blocked on another team's queue.
+**Phase 3 ran in Sprint 5** ([plan](./sprint-5-plan.md), [review](./sprint-5-review.md)). It set out
+to give events their own pages and settle the missed Phase 2 target. Because the portal team turned
+every request around the same day, it also delivered the two items it had expected to wait on — the
+news section, and an answer on event registration — and moved every landing-page picture into the
+portal.
 
-### Sprint 5 scope
+### What Phase 3 delivered
 
-| Ticket | Delivers | Status |
+| Area | Delivered | Tickets |
 |---|---|---|
-| **EVENTS-03** #156 | A page per event at `/events/[id]`, from data the portal already sends | ✅ Merged |
-| **SEO-05** #157 | Per-event metadata, `Event` structured data, events in the sitemap | ✅ Merged |
-| **OFFICER-03** #155 | Officer bios, shown when the portal provides one | ✅ Merged |
-| **PERF-02** #94 | The one unmet Phase 2 target: measured, decided, recorded | ✅ Measured — target still not met, see [performance.md](./performance.md) |
-| **DATA-BT-01** #91 | `social-links` holds data rather than JSX | ✅ Merged |
-| **CLEANUP-02** #153 | `server.log` out of version control | ✅ Merged |
-| **DOCS-02** #158 | These documents | ✅ This change |
+| **Event pages** | A page per event at its portal slug; short links and old ids redirect to it; unknown events 404 | EVENTS-03 #156, EVENTS-04 #175 |
+| **Event search presence** | Per-event title and description, `Event` structured data (none for TBA events), sitemap entries | SEO-05 #157 |
+| **What the homepage features** | Officers choose per event: auto, always (a past event, labelled **Past event**), or never | EVENTS-06 #184 |
+| **Categories** | Every category shown, the primary one as the main badge under its own name | EVENTS-07 #186 |
+| **Taking part** | Upcoming and TBA events say registration is for members, **Join DevCon Laguna** first | EVENTS-08 #190 |
+| **Locations** | A map link in `location` renders as a link, never as the venue's name | EVENTS-05 #177 |
+| **News** | `/news`, a page per post, and a homepage section that appears only when there is news | NEWS-02 #179 |
+| **Officer bios** | Shown when the portal has one; the card is unchanged when it does not | OFFICER-03 #155 |
+| **Landing images** | All 12 pictures now served from the portal, where officers can replace them | CONTENT-01 #187 |
+| **Performance** | The hero served as AVIF: LCP 2.90 s → 2.41 s with real throttling | PERF-02 #94 |
+| **Freshness** | The sitemap is rendered per request; a portal save reaches the site on the next load | SEO-05-BT-01 #182, CMS-05-BT-01 #183 |
+| **Testing** | The site now runs in CI against a fixture portal that returns data, not only against an absent one | TEST-01 #172 |
 
-### What is left of Phase 3, and what it waits on
+### Event registration is the portal's
 
-| Candidate | Depends on | Note |
-|---|---|---|
-| **News / blog section** | **A new portal endpoint.** The portal team would add posts to their admin and API | Cross-team, so it runs on their schedule. The Sprint 3 handoff pattern — a written specification — was answered the same day |
-| **Event registration** | **Probably not ours.** Members already have accounts on the portal | Confirm ownership with the portal team before scoping. Building sign-ups here would rebuild what the portal has |
-| **PERF-02** (#94), if pursued further | Nothing | The remaining gap is main-thread work, not bytes. See [performance.md](./performance.md): a fifth attempt needs a hypothesis, not another guess |
-| **NEWS-01** (#66) newsletter | An email provider and a list owner | Backlog since Sprint 2 |
-| **CON-03** (#71) contact map | A venue to show | Backlog since Sprint 2 |
+Confirmed with the portal team on 2026-09-24: registration needs an approved member account, and
+the portal already holds participants, volunteers and attendance. The site does not take sign-ups;
+it tells visitors how to take part and links to the portal (EVENTS-08). When the portal ships its
+planned public event page, that becomes a single Register button.
+
+### What is left, and what each waits on
+
+| Item | Waits on |
+|---|---|
+| **CON-03** (#71) contact map | **A venue address** — which location the map should show |
+| **NEWS-01** (#66) newsletter sign-up | **An email provider and a list owner** — who sends it, and who is responsible for the list |
+| Content | Officer bios, the first news post, the event back catalogue — all with the portal team |
+
+Neither code item can be finished well without its input: a map of a guessed venue, or a sign-up
+form that goes nowhere, is worse than neither.
 
 ### Two open questions, still open
 
 1. **Vercel Pro.** Custom analytics events (which buttons get clicked) need it; pageviews work on
    the free plan. A cost decision, not a technical one. Open since Sprint 3.
 2. **Who may assign work to Copilot.** Six draft pull requests appeared on the CMS tickets in
-   Sprint 3 (#119–#124), one duplicating work already in review. Nobody has established who
-   triggered it. Open since Sprint 3; no new ones have appeared since.
+   Sprint 3 (#119–#124). Nobody has established who triggered it. No new ones have appeared since.
 
 ### What Phase 3 keeps from Phase 2
 

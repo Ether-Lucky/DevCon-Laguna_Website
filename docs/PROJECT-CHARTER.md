@@ -80,13 +80,15 @@ session.
 - **Sprint 4 — Phase 2 close-out:** the quality targets the charter set, the 17 footer links
   that pointed nowhere, and the Privacy Policy and Terms pages.
 
-- **Sprint 5 — Phase 3, part one:** a page per event, its search metadata, officer bios, and the
-  one Phase 2 target that was missed.
+- **Sprint 5 — Phase 3:** event pages with their search metadata and short links, news, officer
+  bios, portal-chosen featured events and categories, a registration path, every landing image
+  moved into the portal, and the Phase 2 performance target addressed.
 
-*Of the three features deferred beyond Phase 2, **event detail pages were delivered in Sprint 5**
-(EVENTS-03 #156, SEO-05 #157). A blog/news section and event registration remain deferred: the
-first needs a new portal endpoint, and the second is probably the portal's own job, since members
-already have accounts there. See the roadmap's Phase 3 section.*
+*All three features deferred beyond Phase 2 were settled in Phase 3 (Sprint 5). **Event detail
+pages** and a **news section** were delivered. **Event registration** was confirmed as the
+DevConnect Portal's — it needs a member account, and the portal already holds participants and
+attendance — so the site tells visitors how to take part and links there rather than taking
+sign-ups itself. See the roadmap's Phase 3 section.*
 
 ### Out of Scope (Phase 2)
 
