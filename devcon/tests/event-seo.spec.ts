@@ -180,6 +180,17 @@ test.describe('SEO-05 on the site', () => {
     expect(xml).not.toContain('/events/');
   });
 
+  test('the sitemap is rendered on every request, not served from a cache', async ({ request }) => {
+    // SEO-05-BT-01. On Vercel the sitemap was served from a cache that never
+    // expired — 59 hours old after one deploy, and still stale 33 minutes into
+    // a declared 30-minute window after the next. It is now rendered per
+    // request. A prerendered or ISR response carries `x-nextjs-cache`
+    // (robots.txt and the homepage both do); a live one does not.
+    const response = await request.get('/sitemap.xml');
+    expect(response.status()).toBe(200);
+    expect(response.headers()['x-nextjs-cache'], 'the sitemap must not come from a prerender').toBeUndefined();
+  });
+
   test('the homepage carries no Event structured data', async ({ request }) => {
     // Organization data belongs to the site; Event data belongs to an event.
     const html = await (await request.get('/')).text();

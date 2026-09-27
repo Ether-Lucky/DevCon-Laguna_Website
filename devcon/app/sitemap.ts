@@ -20,20 +20,26 @@ import { postPath } from '@/lib/portal/posts';
  * the build. A sitemap that 500s is worse than a short one.
  */
 /**
- * Regenerated at most every 30 minutes, the same window as the portal fetch.
+ * Rendered on every request, not cached (SEO-05-BT-01).
  *
- * Declared rather than left to be inferred (SEO-05-BT-01). The build does infer
- * a 30-minute window from the fetches inside — but in production the sitemap was
- * served from Vercel's cache for 59 hours after a deploy, never regenerating,
- * while the homepage built from the same fetch regenerated normally. Every event
- * and post published in that time was missing from it.
+ * In production the sitemap was served from Vercel's cache indefinitely: 59
+ * hours after one deploy, 8.9 hours after the next, `X-Vercel-Cache: HIT` on
+ * every request and never STALE — while the homepage, built from the same
+ * portal fetch on the same deployment, went STALE and refreshed as it should.
+ * Every event and post published after a deploy was missing from it until the
+ * next one.
  *
- * `sitemap.ts` is a route handler, which Next caches by default unless it is
- * given dynamic or revalidate config; stating the window is the documented way
- * to give it one. `force-dynamic` would also work, but it would make every
- * sitemap request call the portal uncached.
+ * The first fix declared `revalidate = 1800`. The build reported a 30-minute
+ * window both before and after, and production ignored it: 33 minutes after
+ * deploy the sitemap was still HIT at Age 1980. ISR for this route handler is
+ * not reliable on this platform, so the sitemap no longer depends on it.
+ *
+ * The cost is one uncached portal call per sitemap request. Crawlers fetch a
+ * sitemap a few times a day, the fetch times out after 8 seconds, and a failure
+ * yields the static pages rather than an error — so a sitemap that is always
+ * current is worth far more than the calls it saves.
  */
-export const revalidate = 1800;
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [events, posts] = await Promise.all([getPortalEvents(), getPosts()]);
