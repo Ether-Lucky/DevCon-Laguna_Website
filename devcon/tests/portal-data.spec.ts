@@ -553,7 +553,11 @@ test.describe('NEWS-01 newsletter sign-up on portal data', () => {
   test('the Privacy Policy explains the list once the form is live', async ({ page }) => {
     await page.goto('/privacy', { waitUntil: 'load' });
     await expect(page.getByRole('heading', { name: 'When you subscribe to event updates' })).toBeVisible();
-    await expect(page.getByText(/unsubscribe, your address is removed/i)).toBeVisible();
+    await expect(page.getByText(/unsubscribe, your address is deleted/i)).toBeVisible();
+    await expect(page.getByText(/not confirmed within 30 days is deleted/i)).toBeVisible();
+    await expect(page.getByText(/27 September 2026/)).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: /^Supabase:/ })).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: /sends newsletter emails/ })).toBeVisible();
   });
 
   test('the server re-validates, and a honeypot submission relays nothing', async ({ request }) => {

@@ -19,6 +19,8 @@ test.describe('NEWS-01 newsletter sign-up before the portal is ready', () => {
     await page.goto('/privacy', { waitUntil: 'load' });
     await expect(page.getByRole('heading', { name: 'What we collect, and why' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'When you subscribe to event updates' })).toHaveCount(0);
+    await expect(page.getByText(/Supabase/)).toHaveCount(0);
+    await expect(page.getByText(/sends newsletter emails/)).toHaveCount(0);
   });
 
   test('the endpoint says it is not open rather than pretending to succeed', async ({ request }) => {

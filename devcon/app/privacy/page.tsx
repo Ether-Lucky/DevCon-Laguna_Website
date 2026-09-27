@@ -39,13 +39,16 @@ const list = 'list-disc space-y-2 pl-6';
  * Update this whenever the policy's wording changes.
  */
 const LAST_UPDATED = '23 September 2026';
+/** The newsletter section was added on this date; it is the policy's date once that section shows. */
+const LAST_UPDATED_WITH_NEWSLETTER = '27 September 2026';
 
 /** The chapter's own mailbox; it already receives the contact form's messages. */
 const PRIVACY_CONTACT = 'laguna@devcon.ph';
 
 export default function PrivacyPage() {
+  const newsletter = isNewsletterEnabled();
   return (
-    <LegalPage title="Privacy Policy" lastUpdated={LAST_UPDATED}>
+    <LegalPage title="Privacy Policy" lastUpdated={newsletter ? LAST_UPDATED_WITH_NEWSLETTER : LAST_UPDATED}>
       <p>
         {siteConfig.name} is a chapter of Developers Connect (DevCon) Philippines. This policy
         explains what personal information this website collects, why, who else handles it, and the
@@ -83,7 +86,7 @@ export default function PrivacyPage() {
           </li>
         </ul>
 
-        {isNewsletterEnabled() && (
+        {newsletter && (
           <>
             <h3 className="text-lg font-semibold text-foreground">When you subscribe to event updates</h3>
             <ul className={list}>
@@ -94,15 +97,18 @@ export default function PrivacyPage() {
               <li>
                 The website does not store it. It is passed to the{' '}
                 <Link href={siteConfig.portalUrl} className="underline underline-offset-4">DevConnect Portal</Link>,{' '}
-                {siteConfig.name}&apos;s member system, which keeps the list and sends the emails.
+                {siteConfig.name}&apos;s member system, which keeps the list (stored with{' '}
+                <strong>Supabase</strong>) and sends the emails through <strong>Google (Gmail)</strong>{' '}
+                from <strong>{PRIVACY_CONTACT}</strong>. With your address it keeps the wording you agreed
+                to and when you signed up and confirmed, as the record of your consent.
               </li>
               <li>
                 You will first get an email asking you to confirm. Nothing else is sent until you do, and
-                an address that is never confirmed is deleted.
+                an address that is not confirmed within <strong>30 days</strong> is deleted.
               </li>
               <li>
-                Every email has an unsubscribe link. When you unsubscribe, your address is removed from
-                the list.
+                Every email has an unsubscribe link. When you unsubscribe, your address is{' '}
+                <strong>deleted</strong> from the list.
               </li>
             </ul>
           </>
@@ -180,7 +186,11 @@ export default function PrivacyPage() {
         <ul className={list}>
           <li><strong>Vercel</strong>: hosting and analytics</li>
           <li><strong>Cloudflare</strong>: spam protection on the contact form</li>
-          <li><strong>Google</strong>: the email inbox that receives contact form messages</li>
+          <li>
+            <strong>Google</strong>: the email inbox that receives contact form messages
+            {newsletter && ', and the account that sends newsletter emails'}
+          </li>
+          {newsletter && <li><strong>Supabase</strong>: storage for the DevConnect Portal, including the newsletter list</li>}
         </ul>
         <p>
           These providers may process information on servers outside the Philippines. We do not sell
