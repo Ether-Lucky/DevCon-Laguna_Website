@@ -169,6 +169,14 @@ dash characters vary between ICU versions.
 **Event order is the portal's**: undated first, then newest start date first. The portal owns
 that editorial choice, the same way it owns officers' `display_order`.
 
+**Every category an event has is shown, primary first** (EVENTS-07). The portal sends
+`categories` — each `{ name, publishes_as }`, primary first. The **main badge** is the primary
+category under its own name ("Code Camp"), in the full colour of its `publishes_as`; the rest follow
+as quieter **sub-category chips** with a dot of their colour. A card shows the main badge and two
+sub-categories, collapsing the rest into "+N"; the event page shows them all. An entry with an
+unknown `publishes_as` or a blank name is dropped, and an event with no usable list falls back to the
+single `category` badge it always had.
+
 **Which events Featured Events shows is the portal's choice, per event** (EVENTS-06). The portal
 sends `landing_visibility`:
 

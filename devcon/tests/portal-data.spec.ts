@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 import { team } from '../lib/content/officers';
 import { events as bundledEvents } from '../lib/content/events';
 import type { PortalLanding } from '../lib/portal/types';
@@ -116,6 +117,23 @@ test.describe('TEST-01 the events section on portal data', () => {
     await expect(card.locator('[data-past-event]')).toHaveCount(0);
   });
 
+  test('a card shows the main category, two more, and a count of the rest', async ({ page }) => {
+    // EVENTS-07. The fixture's hackathon has four categories, primary first.
+    const card = page.locator('#events a', { hasText: event('event-upcoming').title });
+    await expect(card.locator('[data-category-main]')).toHaveText('Code Camp');
+    await expect(card.locator('[data-category-sub]')).toHaveText(['Workshop', 'Community']);
+    await expect(card.locator('[data-category-more]')).toContainText('+1');
+    // Read aloud, "+1" means nothing; the hidden text says what it counts.
+    await expect(card.locator('[data-category-more]')).toContainText('and 1 more category');
+  });
+
+  test('an event with a single category shows exactly one badge', async ({ page }) => {
+    const card = page.locator('#events a', { hasText: event('event-tba').title });
+    await expect(card.locator('[data-category-main]')).toHaveCount(1);
+    await expect(card.locator('[data-category-sub]')).toHaveCount(0);
+    await expect(card.locator('[data-category-more]')).toHaveCount(0);
+  });
+
   test('drops the bundled placeholders entirely', async ({ page }) => {
     const section = page.locator('#events');
     for (const placeholder of bundledEvents.slice(0, 3)) {
@@ -168,6 +186,15 @@ test.describe('TEST-01 an event page on portal data', () => {
     const response = await page.goto(`/events/${event('event-past').id}`);
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { name: event('event-past').title, level: 1 })).toBeVisible();
+  });
+
+  test('the event page shows every category', async ({ page }) => {
+    await page.goto(`/events/${event('event-upcoming').slug}`);
+    const badges = page.locator('main [data-event-categories]');
+    await expect(badges.locator('[data-category-main]')).toHaveText('Code Camp');
+    // No "+N" here: unlike a card, the page has room for all of them.
+    await expect(badges.locator('[data-category-sub]')).toHaveText(['Workshop', 'Community', 'Career Talk']);
+    await expect(badges.locator('[data-category-more]')).toHaveCount(0);
   });
 
   test('carries its own title and description, not the site defaults', async ({ page }) => {
@@ -373,4 +400,69 @@ test.describe('TEST-01 the key still never reaches the browser', () => {
     expect(html).not.toContain('fixture-key');
     expect(html).not.toContain('x-api-key');
   });
+});
+
+/**
+ * Accessibility on pages built from portal data (EVENTS-07).
+ *
+ * `a11y.spec.ts` audits the site with no portal — bundled content only. Every
+ * piece of the page that exists only when the portal answers had never been
+ * audited: event links, the past-event marker, and now the category chips,
+ * which appear only when an event has more than one category.
+ *
+ * Same method as the main audit: motion off so text is not measured mid-fade,
+ * the page scrolled through so every section has revealed, and only critical or
+ * serious violations fail.
+ */
+test.describe('EVENTS-07 accessibility on portal data', () => {
+  // The first run of this block found 7 real contrast failures, none of them in
+  // the new category chips: the event page and the news cards, both built in
+  // earlier tickets, both invisible to the main audit because they only exist
+  // when the portal returns data. Fixed by giving <body> the theme background
+  // and the news card a theme-aware surface.
+  test.use({ contextOptions: { reducedMotion: 'reduce' } });
+
+  const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'];
+
+  async function audit(page: Page, context: string) {
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 400) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 60));
+      }
+      window.scrollTo(0, 0);
+    });
+    await page.waitForTimeout(1000);
+
+    const { violations } = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+    const blocking = violations.filter((v) => ['critical', 'serious'].includes(v.impact ?? ''));
+    const detail = blocking
+      .map((v) => `${v.impact} ${v.id} (x${v.nodes.length}): ${v.help}\n    ${v.nodes.map((n) => n.target.join(' ')).join('\n    ')}`)
+      .join('\n');
+    expect(blocking, `${context} has blocking accessibility violations:\n${detail}`).toEqual([]);
+  }
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`the homepage, ${theme} theme`, async ({ page }) => {
+      await page.addInitScript((value) => window.localStorage.setItem('theme', value), theme);
+      await page.goto('/', { waitUntil: 'load' });
+      await audit(page, `homepage (${theme})`);
+    });
+
+    test(`the news index and a post, ${theme} theme`, async ({ page }) => {
+      // The news pages set no background of their own; before the body did,
+      // their text was measured against the browser's default canvas.
+      await page.addInitScript((value) => window.localStorage.setItem('theme', value), theme);
+      await page.goto('/news', { waitUntil: 'load' });
+      await audit(page, `news index (${theme})`);
+      await page.goto('/news/fixture-hackathon-recap', { waitUntil: 'load' });
+      await audit(page, `news post (${theme})`);
+    });
+
+    test(`an event page with several categories, ${theme} theme`, async ({ page }) => {
+      await page.addInitScript((value) => window.localStorage.setItem('theme', value), theme);
+      await page.goto(`/events/${event('event-upcoming').slug}`, { waitUntil: 'load' });
+      await audit(page, `event page (${theme})`);
+    });
+  }
 });

@@ -39,6 +39,12 @@ interface EventItem {
    * chose to keep on the landing page can be past here; the card says so.
    */
   past?: boolean;
+  /**
+   * Every category the event has, primary first, each with the officers' own
+   * name for it (EVENTS-07). Absent on the bundled placeholders, which show the
+   * single `category` badge they always did.
+   */
+  labels?: { name: string; category: Category }[];
 }
 
 const events: EventItem[] = [

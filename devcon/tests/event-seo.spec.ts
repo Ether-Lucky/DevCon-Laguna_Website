@@ -24,6 +24,7 @@ function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
     description: 'Two days of building.',
     location: 'Los Baños',
     category: 'hackaton',
+    categories: [{ name: 'hackaton', publishes_as: 'hackaton' }],
     start_date: '2026-05-10T00:00:00.000Z',
     end_date: '2026-05-12T00:00:00.000Z',
     cover_image_url: null,

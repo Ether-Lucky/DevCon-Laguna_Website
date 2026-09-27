@@ -29,7 +29,11 @@ export default function PostCard({ post }: { post: PortalPost }) {
       // `h-full` so a card without a cover image is the same height as the one
       // beside it; the grid stretches the row, and without it the shorter card
       // leaves a ragged gap.
-      className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-zinc-900/40 ring-1 ring-foreground/10 transition-colors hover:ring-devcon-purple-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-devcon-purple-500"
+      //
+      // The surface is a tint of the theme's own foreground, not a fixed dark
+      // colour: `bg-zinc-900/40` turned mid-grey on the light theme and put the
+      // muted date and excerpt at a 1.99:1 contrast ratio (EVENTS-07 audit).
+      className="group flex h-full flex-col overflow-hidden rounded-[28px] bg-foreground/[0.04] ring-1 ring-foreground/10 transition-colors hover:ring-devcon-purple-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-devcon-purple-500"
     >
       {cover ? (
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-900">

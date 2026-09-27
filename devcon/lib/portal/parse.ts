@@ -7,6 +7,7 @@ import {
   type PortalEvent,
   type PortalEventCategory,
   type PortalLandingImage,
+  type PortalEventCategoryLabel,
   type PortalOfficer,
   type PortalPost,
 } from './types';
@@ -103,6 +104,7 @@ export function parseEvents(value: unknown): PortalEvent[] {
       description: typeof entry.description === 'string' ? entry.description : null,
       location: typeof entry.location === 'string' ? entry.location : '',
       category: entry.category,
+      categories: parseCategoryLabels(entry.categories, entry.category),
       start_date: start ?? end,
       end_date: end ?? start,
       cover_image_url: typeof entry.cover_image_url === 'string' ? entry.cover_image_url : null,
@@ -151,6 +153,35 @@ export function parsePosts(value: unknown): PortalPost[] {
     });
   }
   return posts;
+}
+
+/**
+ * An event's categories, primary first (EVENTS-07).
+ *
+ * Entries the landing page cannot colour — an unknown `publishes_as`, a blank
+ * name — are dropped rather than rendered as an uncoloured chip. If nothing
+ * usable remains, or the portal did not send the list at all, the result is the
+ * single category the site always showed, named by its key: an event must never
+ * lose its main badge because the list was malformed.
+ *
+ * The same category named twice is shown once.
+ */
+function parseCategoryLabels(value: unknown, primary: PortalEventCategory): PortalEventCategoryLabel[] {
+  const labels: PortalEventCategoryLabel[] = [];
+  const seen = new Set<string>();
+
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      if (!isRecord(entry) || typeof entry.name !== 'string' || !isCategory(entry.publishes_as)) continue;
+      const name = entry.name.trim();
+      const key = name.toLowerCase();
+      if (name.length === 0 || seen.has(key)) continue;
+      seen.add(key);
+      labels.push({ name, publishes_as: entry.publishes_as });
+    }
+  }
+
+  return labels.length > 0 ? labels : [{ name: primary, publishes_as: primary }];
 }
 
 function isLandingVisibility(value: unknown): value is LandingVisibility {

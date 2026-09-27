@@ -72,7 +72,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${dmSans.variable} ${jetBrainsMono.variable}`}>
-      <body className="antialiased min-h-full flex flex-col">
+      {/*
+        `bg-background text-foreground` on the body, not left to each page. The
+        body rule in globals.css is commented out, so until now a page only had
+        a theme background if its own <main> set one. The homepage and legal
+        pages did; the event and news pages did not, and their grey text was
+        measured against the browser's default canvas instead of the theme — a
+        contrast failure the portal-data audit caught (EVENTS-07). Setting it
+        here means no future page can repeat that.
+      */}
+      <body className="antialiased min-h-full flex flex-col bg-background text-foreground">
         <StructuredData />
         <ThemeProvider>{children}</ThemeProvider>
         {/*

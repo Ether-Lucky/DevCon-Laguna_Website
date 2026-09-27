@@ -18,3 +18,19 @@ export const EVENT_BADGE_COLORS: Record<Category, string> = {
   community: 'bg-devcon-lime-500   text-black',
   career: 'bg-devcon-orange-500  text-white',
 };
+
+/**
+ * The colour hint on a sub-category chip (EVENTS-07).
+ *
+ * Sub-categories are deliberately quieter than the main badge — a neutral dark
+ * chip — and carry their category's colour only as a small dot. The dot is
+ * decorative: the chip's text is white on dark, so contrast never depends on
+ * which category it is.
+ */
+export const EVENT_DOT_COLORS: Record<Category, string> = {
+  hackaton: 'bg-devcon-purple-500',
+  workshop: 'bg-devcon-yellow-500',
+  seminar: 'bg-devcon-purple-700',
+  community: 'bg-devcon-lime-500',
+  career: 'bg-devcon-orange-500',
+};
