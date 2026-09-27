@@ -187,6 +187,10 @@ effectiveness and inform future decisions.
 
 > **Ticket:** `NEWS-01: Newsletter Subscription` — labels: `feature`, `front-end`, `back-end`, `low priority`, `sprint-2`, `stretch`
 
+> **Status (2026-09-27):** built on the site, hidden until the DevConnect Portal's list is live. The
+> PM decided the **portal owns the list**; the site validates and relays. See
+> [portal-api.md](./portal-api.md#newsletter-sign-up-news-01).
+
 **User Story:**
 As a visitor, I want to subscribe for updates so I stay informed about DevCon Laguna events
 and news.

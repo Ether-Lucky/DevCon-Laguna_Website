@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { footerColumns, footerLegalLinks } from '@/lib/content/footer';
 import Logo from '../logo';
 import SocialMedia from './social-media';
+import NewsletterForm from '../newsletter-form';
+import { isNewsletterEnabled } from '@/lib/newsletter';
 
 /**
  * Footer — the site-wide footer.
@@ -42,6 +44,13 @@ export default function Footer() {
 
             {/* Integrated Social Media Component */}
             <SocialMedia color="text-foreground" compact />
+
+            {/* NEWS-01: hidden until the portal's list is live (lib/newsletter.ts). */}
+            {isNewsletterEnabled() && (
+              <div className="mt-8 max-w-sm">
+                <NewsletterForm />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-x-7 gap-y-9 md:mt-0 md:w-2/3 md:grid-cols-3 md:gap-8">
