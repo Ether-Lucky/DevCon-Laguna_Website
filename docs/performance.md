@@ -96,3 +96,45 @@ it is exactly what the last three attempts did.
 
 **PERF-02 (#94) records the target as not met**, with the measurements above, rather than being
 closed on a fourth guess or quietly carried a fourth time.
+
+---
+
+## Update: the image was the bottleneck after all (Sprint 5, PERF-02)
+
+The first round above concluded the gap was main-thread work. That came from the **simulated**
+breakdown, which put 63% of LCP in "render delay". Lighthouse's newer `lcp-breakdown-insight`,
+read from a **real-throttling** run, says something different:
+
+| LCP part | Time |
+|---|---|
+| Time to first byte | 13 ms |
+| Resource load delay | 611 ms |
+| **Resource load duration** | **2,249 ms** |
+| Element render delay | 24 ms |
+
+**LCP was almost entirely the hero image downloading.** It is 102 KB, and for its first 1.3 seconds
+it shares a slow connection with two fonts (76 KB) requested at the same moment at the same
+priority. The simulator's "render delay" was the simulator.
+
+### The fix: AVIF
+
+The hero is a transparent collage, which AVIF compresses far better than WebP. `next.config.ts` now
+serves AVIF first, WebP as the fallback:
+
+| Same machine, 3 runs each, real throttling | Hero | LCP (median) |
+|---|---|---|
+| A — WebP | 102 KB | 2.90 s |
+| B — AVIF | **36 KB** | **2.41 s** |
+| A again — WebP | 102 KB | 2.91 s |
+
+**A-B-A, deliberately**, after the false 0.98 recorded above. The byte saving is deterministic;
+the LCP saving reproduced. **With real throttling, LCP is now under the 2.5 s target.**
+
+The CI score uses simulated throttling, which is pessimistic about LCP (above), so the CI figure is
+recorded from CI, not from these runs.
+
+### Still available if more is needed
+
+The two fonts compete with the hero for its first second. Deferring one font's preload would give
+the image more of the connection, at the cost of that font swapping in slightly later. Not done: the
+image fix already crossed the target, and each further change needs its own A-B-A.
