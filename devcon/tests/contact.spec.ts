@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { fillContactForm, fillWhenReady, clickUntilEffect } from './support/form';
+import { siteConfig } from '../lib/site-config';
 
 /**
  * CON-01 (#59) — contact form, closing FR-07.
@@ -297,5 +298,18 @@ test.describe('CON-02 bot protection', () => {
     await page.goto('/#contact');
     await expect(page.getByTestId('turnstile-widget')).toHaveCount(0);
     await expect(page.locator('#name')).toBeVisible();
+  });
+});
+
+test.describe('CON-03 community hub', () => {
+  test('points to the DevConnect Portal, not a map', async ({ page }) => {
+    const contact = page.locator('#contact');
+    const hub = contact.getByRole('link', { name: 'DevConnect Portal' });
+    await expect(hub).toHaveAttribute('href', siteConfig.portalUrl);
+    await expect(hub).toHaveAttribute('target', '_blank');
+    await expect(hub).toHaveAttribute('rel', /noopener/);
+    await expect(contact.getByText('Laguna, Philippines')).toBeVisible();
+    // No venue is pinned: DevCon Laguna has no fixed address.
+    await expect(contact.locator('iframe[src*="map"], img[alt*="map" i]')).toHaveCount(0);
   });
 });
