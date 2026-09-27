@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { validateContact, type ContactPayload } from '@/lib/contact-schema';
 import { verifyTurnstile } from '@/lib/turnstile';
-import { TURNSTILE_ACTION } from '@/components/ui/turnstile-widget';
+import { TURNSTILE_ACTION } from '@/lib/turnstile-action';
 
 /**
  * Contact form submission endpoint (CON-01, CON-01-BT-01).

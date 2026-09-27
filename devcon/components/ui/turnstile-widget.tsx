@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-
-/** The action name this widget is issued for; the server checks it matches. */
-export const TURNSTILE_ACTION = 'contact';
+import { TURNSTILE_ACTION } from '@/lib/turnstile-action';
 
 type TurnstileApi = {
   render: (
