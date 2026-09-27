@@ -138,3 +138,29 @@ export function locationUrl(location: string): string | null {
     return null;
   }
 }
+
+/**
+ * The event in the portal, where a member signs in and registers (EVENTS-08).
+ *
+ * Registration is the portal's: it holds participants, volunteers and
+ * attendance, and it requires an approved member account. The portal's event
+ * pages are behind sign-in — a signed-out visitor who follows this lands on the
+ * login screen, which is the right place for a member and the wrong one for
+ * anybody else. That is why the page offers "Join" first.
+ *
+ * Built from the portal's `id`, not our slug: it is the portal's own address.
+ */
+export function portalEventUrl(portalBaseUrl: string, event: Pick<PortalEvent, 'id'>): string {
+  return `${portalBaseUrl.replace(/\/+$/, '')}/events/${encodeURIComponent(event.id)}`;
+}
+
+/**
+ * Whether a visitor can still take part: upcoming or undated.
+ *
+ * A past event shows no registration notice. `landing_visibility` has no say
+ * here — an officer keeping a past event on the landing page is showcasing it,
+ * not reopening it.
+ */
+export function isOpenForRegistration(event: Pick<PortalEvent, 'start_date' | 'end_date'>, now: Date = new Date()): boolean {
+  return isUpcoming(event, now);
+}

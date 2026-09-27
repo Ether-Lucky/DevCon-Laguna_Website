@@ -188,6 +188,34 @@ test.describe('TEST-01 an event page on portal data', () => {
     await expect(page.getByRole('heading', { name: event('event-past').title, level: 1 })).toBeVisible();
   });
 
+  test('an upcoming event says how to register, Join first', async ({ page }) => {
+    // EVENTS-08. Registration needs an approved member account, and the portal
+    // team asked for "Join DevCon" first: most visitors are not members yet.
+    const target = event('event-upcoming');
+    await page.goto(`/events/${target.slug}`);
+    const notice = page.locator('[data-registration-notice]');
+    await expect(notice).toContainText(/for DevCon Laguna members/i);
+
+    const links = notice.getByRole('link');
+    await expect(links.first()).toContainText('Join DevCon Laguna');
+    await expect(links.nth(1)).toHaveAttribute('href', new RegExp(`/events/${target.id}$`));
+    for (const link of await links.all()) {
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', /noopener/);
+    }
+  });
+
+  test('a TBA event says how to register too', async ({ page }) => {
+    await page.goto(`/events/${event('event-tba').slug}`);
+    await expect(page.locator('[data-registration-notice]')).toHaveCount(1);
+  });
+
+  test('a past event does not invite registration', async ({ page }) => {
+    // Kept on the landing page by an officer, but over: showcasing, not open.
+    await page.goto(`/events/${event('event-past-shown').slug}`);
+    await expect(page.locator('[data-registration-notice]')).toHaveCount(0);
+  });
+
   test('the event page shows every category', async ({ page }) => {
     await page.goto(`/events/${event('event-upcoming').slug}`);
     const badges = page.locator('main [data-event-categories]');
