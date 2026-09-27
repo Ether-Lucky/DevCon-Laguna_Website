@@ -67,6 +67,14 @@ export const FIXTURE = {
       slug: 'fixture-hackathon-with-a-very-long-title',
       slug_aliases: ['fixture-hack'],
       title: 'Fixture Hackathon',
+      // Four categories, primary first, as the portal sends them (EVENTS-07): a
+      // card shows the main badge, two sub-categories and "+1".
+      categories: [
+        { name: 'Code Camp', publishes_as: 'hackaton' },
+        { name: 'Workshop', publishes_as: 'workshop' },
+        { name: 'Community', publishes_as: 'community' },
+        { name: 'Career Talk', publishes_as: 'career' },
+      ],
       description: 'Two days of building.\n\nBring a laptop and a team.',
       location: 'Los Baños, Laguna',
       category: 'hackaton',

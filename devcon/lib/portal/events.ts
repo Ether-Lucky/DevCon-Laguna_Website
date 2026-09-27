@@ -50,6 +50,7 @@ export function toEventItem(
     // Only a past event an officer chose to `show` can reach the carousel, and
     // it is marked so a visitor does not read it as coming up (EVENTS-06).
     past: !isUpcoming(event, now),
+    labels: event.categories.map((label) => ({ name: label.name, category: label.publishes_as })),
   };
 }
 

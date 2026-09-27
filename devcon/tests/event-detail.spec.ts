@@ -24,6 +24,7 @@ function portalEvent(extra: Partial<PortalEvent> = {}): PortalEvent {
     description: 'Two days of building.',
     location: 'Los Baños, Laguna',
     category: 'hackaton',
+    categories: [{ name: 'hackaton', publishes_as: 'hackaton' }],
     start_date: '2026-05-10T00:00:00.000Z',
     end_date: '2026-05-12T00:00:00.000Z',
     cover_image_url: null,
@@ -155,6 +156,64 @@ test.describe('EVENTS-06 the portal chooses what the landing page shows', () => 
       const [parsed] = parseEvents([{ ...base, landing_visibility: value }]);
       expect(parsed.landing_visibility).toBe(value);
     }
+  });
+});
+
+test.describe('EVENTS-07 every category, primary first', () => {
+  const base = { id: 'e', title: 'E', category: 'hackaton', start_date: null, end_date: null };
+
+  test("keeps the portal's list, in its order, under its own names", () => {
+    const [event] = parseEvents([
+      {
+        ...base,
+        categories: [
+          { name: 'Code Camp', publishes_as: 'hackaton' },
+          { name: 'Workshop', publishes_as: 'workshop' },
+        ],
+      },
+    ]);
+    expect(event.categories).toEqual([
+      { name: 'Code Camp', publishes_as: 'hackaton' },
+      { name: 'Workshop', publishes_as: 'workshop' },
+    ]);
+  });
+
+  test('an event without the list still has its main badge', () => {
+    // Every event before the portal sent `categories`, and any malformed list,
+    // must keep the single badge the site always showed.
+    for (const categories of [undefined, null, [], 'Code Camp', {}]) {
+      const [event] = parseEvents([{ ...base, categories }]);
+      expect(event.categories, JSON.stringify(categories)).toEqual([{ name: 'hackaton', publishes_as: 'hackaton' }]);
+    }
+  });
+
+  test('drops entries it cannot colour or name, and duplicates', () => {
+    const [event] = parseEvents([
+      {
+        ...base,
+        categories: [
+          { name: 'Code Camp', publishes_as: 'hackaton' },
+          { name: 'Mystery', publishes_as: 'party' },
+          { name: '   ', publishes_as: 'workshop' },
+          { name: 'code camp', publishes_as: 'hackaton' },
+          'Workshop',
+          { name: 'Community', publishes_as: 'community' },
+        ],
+      },
+    ]);
+    expect(event.categories.map((label) => label.name)).toEqual(['Code Camp', 'Community']);
+  });
+
+  test('the card carries the labels, keyed to their colours', () => {
+    const item = toEventItem(
+      portalEvent({ categories: [{ name: 'Code Camp', publishes_as: 'seminar' }, { name: 'Workshop', publishes_as: 'workshop' }] }),
+      0,
+      undefined,
+    );
+    expect(item.labels).toEqual([
+      { name: 'Code Camp', category: 'seminar' },
+      { name: 'Workshop', category: 'workshop' },
+    ]);
   });
 });
 

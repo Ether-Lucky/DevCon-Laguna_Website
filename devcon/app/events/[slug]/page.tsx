@@ -6,7 +6,7 @@ import { CalendarIcon, MapPinIcon, ArrowLeftIcon } from '@heroicons/react/24/out
 import { getPortalEvent } from '@/lib/portal/content';
 import { eventPath, locationUrl } from '@/lib/portal/events';
 import { formatEventDate } from '@/lib/portal/format';
-import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
+import CategoryBadges from '@/components/ui/events/category-badges';
 import { eventDescription, eventJsonLd, eventTitle, eventUrl } from '@/lib/portal/event-seo';
 import { siteConfig } from '@/lib/site-config';
 import NavBar from '@/components/ui/nav-bar/nav-bar';
@@ -118,11 +118,12 @@ export default async function EventPage({ params }: PageProps<'/events/[slug]'>)
         </Link>
 
         <article className="mt-8">
-          <span
-            className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${EVENT_BADGE_COLORS[event.category]}`}
-          >
-            {event.category}
-          </span>
+          {/* Every category, the primary one leading (EVENTS-07). All of them here:
+              unlike a card, the page has room. */}
+          <CategoryBadges
+            labels={event.categories.map((label) => ({ name: label.name, category: label.publishes_as }))}
+            fallback={event.category}
+          />
 
           <h1 className="mt-6 text-4xl md:text-6xl font-extrabold text-foreground leading-tight">
             {event.title}

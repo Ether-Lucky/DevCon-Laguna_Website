@@ -37,6 +37,18 @@ export type LandingVisibility = (typeof LANDING_VISIBILITIES)[number];
 export const EVENT_CATEGORIES = ['hackaton', 'workshop', 'seminar', 'community', 'career'] as const;
 export type PortalEventCategory = (typeof EVENT_CATEGORIES)[number];
 
+/**
+ * One of an event's categories, as the portal names it (EVENTS-07).
+ *
+ * `name` is the officers' own wording — "Code Camp", "Bootcamp" — and
+ * `publishes_as` is the one of our five keys it maps to, which decides its
+ * colour. The portal keeps `category` equal to the primary's `publishes_as`.
+ */
+export type PortalEventCategoryLabel = {
+  name: string;
+  publishes_as: PortalEventCategory;
+};
+
 export type PortalEvent = {
   id: string;
   /**
@@ -63,6 +75,12 @@ export type PortalEvent = {
    * the badge colours key on that exact string.
    */
   category: PortalEventCategory;
+  /**
+   * Every category the event has, **primary first** (EVENTS-07). Always at
+   * least one entry after parsing: an event the portal sent without the list
+   * gets one built from `category`, so there is always a main badge.
+   */
+  categories: PortalEventCategoryLabel[];
   /**
    * ISO 8601 in UTC, or `null` for an event whose date is still to be
    * announced ("TBA"). The portal guarantees start and end are both set or both

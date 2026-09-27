@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { EventItem, events } from '@/lib/content/events';
 import Link from 'next/link';
 import { DynamicCarousel } from '@/components/ui/dynamic-carousel';
-import { EVENT_BADGE_COLORS } from '@/lib/content/event-badges';
+import CategoryBadges from '@/components/ui/events/category-badges';
 import { socialLinks } from '@/lib/content/social-links';
 
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -31,16 +31,14 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
  */
 const FACEBOOK_URL = socialLinks.find((link) => link.platform === 'Facebook')?.link;
 
-// Shared with the event's own page (EVENTS-03) so a category cannot be purple
-// in the carousel and grey on the page it links to.
-const categoryColors = EVENT_BADGE_COLORS;
-
 /**
  * EventCard — a tall image card representing a single event in the carousel.
  *
  * - If `event.img` is provided, the image fills the card with a dark bottom gradient.
  * - Otherwise a purple-to-black placeholder gradient is shown with a calendar icon.
- * - The category badge color is derived from `categoryColors` — not from the event data.
+ * - Categories are drawn by `CategoryBadges`, shared with the event's own page so
+ *   the two cannot drift (EVENTS-07). Colours come from `event-badges.ts`, never
+ *   from the event data.
  */
 /**
  * The card's wrapper: a link to the event's own page when there is one to link
@@ -91,25 +89,32 @@ function EventCard({ event }: { event: EventItem }) {
         </div>
       )}
 
-      {/* Category Badge, and a "Past event" marker beside it (EVENTS-06) */}
-      <div className="absolute top-6 left-6 z-10 flex flex-wrap items-center gap-2">
-        <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${categoryColors[event.category]}`}>
-          {event.category}
-        </span>
-        {/*
-          Officers can keep a past event on the landing page. In a section called
-          Featured Events a visitor would otherwise read it as coming up, and the
-          date alone is easy to miss. Plain text rather than an icon, so a screen
-          reader says it too.
-        */}
-        {event.past ? (
-          <span
-            data-past-event
-            className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 text-white ring-1 ring-white/30"
-          >
-            Past event
-          </span>
-        ) : null}
+      {/*
+        Every category, the primary one leading (EVENTS-07), and the "Past event"
+        marker in the same row so they wrap together (EVENTS-06). Two
+        sub-categories at most on a card: the row sits over an image, and the rest
+        collapse into "+N".
+      */}
+      <div className="absolute top-6 left-6 right-6 z-10">
+        <CategoryBadges
+          labels={event.labels}
+          fallback={event.category}
+          maxSubs={2}
+          trailing={
+            // Officers can keep a past event on the landing page. In a section
+            // called Featured Events a visitor would otherwise read it as coming
+            // up, and the date alone is easy to miss. Plain text rather than an
+            // icon, so a screen reader says it too.
+            event.past ? (
+              <span
+                data-past-event
+                className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 text-white ring-1 ring-white/30"
+              >
+                Past event
+              </span>
+            ) : null
+          }
+        />
       </div>
 
       {/* Card Details */}
@@ -128,7 +133,7 @@ function EventCard({ event }: { event: EventItem }) {
  * Events — the "Featured Events" homepage section.
  *
  * Renders a horizontally scrollable `DynamicCarousel` of `EventCard` tiles.
- * Badge colors are determined by `categoryColors` above — not by the event objects.
+ * Badge colours come from `lib/content/event-badges.ts` — not from the event objects.
  *
  * `items` comes from the DevConnect Portal, fetched on the server by
  * `lib/portal/content.ts` (CMS-02). It defaults to the bundled list in
