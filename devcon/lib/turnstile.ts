@@ -25,6 +25,14 @@ export type TurnstileOutcome =
   | { status: 'ok' }
   | { status: 'failed'; reason: string };
 
+/**
+ * Cloudflare's published dummy secrets (always pass, always fail, token spent).
+ * They approve any token and label it `action: "test"`, so they can never pass
+ * our action check. Named outright rather than surfacing as a mismatch
+ * (CON-02-BT-01, #199).
+ */
+const TEST_SECRET = /^[123]x0{31}AA$/;
+
 /** Turnstile is only enforced once a secret is configured. */
 export function isTurnstileEnabled(): boolean {
   return Boolean(process.env.TURNSTILE_SECRET);
@@ -58,6 +66,11 @@ export async function verifyTurnstile(
 ): Promise<TurnstileOutcome> {
   const secret = process.env.TURNSTILE_SECRET;
   if (!secret) return { status: 'skipped' };
+
+  if (TEST_SECRET.test(secret)) {
+    console.error("[turnstile] TURNSTILE_SECRET is a Cloudflare test secret; use the widget's real secret.");
+    return { status: 'failed', reason: 'test-secret' };
+  }
 
   const hostnames = expectedHostnames();
   if (hostnames.size === 0) {
@@ -98,11 +111,20 @@ export async function verifyTurnstile(
   if (!result.success) {
     return { status: 'failed', reason: (result['error-codes'] ?? ['rejected']).join(',') };
   }
+  // The reasons carry what Cloudflare returned, so a log line explains itself.
+  // Neither value is secret: the action is set by our own page, the hostname is
+  // where the visitor was.
   if (result.action !== expectedAction) {
-    return { status: 'failed', reason: 'action-mismatch' };
+    return {
+      status: 'failed',
+      reason: `action-mismatch (received ${JSON.stringify(result.action ?? null)}, expected "${expectedAction}")`,
+    };
   }
   if (!result.hostname || !hostnames.has(result.hostname)) {
-    return { status: 'failed', reason: 'hostname-mismatch' };
+    return {
+      status: 'failed',
+      reason: `hostname-mismatch (received ${JSON.stringify(result.hostname ?? null)}, allowed ${[...hostnames].join(',')})`,
+    };
   }
 
   return { status: 'ok' };
