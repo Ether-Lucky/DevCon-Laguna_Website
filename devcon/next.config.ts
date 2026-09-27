@@ -27,6 +27,21 @@ const nextConfig: NextConfig = {
      * check photos against the same list before rendering them.
      */
     remotePatterns: remoteImagePatterns,
+    /**
+     * AVIF first, WebP for browsers without it (PERF-02).
+     *
+     * Measured with real throttling, the landing page's LCP was almost all the
+     * hero image downloading: 2.25s of a 2.9s LCP, sharing a slow connection
+     * with the fonts. The hero is a transparent collage, which AVIF compresses
+     * far better than WebP — 102 KB became 36 KB — and LCP went from 2.90s to
+     * 2.41s. Confirmed A-B-A (2.90 → 2.41 → 2.91), because an earlier PERF-02
+     * "improvement" turned out to be a stale server.
+     *
+     * The cost: each image is encoded and cached in both formats, and AVIF is
+     * slower to encode the first time a size is requested. Both are one-off per
+     * image and size.
+     */
+    formats: ['image/avif', 'image/webp'],
   },
 };
 
