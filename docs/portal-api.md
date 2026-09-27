@@ -346,9 +346,17 @@ newsletter section are not rendered, and `/api/newsletter` answers `503`. That i
 Tested both ways: `tests/newsletter.spec.ts` (off) and `tests/portal-data.spec.ts` (on, against a
 fixture that implements the endpoint).
 
-**Before turning it on:** the portal endpoint is live, and the Privacy Policy text is approved by the
-PM (it promises confirmation first, deletion of unconfirmed addresses, and removal on unsubscribe;
-the portal must actually do all three).
+**The portal's side went live on 2026-09-27**, tested end to end on production by the portal
+team. It sends from `laguna@devcon.ph` through Google Workspace, stores the list in Supabase,
+deletes unconfirmed addresses after 30 days, and deletes on unsubscribe. The Privacy Policy section
+states exactly these, and adds Supabase to its provider list, only while the form shows.
+
+**To turn it on:** the PM approves the Privacy Policy section, then `NEWSLETTER_ENABLED=true` in
+Vercel (Production) and a redeploy. Check afterwards: the footer form shows, `/privacy` has the
+section and is dated 27 September 2026, and a real sign-up gets a confirmation email.
+
+Portal answers beyond the table above: `502` when their confirmation email could not be sent (the
+address is not kept), which the visitor sees as "we could not sign you up just now".
 
 ## Change requests for the portal team
 
