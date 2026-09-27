@@ -5,6 +5,7 @@ import { validateContact, type ContactErrors, type ContactPayload } from '@/lib/
 import { ANALYTICS_EVENTS, trackEvent } from '@/lib/analytics';
 import TurnstileWidget from '@/components/ui/turnstile-widget';
 import SocialMedia from '@/components/ui/sections/social-media';
+import { siteConfig } from '@/lib/site-config';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -151,11 +152,24 @@ export default function Contact() {
               facebook.com/DEVCONLAGUNA
             </a>
           </div>
+          {/*
+            No map (CON-03): DevCon Laguna has no fixed venue — events move, and each
+            event page links to its own location. The hub members actually gather
+            at is the DevConnect Portal, so that is where this points.
+          */}
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
               {'// Community hub'}
             </p>
-            <p className="mt-2 text-lg font-semibold text-foreground">Laguna, Philippines</p>
+            <a
+              href={siteConfig.portalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-lg font-semibold text-foreground underline-offset-4 hover:underline"
+            >
+              DevConnect Portal
+            </a>
+            <p className="mt-1 text-sm text-muted">Laguna, Philippines</p>
           </div>
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
